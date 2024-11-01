@@ -19,9 +19,8 @@ const services = [
       isGlobal: true,
       load: [configuration],
       validate: validate,
-      // ignoreEnvFile:
-      //   process.env.ENV !== Environments.DEVELOPMENT &&
-      //   process.env.ENV !== Environments.TEST,
+
+
       envFilePath: ['.env'],
     }),
 
