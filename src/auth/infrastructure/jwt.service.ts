@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 import { randomUUID } from 'crypto';
-import { SessionRepository } from '../../sessions/infrastructure/session.repository';
-import { UsersQueryRepository } from '../../users/infrastructure/users.query.repository';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationType } from '../../settings/configuration';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';

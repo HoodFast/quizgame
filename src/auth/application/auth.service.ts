@@ -1,4 +1,4 @@
-import { SessionRepository } from '../../sessions/infrastructure/session.repository';
+
 import { JwtService } from '../infrastructure/jwt.service';
 import { UsersService } from '../../users/application/users.service';
 import {
@@ -7,8 +7,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { UsersQueryRepository } from '../../users/infrastructure/users.query.repository';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { EmailService } from '../infrastructure/email.service';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
 import { UserEntity } from '../../users/domain/user.entity';

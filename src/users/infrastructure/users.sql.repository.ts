@@ -3,7 +3,6 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { OutputUsersType } from '../api/output/users.output.dto';
 import { Users } from '../domain/user.sql.entity';
-import { User } from '../domain/user.schema';
 import { EmailConfirmation } from '../domain/email.confirmation.entity';
 import { TokensBlackList } from '../domain/tokens.black.list.sql.entity';
 
@@ -17,7 +16,7 @@ export class UsersSqlRepository {
     @InjectRepository(EmailConfirmation)
     protected emailConfirmRepository: Repository<EmailConfirmation>,
   ) {}
-  async createUser(userData: User): Promise<OutputUsersType | null> {
+  async createUser(userData): Promise<OutputUsersType | null> {
     const { accountData, emailConfirmation } = userData;
 
     try {

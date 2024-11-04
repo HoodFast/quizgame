@@ -12,23 +12,13 @@ import {
 } from '@nestjs/common';
 import { UserInputDto } from './input/userInput.dto';
 import { UsersService } from '../application/users.service';
-import { UsersSortData } from '../../base/sortData/sortData.model';
-import { sortDirection } from '../../blogs/api/blogs.controller';
+import { sortDirection, UsersSortData } from '../../base/sortData/sortData.model';
 import { AuthGuard } from '../../guards/auth.guard';
 import { OutputUsersType } from './output/users.output.dto';
 import { Pagination } from '../../base/paginationInputDto/paginationOutput';
 import { UsersSqlQueryRepository } from '../infrastructure/users.sql.query.repository';
 
-// const validateOrRejectModel = async (model: any, ctor: { new (): any }) => {
-//   if (!(model instanceof ctor)) {
-//     throw new Error('incorrect input data');
-//   }
-//   try {
-//     await validateOrReject(model);
-//   } catch (e) {
-//     throw new Error(e);
-//   }
-// };
+
 @UseGuards(AuthGuard)
 @Controller('sa/users')
 export class UsersController {

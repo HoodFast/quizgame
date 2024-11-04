@@ -1,7 +1,6 @@
 import { OutputUsersType } from '../api/output/users.output.dto';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import { User } from '../domain/user.schema';
 import { add } from 'date-fns/add';
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { EmailService } from '../../auth/infrastructure/email.service';
@@ -46,7 +45,7 @@ export class UsersService {
     const salt = bcrypt.genSaltSync(saltRounds);
     const hash = bcrypt.hashSync(password, salt);
 
-    const userData: User = {
+    const userData= {
       accountData: { _passwordHash: hash, createdAt, email, login },
       emailConfirmation: {
         confirmationCode: uuidv4(),
