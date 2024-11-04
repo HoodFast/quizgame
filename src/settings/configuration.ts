@@ -4,7 +4,7 @@ import { EnvironmentSettings } from './environmentSettings/environment-settings'
 import { ConfigService } from '@nestjs/config';
 import { ValidateNested, validateSync } from 'class-validator';
 import { SqlDataBaseSettings } from './dataBaseSettings/sql-data-base-settings';
-import { JwtSettings } from '../jwtSettings/jwtSettings';
+import { JwtSettings } from './jwtSettings/jwtSettings';
 
 export type EnvironmentVariable = { [key: string]: string };
 
@@ -14,8 +14,6 @@ export type ConfigServiceType = ConfigService<ConfigurationType>;
 export class Configuration {
   @ValidateNested()
   apiSettings: ApiSettings;
-  // @ValidateNested()
-  // databaseSettings: DataBaseSettings;
   @ValidateNested()
   sqlDataBaseSettings: SqlDataBaseSettings;
   @ValidateNested()
@@ -30,7 +28,6 @@ export class Configuration {
   ): Configuration {
     return new this({
       apiSettings: new ApiSettings(environmentVariables),
-      // databaseSettings: new DataBaseSettings(environmentVariables),
       sqlDataBaseSettings: new SqlDataBaseSettings(environmentVariables),
       environmentSettings: new EnvironmentSettings(environmentVariables),
       jwtSettings: new JwtSettings(environmentVariables),

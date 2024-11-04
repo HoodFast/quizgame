@@ -1,6 +1,6 @@
 
 import { IsOptional, IsString } from 'class-validator';
-import { EnvironmentVariable } from '../settings/configuration';
+import { EnvironmentVariable } from '../configuration';
 
 export class JwtSettings {
   constructor(private environmentVariables: EnvironmentVariable) {}
