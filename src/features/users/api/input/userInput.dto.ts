@@ -1,5 +1,5 @@
 import { IsEmail, IsString, Length } from 'class-validator';
-import { Trim } from '../../../base/validate/trim';
+import { Trim } from '../../../../base/validate/trim';
 
 export class UserInputDto {
   @Trim()

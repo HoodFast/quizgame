@@ -6,14 +6,14 @@ import { PostsController } from './posts/api/posts.controller';
 import { PostService } from './posts/application/posts.service';
 import { BlogsController } from './blogs/api/blogs.controller';
 import { BlogService } from './blogs/application/blogs.service';
-import { UsersService } from './users/application/users.service';
+import { UsersService } from './features/users/application/users.service';
 import { TestingSqlQueryRepository } from './testing/infrastructure/testing.query.repository';
 import { TestingController } from './testing/api/testing.controller';
-import { AuthService } from './auth/application/auth.service';
-import { JwtService } from './auth/infrastructure/jwt.service';
+import { AuthService } from './features/auth/application/auth.service';
+import { JwtService } from './features/auth/infrastructure/jwt.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthController } from './auth/api/auth.controller';
-import { EmailService } from './auth/infrastructure/email.service';
+import { AuthController } from './features/auth/api/auth.controller';
+import { EmailService } from './features/auth/infrastructure/email.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, {
   ConfigServiceType,
@@ -37,14 +37,14 @@ import { SecurityController } from './sessions/api/security.controller';
 import { DeleteAllSessionsUseCase } from './sessions/api/useCases/delete-all-sessions.usecase';
 import { DeleteSessionByIdUseCase } from './sessions/api/useCases/delete-session-by-id.usecase';
 import { GetAllSessionUseCase } from './sessions/api/useCases/get-all-sessions.usecase';
-import { UsersSqlRepository } from './users/infrastructure/users.sql.repository';
-import { UsersSqlQueryRepository } from './users/infrastructure/users.sql.query.repository';
+import { UsersSqlRepository } from './features/users/infrastructure/users.sql.repository';
+import { UsersSqlQueryRepository } from './features/users/infrastructure/users.sql.query.repository';
 import { SessionSqlQueryRepository } from './sessions/infrastructure/session.sql.query.repository';
 import { SessionSqlRepository } from './sessions/infrastructure/session.sql.repository';
-import { Users } from './users/domain/user.sql.entity';
-import { EmailConfirmation } from './users/domain/email.confirmation.entity';
+import { Users } from './features/users/domain/user.sql.entity';
+import { EmailConfirmation } from './features/users/domain/email.confirmation.entity';
 import { Sessions } from './sessions/domain/session.sql.entity';
-import { TokensBlackList } from './users/domain/tokens.black.list.sql.entity';
+import { TokensBlackList } from './features/users/domain/tokens.black.list.sql.entity';
 import { BlogsSqlRepository } from './blogs/infrastructure/blogs.sql.repository';
 import { BlogsSqlQueryRepository } from './blogs/infrastructure/blogs.sql.query.repository';
 import { LikePost } from './posts/domain/likePost.sql.entity';
@@ -60,6 +60,7 @@ import { Comments, CommentsLikes } from './comments/domain/comment.sql.entity';
 import { CommentsSqlRepository } from './comments/infrastructure/comments.sql.repository';
 import { CommentsSqlQueryRepository } from './comments/infrastructure/comments.sql.query.repository';
 import { UserModule } from './features/users/user.module';
+import { AuthModule } from './features/auth/auth.module';
 
 const useCases = [
   CreateBlogUseCase,
@@ -120,13 +121,14 @@ const useCases = [
     TypeOrmModule.forFeature([EmailConfirmation]),
     TypeOrmModule.forFeature([Sessions]),
     UserModule,
+    AuthModule,
   ],
   controllers: [
     AppController,
     PostsController,
     BlogsController,
     TestingController,
-    AuthController,
+    // AuthController,
     CommentsController,
     SecurityController,
     BlogsSaController,
@@ -141,19 +143,19 @@ const useCases = [
     PostsSqlRepository,
     AppService,
     PostService,
-    UsersSqlQueryRepository,
-    UsersSqlRepository,
     BlogService,
-    UsersService,
     TestingSqlQueryRepository,
     AuthService,
     AuthService,
     ConfigService,
     BlogExistsValidator,
-    EmailService,
-    JwtService,
-    SessionSqlRepository,
     SessionSqlQueryRepository,
+    SessionSqlRepository,
+    JwtService,
+    EmailService,
+    UsersService,
+    UsersSqlRepository,
+    UsersSqlQueryRepository,
     ...useCases,
   ],
 })

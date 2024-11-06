@@ -1,9 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { JwtService } from '../auth/infrastructure/jwt.service';
+import { JwtService } from '../features/auth/infrastructure/jwt.service';
 
 @Injectable()
 export class AccessTokenGetId implements CanActivate {
   constructor(private jwtService: JwtService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 

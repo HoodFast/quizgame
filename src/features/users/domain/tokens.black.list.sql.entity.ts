@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Users } from '../../users/domain/user.sql.entity';
+import { Users } from './user.sql.entity';
 
 @Entity()
 export class TokensBlackList extends BaseEntity {

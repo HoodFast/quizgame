@@ -16,16 +16,19 @@ import { LoginDto } from './input/login.dto';
 import { Request, Response } from 'express';
 import { AuthService } from '../application/auth.service';
 import { UsersService } from '../../users/application/users.service';
-import { Limiter, LimiterForRegistration } from '../../guards/limitter.guard';
+import {
+  Limiter,
+  LimiterForRegistration,
+} from '../../../guards/limitter.guard';
 import { recoveryPass } from './input/recovery.password.input';
 import { recoveryPassInputDto } from './input/new.password.input';
 import { JwtService } from '../infrastructure/jwt.service';
-import { AccessTokenAuthGuard } from '../../guards/access.token.auth.guard';
-import { UserId } from '../../decorators/userId';
+import { AccessTokenAuthGuard } from '../../../guards/access.token.auth.guard';
+import { UserId } from '../../../decorators/userId';
 import { confirmDto } from '../../users/api/input/conf.code.dto';
 import { UserInputDto } from '../../users/api/input/userInput.dto';
 import { emailResendingDto } from './input/email.resending.input';
-import { RefreshTokenGuard } from '../../guards/refresh-token.guards';
+import { RefreshTokenGuard } from '../../../guards/refresh-token.guards';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
 
 @Controller('auth')

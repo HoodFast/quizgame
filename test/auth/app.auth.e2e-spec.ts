@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 
 import { AppModule } from '../../src/app.module';
 import { appSettings } from '../../src/settings/app.settings';
-import { UsersService } from '../../src/users/application/users.service';
+import { UsersService } from '../../src/features/users/application/users.service';
 
 import request from 'supertest';
 import { UsersServiceEmailMock } from '../users/mock/email.mock.class';

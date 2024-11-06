@@ -1,12 +1,11 @@
-
 import { CommentsOutputType } from '../api/model/output/comments.output';
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { CommentsSqlQueryRepository } from './comments.sql.query.repository';
-import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
 import { Comments, CommentsLikes } from '../domain/comment.sql.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { likesStatuses } from '../../posts/domain/likes.statuses';
+import { UsersSqlQueryRepository } from '../../features/users/infrastructure/users.sql.query.repository';
 
 @Injectable()
 export class CommentsSqlRepository {
@@ -19,9 +18,8 @@ export class CommentsSqlRepository {
     @InjectRepository(CommentsLikes)
     protected commentsLikeRepository: Repository<CommentsLikes>,
   ) {}
-  async createComment(
-    createData,
-  ): Promise<CommentsOutputType | null> {
+
+  async createComment(createData): Promise<CommentsOutputType | null> {
     try {
       const newComment = new Comments();
       newComment.content = createData.content;
@@ -58,6 +56,7 @@ export class CommentsSqlRepository {
     const deleted = await this.commentsRepository.delete({ id });
     return !!deleted.affected;
   }
+
   async addLikeToComment(
     userId: string,
     commentId: string,

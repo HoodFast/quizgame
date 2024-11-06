@@ -12,21 +12,23 @@ import {
 } from '@nestjs/common';
 import { UserInputDto } from './input/userInput.dto';
 import { UsersService } from '../application/users.service';
-import { sortDirection, UsersSortData } from '../../base/sortData/sortData.model';
-import { AuthGuard } from '../../guards/auth.guard';
+import {
+  sortDirection,
+  UsersSortData,
+} from '../../../base/sortData/sortData.model';
+import { AuthGuard } from '../../../guards/auth.guard';
 import { OutputUsersType } from './output/users.output.dto';
-import { Pagination } from '../../base/paginationInputDto/paginationOutput';
+import { Pagination } from '../../../base/paginationInputDto/paginationOutput';
 import { UsersSqlQueryRepository } from '../infrastructure/users.sql.query.repository';
-
 
 @UseGuards(AuthGuard)
 @Controller('sa/users')
 export class UsersController {
   constructor(
     protected userService: UsersService,
-
     protected usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
+
   @Get()
   async getAllUsers(
     @Query() input: UsersSortData,
@@ -48,6 +50,7 @@ export class UsersController {
     if (!result) throw new NotFoundException();
     return result;
   }
+
   @UseGuards(AuthGuard)
   @Post()
   async createUser(
@@ -64,6 +67,7 @@ export class UsersController {
 
     return createdUser;
   }
+
   @HttpCode(204)
   @UseGuards(AuthGuard)
   @Delete(':id')

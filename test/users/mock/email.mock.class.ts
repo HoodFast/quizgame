@@ -1,4 +1,4 @@
-import { UsersService } from '../../../src/users/application/users.service';
+import { UsersService } from '../../../src/features/users/application/users.service';
 
 export class UsersServiceEmailMock extends UsersService {
   sendMessageOnEmail(): Promise<boolean> {

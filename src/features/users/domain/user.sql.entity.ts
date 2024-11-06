@@ -1,12 +1,18 @@
-import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { EmailConfirmation } from './email.confirmation.entity';
-import { Sessions } from '../../sessions/domain/session.sql.entity';
+import { Sessions } from '../../../sessions/domain/session.sql.entity';
 import { TokensBlackList } from './tokens.black.list.sql.entity';
-import { LikePost } from '../../posts/domain/likePost.sql.entity';
+import { LikePost } from '../../../posts/domain/likePost.sql.entity';
 import {
   Comments,
   CommentsLikes,
-} from '../../comments/domain/comment.sql.entity';
+} from '../../../comments/domain/comment.sql.entity';
 
 @Entity()
 export class Users extends BaseEntity {

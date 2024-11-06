@@ -1,4 +1,3 @@
-
 import { JwtService } from '../infrastructure/jwt.service';
 import { UsersService } from '../../users/application/users.service';
 import {
@@ -11,21 +10,21 @@ import { EmailService } from '../infrastructure/email.service';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
 import { UserEntity } from '../../users/domain/user.entity';
 import { UsersSqlRepository } from '../../users/infrastructure/users.sql.repository';
-import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';
+import { SessionSqlRepository } from '../../../sessions/infrastructure/session.sql.repository';
+
 const jwt = require('jsonwebtoken');
+
 @Injectable()
 export class AuthService {
   constructor(
     protected usersService: UsersService,
-
     protected sessionSqlRepository: SessionSqlRepository,
     protected jwtService: JwtService,
-
     protected usersSqlQueryRepository: UsersSqlQueryRepository,
-
     protected usersSqlRepository: UsersSqlRepository,
     protected emailService: EmailService,
   ) {}
+
   async confirmEmail(code: string) {
     const user = await this.usersSqlQueryRepository.getUserByCode(code);
     if (!user) throw new BadRequestException('invalid code', 'code');
@@ -41,6 +40,7 @@ export class AuthService {
     const confirmEmail = await this.usersSqlRepository.confirmEmail(user._id);
     return confirmEmail;
   }
+
   async sendRecovery(email: string) {
     const subject = 'Password recovery';
     const recoveryCode = this.jwtService.createRecoveryCode(email);
@@ -138,6 +138,7 @@ export class AuthService {
     );
     return { accessToken, refreshToken };
   }
+
   async resendConfirmationCode(email: string) {
     const user = await this.usersSqlQueryRepository.findUser(email);
     if (!user) throw new BadRequestException('mail doesnt exist', 'email');
@@ -159,6 +160,7 @@ export class AuthService {
     const sendMail = await this.emailService.sendEmail(email, subject, message);
     return sendMail;
   }
+
   async deleteSession(token: string): Promise<boolean> {
     const dataSession = await this.jwtService.getSessionDataByToken(token);
     if (!dataSession) return false;
@@ -173,6 +175,7 @@ export class AuthService {
       return false;
     }
   }
+
   async deleteSessionUsingLogin(
     userId: string,
     title: string,

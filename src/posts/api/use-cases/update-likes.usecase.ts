@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InterlayerNotice } from '../../../base/models/Interlayer';
 import { UpdateOutputData } from '../../../base/models/updateOutput';
-import { UsersSqlQueryRepository } from '../../../users/infrastructure/users.sql.query.repository';
+import { UsersSqlQueryRepository } from '../../../features/users/infrastructure/users.sql.query.repository';
 import { PostsSqlRepository } from '../../infrastructure/posts.sql.repository';
 import { PostsSqlQueryRepository } from '../../infrastructure/posts.sql.query.repository';
 import { PostType } from '../../infrastructure/mappers/post.mapper';
@@ -25,6 +25,7 @@ export class UpdateLikesUseCase
     protected postsQueryRepository: PostsSqlQueryRepository,
     private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
+
   async execute(
     command: UpdateLikesCommand,
   ): Promise<InterlayerNotice<UpdateOutputData>> {

@@ -5,7 +5,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { UsersService } from '../users/application/users.service';
+import { UsersService } from '../features/users/application/users.service';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
 
@@ -14,10 +14,13 @@ export type rateLimitDbType = {
   URL: string;
   date: Date;
 };
+
 @Injectable()
 export class Limiter implements CanActivate {
   limitListDB: rateLimitDbType[] = [];
+
   constructor() {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
@@ -40,10 +43,13 @@ export class Limiter implements CanActivate {
     }
   }
 }
+
 @Injectable()
 export class LimiterForRegistration implements CanActivate {
   limitListDB: rateLimitDbType[] = [];
+
   constructor() {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

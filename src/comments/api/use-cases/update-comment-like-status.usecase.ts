@@ -3,7 +3,7 @@ import { InterlayerNotice } from '../../../base/models/Interlayer';
 
 import { UpdateOutputData } from '../../../base/models/updateOutput';
 
-import { UsersSqlQueryRepository } from '../../../users/infrastructure/users.sql.query.repository';
+import { UsersSqlQueryRepository } from '../../../features/users/infrastructure/users.sql.query.repository';
 import { CommentsSqlQueryRepository } from '../../infrastructure/comments.sql.query.repository';
 import { CommentsOutputType } from '../model/output/comments.output';
 import { CommentsSqlRepository } from '../../infrastructure/comments.sql.repository';
@@ -28,9 +28,9 @@ export class UpdateCommentLikesUseCase
   constructor(
     private commentsQueryRepository: CommentsSqlQueryRepository,
     private commentsRepository: CommentsSqlRepository,
-
     private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
+
   async execute(
     command: UpdateCommentLikesCommand,
   ): Promise<InterlayerNotice<UpdateOutputData>> {

@@ -3,7 +3,7 @@ import { InterlayerNotice } from '../../../base/models/Interlayer';
 
 import { UpdateOutputData } from '../../../base/models/updateOutput';
 import { ForbiddenException } from '@nestjs/common';
-import { UsersSqlQueryRepository } from '../../../users/infrastructure/users.sql.query.repository';
+import { UsersSqlQueryRepository } from '../../../features/users/infrastructure/users.sql.query.repository';
 import { CommentsSqlRepository } from '../../infrastructure/comments.sql.repository';
 import { CommentsSqlQueryRepository } from '../../infrastructure/comments.sql.query.repository';
 import { CommentsOutputType } from '../model/output/comments.output';
@@ -27,9 +27,9 @@ export class UpdateCommentBodyUseCase
   constructor(
     private commentsQueryRepository: CommentsSqlQueryRepository,
     private commentsRepository: CommentsSqlRepository,
-
     private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
+
   async execute(
     command: UpdateCommentBodyCommand,
   ): Promise<InterlayerNotice<UpdateOutputData>> {

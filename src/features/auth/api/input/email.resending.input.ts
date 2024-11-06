@@ -1,4 +1,4 @@
-import { Trim } from '../../../base/validate/trim';
+import { Trim } from '../../../../base/validate/trim';
 import { IsEmail, IsString } from 'class-validator';
 
 export class emailResendingDto {

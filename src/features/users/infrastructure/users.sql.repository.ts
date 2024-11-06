@@ -16,6 +16,7 @@ export class UsersSqlRepository {
     @InjectRepository(EmailConfirmation)
     protected emailConfirmRepository: Repository<EmailConfirmation>,
   ) {}
+
   async createUser(userData): Promise<OutputUsersType | null> {
     const { accountData, emailConfirmation } = userData;
 

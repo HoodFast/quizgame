@@ -10,6 +10,7 @@ import { UsersSqlQueryRepository } from '../infrastructure/users.sql.query.repos
 import { UsersSqlRepository } from '../infrastructure/users.sql.repository';
 
 const saltRounds = 10;
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -18,6 +19,7 @@ export class UsersService {
     protected emailService: EmailService,
     protected jwtService: JwtService,
   ) {}
+
   // async findUser(loginOrEmail: string) {
   //   const user = await this.usersQueryRepository.findUser(loginOrEmail);
   //   return user;
@@ -45,7 +47,7 @@ export class UsersService {
     const salt = bcrypt.genSaltSync(saltRounds);
     const hash = bcrypt.hashSync(password, salt);
 
-    const userData= {
+    const userData = {
       accountData: { _passwordHash: hash, createdAt, email, login },
       emailConfirmation: {
         confirmationCode: uuidv4(),
@@ -71,6 +73,7 @@ export class UsersService {
 
     return createdUser;
   }
+
   async sendConfirmCode(email: string) {
     const user = await this.usersSqlQueryRepository.findUser(email);
     if (!user) return false;
@@ -82,6 +85,7 @@ export class UsersService {
     const send = await this.emailService.sendEmail(email, subject, message);
     return send;
   }
+
   async checkCredentials(
     loginOrEmail: string,
     password: string,
@@ -96,10 +100,12 @@ export class UsersService {
       return user._id;
     }
   }
+
   async deleteUser(userId: string) {
     const deleteUser = await this.usersSqlRepository.deleteUser(userId);
     return deleteUser;
   }
+
   async changePass(data: recoveryPassInputDto) {
     try {
       const userId = await this.jwtService.getUserIdByRecoveryCode(

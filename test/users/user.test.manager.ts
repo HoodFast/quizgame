@@ -1,21 +1,25 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { UserInputDto } from '../../src/users/api/input/userInput.dto';
+import { UserInputDto } from '../../src/features/users/api/input/userInput.dto';
 
 export class UserTestManager {
   constructor(protected readonly app: INestApplication) {}
+
   expectCorrectModel(createModel: any, responseModel: any) {
     expect(createModel.name).toBe(responseModel.name);
   }
+
   async deleteUser(id: string) {
     await request(this.app.getHttpServer())
       .delete(`/users/${id}`)
       .auth('admin', 'qwerty')
       .expect(204);
   }
+
   async deleteAll() {
     await request(this.app.getHttpServer()).delete(`/testing/all-data`);
   }
+
   async createUser(createUserData: UserInputDto, expectStatus: number) {
     const response = await request(this.app.getHttpServer())
       .post('/sa/users')
@@ -25,6 +29,7 @@ export class UserTestManager {
 
     return response;
   }
+
   async login(
     login: string,
     password: string,
@@ -40,6 +45,7 @@ export class UserTestManager {
         .split(';')[0],
     };
   }
+
   checkValidateErrors(response: any) {
     const result = response.body;
 

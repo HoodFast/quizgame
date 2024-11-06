@@ -2,13 +2,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InterlayerNotice } from '../../../base/models/Interlayer';
 
 import { CommentsOutputType } from '../../../comments/api/model/output/comments.output';
-import { UsersSqlQueryRepository } from '../../../users/infrastructure/users.sql.query.repository';
+import { UsersSqlQueryRepository } from '../../../features/users/infrastructure/users.sql.query.repository';
 import { PostsSqlQueryRepository } from '../../infrastructure/posts.sql.query.repository';
 import { CommentsSqlRepository } from '../../../comments/infrastructure/comments.sql.repository';
 
 export class CommandCreateCommentForPostOutput {
   commentId: string;
 }
+
 export class CreateCommentForPostCommand {
   constructor(
     public postId: string,
@@ -28,10 +29,10 @@ export class CreateCommentForPostUseCase
 {
   constructor(
     private commentsRepository: CommentsSqlRepository,
-
     private usersSqlQueryRepository: UsersSqlQueryRepository,
     private postQueryRepository: PostsSqlQueryRepository,
   ) {}
+
   async execute(
     command: CreateCommentForPostCommand,
   ): Promise<InterlayerNotice<CommentsOutputType>> {

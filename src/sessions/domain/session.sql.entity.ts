@@ -6,7 +6,7 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Users } from '../../users/domain/user.sql.entity';
+import { Users } from '../../features/users/domain/user.sql.entity';
 
 @Entity()
 export class Sessions extends BaseEntity {

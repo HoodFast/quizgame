@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { UsersSortData } from '../../base/sortData/sortData.model';
-import { Pagination } from '../../base/paginationInputDto/paginationOutput';
+import { UsersSortData } from '../../../base/sortData/sortData.model';
+import { Pagination } from '../../../base/paginationInputDto/paginationOutput';
 import { OutputUsersType } from '../api/output/users.output.dto';
 import { userMapper } from '../domain/mapper/user.mapper.for.sql';
 import { UserEntity } from '../domain/user.entity';
@@ -45,6 +45,7 @@ export class UsersSqlQueryRepository {
       return null;
     }
   }
+
   async getAllUsers(
     sortData: UsersSortData,
   ): Promise<Pagination<OutputUsersType> | null> {
@@ -88,6 +89,7 @@ export class UsersSqlQueryRepository {
       return null;
     }
   }
+
   async getUserById(id: string): Promise<UserEntity | null> {
     const result = await this.usersRepository
       .createQueryBuilder('user')
@@ -99,6 +101,7 @@ export class UsersSqlQueryRepository {
     if (!result) return null;
     return userMapper(result);
   }
+
   async getUserByCode(code: string): Promise<UserEntity | null> {
     const result = await this.usersRepository
       .createQueryBuilder('user')
@@ -110,6 +113,7 @@ export class UsersSqlQueryRepository {
 
     return userMapper(result);
   }
+
   async getMe(userId: string): Promise<MyEntity | null> {
     const result = await this.usersRepository
       .createQueryBuilder('user')
@@ -124,6 +128,7 @@ export class UsersSqlQueryRepository {
       },
     };
   }
+
   async addTokenToBlackList(userId: string, token: string) {
     try {
       const user = await this.usersRepository

@@ -4,7 +4,7 @@ import { AppModule } from '../../src/app.module';
 import { appSettings } from '../../src/settings/app.settings';
 import { TestManager } from '../testManager';
 import { SessionSqlRepository } from '../../src/sessions/infrastructure/session.sql.repository';
-import { UsersSqlQueryRepository } from '../../src/users/infrastructure/users.sql.query.repository';
+import { UsersSqlQueryRepository } from '../../src/features/users/infrastructure/users.sql.query.repository';
 import { SessionSqlQueryRepository } from '../../src/sessions/infrastructure/session.sql.query.repository';
 import { SessionEntity } from '../../src/sessions/domain/session.entity';
 
