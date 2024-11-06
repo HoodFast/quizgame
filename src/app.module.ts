@@ -8,7 +8,6 @@ import { BlogsController } from './blogs/api/blogs.controller';
 import { BlogService } from './blogs/application/blogs.service';
 import { UsersService } from './users/application/users.service';
 import { TestingSqlQueryRepository } from './testing/infrastructure/testing.query.repository';
-import { UsersController } from './users/api/users.controller';
 import { TestingController } from './testing/api/testing.controller';
 import { AuthService } from './auth/application/auth.service';
 import { JwtService } from './auth/infrastructure/jwt.service';
@@ -60,6 +59,7 @@ import { DeleteSaPostUseCase } from './posts/api/use-cases/delete-sa-post.usecas
 import { Comments, CommentsLikes } from './comments/domain/comment.sql.entity';
 import { CommentsSqlRepository } from './comments/infrastructure/comments.sql.repository';
 import { CommentsSqlQueryRepository } from './comments/infrastructure/comments.sql.query.repository';
+import { UserModule } from './features/users/user.module';
 
 const useCases = [
   CreateBlogUseCase,
@@ -85,7 +85,6 @@ const useCases = [
 @Module({
   imports: [
     CqrsModule,
-
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
@@ -112,20 +111,20 @@ const useCases = [
       },
     }),
     TypeOrmModule.forFeature([Users]),
-    TypeOrmModule.forFeature([EmailConfirmation]),
-    TypeOrmModule.forFeature([Sessions]),
     TypeOrmModule.forFeature([TokensBlackList]),
     TypeOrmModule.forFeature([Blogs]),
     TypeOrmModule.forFeature([LikePost]),
     TypeOrmModule.forFeature([Posts]),
     TypeOrmModule.forFeature([Comments]),
     TypeOrmModule.forFeature([CommentsLikes]),
+    TypeOrmModule.forFeature([EmailConfirmation]),
+    TypeOrmModule.forFeature([Sessions]),
+    UserModule,
   ],
   controllers: [
     AppController,
     PostsController,
     BlogsController,
-    UsersController,
     TestingController,
     AuthController,
     CommentsController,
@@ -140,28 +139,21 @@ const useCases = [
     BlogsSqlQueryRepository,
     PostsSqlQueryRepository,
     PostsSqlRepository,
-    UsersSqlRepository,
-    UsersSqlQueryRepository,
-    SessionSqlQueryRepository,
-    SessionSqlRepository,
     AppService,
     PostService,
-    // PostsRepository,
-    // PostsQueryRepository,
+    UsersSqlQueryRepository,
+    UsersSqlRepository,
     BlogService,
-    // BlogsRepository,
-    // BlogsQueryRepository,
     UsersService,
-    // UsersRepository,
-    // UsersQueryRepository,
     TestingSqlQueryRepository,
     AuthService,
-    JwtService,
     AuthService,
-    EmailService,
-    UsersService,
     ConfigService,
     BlogExistsValidator,
+    EmailService,
+    JwtService,
+    SessionSqlRepository,
+    SessionSqlQueryRepository,
     ...useCases,
   ],
 })
