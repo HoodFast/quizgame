@@ -7,6 +7,7 @@ import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.qu
 import { UsersSqlRepository } from '../../users/infrastructure/users.sql.repository';
 import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';
 import { SessionEntity } from '../../sessions/domain/session.entity';
+
 const jwt = require('jsonwebtoken');
 
 @Injectable()
@@ -14,10 +15,10 @@ export class JwtService {
   constructor(
     private usersSqlQueryRepository: UsersSqlQueryRepository,
     private usersSqlRepository: UsersSqlRepository,
-
     private configService: ConfigService<ConfigurationType, true>,
     private sessionSqlRepository: SessionSqlRepository,
   ) {}
+
   private jwtSettings = this.configService.get('jwtSettings', { infer: true });
   private AC_SECRET = this.jwtSettings.AC_SECRET;
   private AC_TIME = this.jwtSettings.AC_TIME;
@@ -33,6 +34,7 @@ export class JwtService {
 
     return token;
   }
+
   async createRefreshJWT(
     userId: string,
     deviceId: string = randomUUID(),
@@ -61,11 +63,13 @@ export class JwtService {
     if (!setTokenMetaData) return null;
     return token;
   }
+
   async getIatFromToken(refreshToken: string): Promise<Date> {
     const decoded = await jwt.decode(refreshToken, { complete: true });
     const iat = new Date(decoded.payload.iat * 1000);
     return iat;
   }
+
   async createRecoveryCode(email: string) {
     try {
       const user = await this.usersSqlQueryRepository.findUser(email);
@@ -75,10 +79,12 @@ export class JwtService {
       return token;
     } catch (e) {}
   }
+
   async getUserIdByRecoveryCode(code: string): Promise<string> {
     const decoded = await jwt.decode(code, { complete: true });
     return decoded.payload.userId;
   }
+
   async checkRefreshToken(token: string) {
     try {
       const result = jwt.verify(token, this.RT_SECRET);
@@ -95,6 +101,7 @@ export class JwtService {
       return null;
     }
   }
+
   async verifyRefreshToken(token: string) {
     try {
       const result = jwt.verify(token, this.RT_SECRET);
@@ -111,6 +118,7 @@ export class JwtService {
       return null;
     }
   }
+
   async getSessionDataByToken(token: string) {
     try {
       const result = jwt.verify(token, this.RT_SECRET);
@@ -124,6 +132,7 @@ export class JwtService {
       return null;
     }
   }
+
   async getUserIdByToken(token: string): Promise<string | null> {
     try {
       const result = jwt.verify(token, this.AC_SECRET);
@@ -131,12 +140,15 @@ export class JwtService {
         result.userId,
         token,
       );
+      debugger;
       if (blackListCheck) return null;
       return result.userId;
     } catch (err) {
+      debugger;
       return null;
     }
   }
+
   async getMetaDataByToken(token: string) {
     try {
       const result = jwt.verify(token, this.RT_SECRET);

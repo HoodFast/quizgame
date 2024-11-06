@@ -36,6 +36,7 @@ export class AuthController {
     private jwtService: JwtService,
     private usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
+
   @HttpCode(200)
   @UseGuards(Limiter)
   @Post('login')
@@ -68,6 +69,7 @@ export class AuthController {
       throw e;
     }
   }
+
   @UseGuards(RefreshTokenGuard)
   @HttpCode(204)
   @Post('logout')
@@ -87,6 +89,7 @@ export class AuthController {
     // // if (!deleteSession) throw new UnauthorizedException();
     return;
   }
+
   @UseGuards(LimiterForRegistration)
   @HttpCode(204)
   @Post('registration')
@@ -96,6 +99,7 @@ export class AuthController {
     if (!res) throw new UnauthorizedException('create user error');
     return;
   }
+
   @UseGuards(Limiter)
   @HttpCode(204)
   @Post('registration-confirmation')
@@ -104,6 +108,7 @@ export class AuthController {
     await this.authService.confirmEmail(data.code);
     return {};
   }
+
   @UseGuards(Limiter)
   @HttpCode(204)
   @Post('password-recovery')
@@ -112,6 +117,7 @@ export class AuthController {
     await this.authService.sendRecovery(email);
     return;
   }
+
   @UseGuards(Limiter)
   @HttpCode(204)
   @Post('new-password')
@@ -149,6 +155,7 @@ export class AuthController {
     });
     return { accessToken };
   }
+
   @UseGuards(Limiter)
   @HttpCode(204)
   @Post('registration-email-resending')
@@ -156,6 +163,7 @@ export class AuthController {
     await this.authService.resendConfirmationCode(data.email);
     return {};
   }
+
   @UseGuards(AccessTokenAuthGuard)
   @Get('me')
   async getMe(@UserId() userId: string) {

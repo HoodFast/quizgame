@@ -150,7 +150,7 @@ describe('AuthController (e2e)', () => {
       password: createUserData.password,
     });
     const token = loginResponse.body.accessToken;
-
+    debugger;
     await request(httpServer)
       .get('/auth/me')
       .auth(token, { type: 'bearer' })

@@ -9,9 +9,10 @@ import { JwtService } from '../auth/infrastructure/jwt.service';
 @Injectable()
 export class AccessTokenAuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-
+    debugger;
     if (!request.headers.authorization) {
       throw new UnauthorizedException('non authorization headers');
     }

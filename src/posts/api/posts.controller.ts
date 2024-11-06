@@ -49,6 +49,7 @@ export class PostsController {
     protected commentsQueryRepository: CommentsSqlQueryRepository,
     protected commandBus: CommandBus,
   ) {}
+
   @HttpCode(204)
   @UseGuards(AccessTokenAuthGuard)
   @Put(':id/like-status')
@@ -67,6 +68,7 @@ export class PostsController {
     if (updateLikes.hasError()) throw new NotFoundException();
     return;
   }
+
   @UseGuards(AccessTokenGetId)
   @Get()
   async getAllPosts(@Query() query: QueryPostInputModel, @Req() req: Request) {
@@ -82,6 +84,7 @@ export class PostsController {
 
     return posts;
   }
+
   @UseGuards(AccessTokenGetId)
   @Get(':id')
   async getPostById(@Param('id') postId: string, @Req() req: Request) {
@@ -92,6 +95,7 @@ export class PostsController {
     if (!post) throw new NotFoundException();
     return post;
   }
+
   @UseGuards(AccessTokenGetId)
   @UsePipes(SortDirectionPipe)
   @Get(':id/comments')
@@ -116,8 +120,9 @@ export class PostsController {
     if (!comments) throw new NotFoundException();
     return comments;
   }
-  @Post()
+
   @UseGuards(AuthGuard)
+  @Post()
   async createPost(@Body() body: InputPostCreate) {
     const command = new CreatePostForBlogCommand(
       body.title,
@@ -139,6 +144,7 @@ export class PostsController {
     if (!post) throw new NotFoundException();
     return post;
   }
+
   @UseGuards(AuthGuard)
   @HttpCode(204)
   @Put(':id')
@@ -158,6 +164,7 @@ export class PostsController {
     if (post.hasError()) throw new NotFoundException();
     return;
   }
+
   @UseGuards(AuthGuard)
   @HttpCode(204)
   @Delete(':id')
@@ -166,6 +173,7 @@ export class PostsController {
     if (!post) throw new NotFoundException();
     return;
   }
+
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(201)
   @Post('/:id/comments')
