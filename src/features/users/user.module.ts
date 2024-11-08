@@ -15,10 +15,12 @@ import { Sessions } from '../../sessions/domain/session.sql.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Users]),
-    TypeOrmModule.forFeature([TokensBlackList]),
-    TypeOrmModule.forFeature([EmailConfirmation]),
-    TypeOrmModule.forFeature([Sessions]),
+    TypeOrmModule.forFeature([
+      Users,
+      TokensBlackList,
+      EmailConfirmation,
+      Sessions,
+    ]),
   ],
   controllers: [UsersController],
   providers: [
@@ -30,6 +32,6 @@ import { Sessions } from '../../sessions/domain/session.sql.entity';
     EmailService,
     JwtService,
   ],
-  exports: [],
+  exports: [JwtService, UsersService, UsersSqlQueryRepository],
 })
 export class UserModule {}
