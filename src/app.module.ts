@@ -12,7 +12,6 @@ import { TestingController } from './testing/api/testing.controller';
 import { AuthService } from './features/auth/application/auth.service';
 import { JwtService } from './features/auth/infrastructure/jwt.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthController } from './features/auth/api/auth.controller';
 import { EmailService } from './features/auth/infrastructure/email.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, {

@@ -6,7 +6,6 @@ import {
   HttpCode,
   NotFoundException,
   Param,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 
