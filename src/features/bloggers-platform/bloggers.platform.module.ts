@@ -38,13 +38,8 @@ import { Users } from '../users/domain/user.sql.entity';
 import { TokensBlackList } from '../users/domain/tokens.black.list.sql.entity';
 import { EmailConfirmation } from '../users/domain/email.confirmation.entity';
 import { Sessions } from '../../sessions/domain/session.sql.entity';
+import { UserModule } from '../users/user.module';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UsersSqlQueryRepository } from '../users/infrastructure/users.sql.query.repository';
-import { JwtService } from '../auth/infrastructure/jwt.service';
-import { UsersSqlRepository } from '../users/infrastructure/users.sql.repository';
-import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';
-import { UsersService } from '../users/application/users.service';
-import { EmailService } from '../auth/infrastructure/email.service';
 
 const useCases = [
   CreateBlogUseCase,
@@ -62,13 +57,7 @@ const useCases = [
   UpdateSaPostUseCase,
   DeleteSaPostUseCase,
 ];
-const services = [
-  PostService,
-  BlogService,
-  JwtService,
-  UsersService,
-  EmailService,
-];
+const services = [PostService, BlogService];
 const repositories = [
   BlogsSqlRepository,
   BlogsSqlQueryRepository,
@@ -76,9 +65,6 @@ const repositories = [
   PostsSqlQueryRepository,
   CommentsSqlRepository,
   CommentsSqlQueryRepository,
-  UsersSqlQueryRepository,
-  UsersSqlRepository,
-  SessionSqlRepository,
 ];
 
 @Module({
@@ -94,6 +80,7 @@ const repositories = [
       TokensBlackList,
       EmailConfirmation,
     ]),
+    UserModule,
     CqrsModule,
   ],
   controllers: [

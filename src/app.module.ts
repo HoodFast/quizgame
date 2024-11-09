@@ -19,23 +19,8 @@ import configuration, {
   validate,
 } from './settings/configuration';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CreateBlogUseCase } from './blogs/api/use-cases/create-blog.usecase';
-import { UpdatePostUseCase } from './posts/api/use-cases/update-post.usecase';
-import { CreatePostForBlogUseCase } from './posts/api/use-cases/create-post-for-blog.usecase';
-import { UpdateBlogUseCase } from './blogs/api/use-cases/update-blog.usecase';
-import { DeleteBlogUseCase } from './blogs/api/use-cases/delete-blog.usecase';
-import { UpdateLikesUseCase } from './posts/api/use-cases/update-likes.usecase';
-import { GetCommentUseCase } from './comments/api/use-cases/get-comment-by-id.usecase';
-import { CreateCommentForPostUseCase } from './posts/api/use-cases/create-comment-for-post.usecase';
-import { UpdateCommentLikesUseCase } from './comments/api/use-cases/update-comment-like-status.usecase';
-import { UpdateCommentBodyUseCase } from './comments/api/use-cases/update-comment-body.usecase';
-import { DeleteCommentUseCase } from './comments/api/use-cases/delete-comment.usecase';
-import { CommentsController } from './comments/api/comments.controller';
 import { BlogExistsValidator } from './base/validate/blog.exist.validate';
 import { SecurityController } from './sessions/api/security.controller';
-import { DeleteAllSessionsUseCase } from './sessions/api/useCases/delete-all-sessions.usecase';
-import { DeleteSessionByIdUseCase } from './sessions/api/useCases/delete-session-by-id.usecase';
-import { GetAllSessionUseCase } from './sessions/api/useCases/get-all-sessions.usecase';
 import { UsersSqlRepository } from './features/users/infrastructure/users.sql.repository';
 import { UsersSqlQueryRepository } from './features/users/infrastructure/users.sql.query.repository';
 import { SessionSqlQueryRepository } from './sessions/infrastructure/session.sql.query.repository';
@@ -61,25 +46,14 @@ import { CommentsSqlQueryRepository } from './comments/infrastructure/comments.s
 import { UserModule } from './features/users/user.module';
 import { AuthModule } from './features/auth/auth.module';
 import { BloggersPlatform } from './features/bloggers-platform/bloggers.platform.module';
+import { DeleteSessionByIdUseCase } from './sessions/api/useCases/delete-session-by-id.usecase';
+import { GetAllSessionUseCase } from './sessions/api/useCases/get-all-sessions.usecase';
+import { DeleteAllSessionsUseCase } from './sessions/api/useCases/delete-all-sessions.usecase';
 
 const useCases = [
-  // CreateBlogUseCase,
-  // CreatePostForBlogUseCase,
-  // UpdateBlogUseCase,
-  // DeleteBlogUseCase,
-  // UpdateBlogUseCase,
-  // UpdatePostUseCase,
-  // UpdateLikesUseCase,
-  // GetCommentUseCase,
-  // CreateCommentForPostUseCase,
-  // UpdateCommentLikesUseCase,
-  // UpdateCommentBodyUseCase,
-  // DeleteCommentUseCase,
-  // GetAllSessionUseCase,
-  // DeleteSessionByIdUseCase,
-  // DeleteAllSessionsUseCase,
-  // UpdateSaPostUseCase,
-  // DeleteSaPostUseCase,
+  GetAllSessionUseCase,
+  DeleteSessionByIdUseCase,
+  DeleteAllSessionsUseCase,
 ];
 
 // const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/nest';
@@ -124,17 +98,7 @@ const useCases = [
     UserModule,
     BloggersPlatform,
   ],
-  controllers: [
-    AppController,
-    // PostsController,
-    // BlogsController,
-    TestingController,
-    // AuthController,
-    // CommentsController,
-    SecurityController,
-    // BlogsSaController,
-    // PostsSaController,
-  ],
+  controllers: [AppController, TestingController, SecurityController],
   providers: [
     CommentsSqlQueryRepository,
     CommentsSqlRepository,

@@ -32,6 +32,11 @@ import { Sessions } from '../../sessions/domain/session.sql.entity';
     EmailService,
     JwtService,
   ],
-  exports: [JwtService, UsersService, UsersSqlQueryRepository],
+  exports: [
+    JwtService,
+    UsersService,
+    UsersSqlQueryRepository,
+    SessionSqlRepository,
+  ],
 })
 export class UserModule {}
