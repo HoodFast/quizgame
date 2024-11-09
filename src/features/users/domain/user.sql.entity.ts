@@ -8,11 +8,11 @@ import {
 import { EmailConfirmation } from './email.confirmation.entity';
 import { Sessions } from '../../../sessions/domain/session.sql.entity';
 import { TokensBlackList } from './tokens.black.list.sql.entity';
-import { LikePost } from '../../../posts/domain/likePost.sql.entity';
+import { LikePost } from '../../bloggers-platform/posts/domain/likePost.sql.entity';
 import {
   Comments,
   CommentsLikes,
-} from '../../../comments/domain/comment.sql.entity';
+} from '../../bloggers-platform/comments/domain/comment.sql.entity';
 
 @Entity()
 export class Users extends BaseEntity {

@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { likesStatuses } from '../../src/posts/api/input/likesDtos';
+import { likesStatuses } from '../../src/features/bloggers-platform/posts/api/input/likesDtos';
 
 export class CommentTestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -18,6 +18,7 @@ export class CommentTestManager {
       .expect(expectStatus);
     return response;
   }
+
   async updateComment(
     newContent: string,
     commentId: string,
@@ -31,6 +32,7 @@ export class CommentTestManager {
       .expect(expectStatus);
     return response;
   }
+
   async deleteComment(
     uri: string,
     accessToken: string,
@@ -42,6 +44,7 @@ export class CommentTestManager {
       .expect(expectStatus);
     return;
   }
+
   async getComment(
     commentId: string,
     accessToken: string,
@@ -60,6 +63,7 @@ export class CommentTestManager {
       .expect(expectedStatus);
     return comment;
   }
+
   async addLikeForComment(
     commentId: string,
     accessToken: string,
@@ -74,6 +78,7 @@ export class CommentTestManager {
       })
       .expect(204);
   }
+
   checkCommentBody(response: any) {
     const comment = response.body;
     expect(comment).toEqual({
@@ -91,12 +96,14 @@ export class CommentTestManager {
       },
     });
   }
+
   async getAllCommentsForPost(postId: string) {
     const res = await request(this.app.getHttpServer())
       .get(`/posts/${postId}/comments`)
       .expect(200);
     return res;
   }
+
   checkAllPostsBody(response: any) {
     const comments = response.body;
     expect(comments).toEqual({
@@ -107,6 +114,7 @@ export class CommentTestManager {
       items: expect.any(Array),
     });
   }
+
   checkValidateErrors(response: any) {
     const result = response.body;
     expect(result).toEqual({

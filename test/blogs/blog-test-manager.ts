@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { createBlogInputDto } from '../../src/blogs/api/model/input/create-blog-input-dto';
-import { PostInput } from '../../src/posts/api/input/PostsCreate.dto';
+import { createBlogInputDto } from '../../src/features/bloggers-platform/blogs/api/model/input/create-blog-input-dto';
+import { PostInput } from '../../src/features/bloggers-platform/posts/api/input/PostsCreate.dto';
 
 export class BlogTestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -14,6 +14,7 @@ export class BlogTestManager {
       .expect(expectStatus);
     return response;
   }
+
   async createPostForBlog(
     createPostData: PostInput,
     blogId: string,
@@ -26,6 +27,7 @@ export class BlogTestManager {
       .expect(expectStatus);
     return response;
   }
+
   async updateBlog(
     updateBlogData: createBlogInputDto,
     blogId: string,
@@ -38,6 +40,7 @@ export class BlogTestManager {
       .expect(expectStatus);
     return response;
   }
+
   async deleteBlog(uri: string) {
     await request(this.app.getHttpServer())
       .delete(uri)
@@ -45,6 +48,7 @@ export class BlogTestManager {
       .expect(204);
     return;
   }
+
   checkBlogBody(response: any) {
     const blog = response.body;
     expect(blog).toEqual({
@@ -56,6 +60,7 @@ export class BlogTestManager {
       isMembership: expect.any(Boolean),
     });
   }
+
   checkAllBlogsBody(response: any) {
     const blogs = response.body;
     expect(blogs).toEqual({
@@ -66,6 +71,7 @@ export class BlogTestManager {
       items: expect.any(Array),
     });
   }
+
   checkValidateErrors(response: any) {
     const result = response.body;
 

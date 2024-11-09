@@ -6,7 +6,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { BlogsSqlQueryRepository } from '../../blogs/infrastructure/blogs.sql.query.repository';
+import { BlogsSqlQueryRepository } from '../../features/bloggers-platform/blogs/infrastructure/blogs.sql.query.repository';
 
 @ValidatorConstraint({ name: 'BlogExists', async: true })
 @Injectable()

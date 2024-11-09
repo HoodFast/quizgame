@@ -11,8 +11,13 @@ import { TokensBlackList } from '../users/domain/tokens.black.list.sql.entity';
 import { EmailConfirmation } from '../users/domain/email.confirmation.entity';
 import { Sessions } from '../../sessions/domain/session.sql.entity';
 import { AuthService } from './application/auth.service';
+import { UserModule } from '../users/user.module';
+import { GetAllSessionUseCase } from '../../sessions/api/useCases/get-all-sessions.usecase';
+import { DeleteSessionByIdUseCase } from '../../sessions/api/useCases/delete-session-by-id.usecase';
+import { DeleteAllSessionsUseCase } from '../../sessions/api/useCases/delete-all-sessions.usecase';
 import { UsersService } from '../users/application/users.service';
-import { EmailService } from './infrastructure/email.service';
+import { SecurityController } from '../../sessions/api/security.controller';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
@@ -22,18 +27,20 @@ import { EmailService } from './infrastructure/email.service';
       EmailConfirmation,
       Sessions,
     ]),
+    CqrsModule,
+    UserModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, SecurityController],
   providers: [
-    JwtService,
-    UsersSqlQueryRepository,
-    UsersSqlRepository,
-    SessionSqlRepository,
-    SessionSqlQueryRepository,
     AuthService,
     UsersService,
-    EmailService,
+    GetAllSessionUseCase,
+    DeleteSessionByIdUseCase,
+    DeleteAllSessionsUseCase,
+    SessionSqlQueryRepository,
+    SessionSqlRepository,
+    JwtService,
   ],
-  exports: [],
+  exports: [JwtService],
 })
 export class AuthModule {}

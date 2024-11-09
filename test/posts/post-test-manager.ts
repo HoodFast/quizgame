@@ -1,9 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { InputPostCreate } from '../../src/posts/api/input/PostsCreate.dto';
+import { InputPostCreate } from '../../src/features/bloggers-platform/posts/api/input/PostsCreate.dto';
 
 export class PostTestManager {
   constructor(protected readonly app: INestApplication) {}
+
   async createPost(createPostData: InputPostCreate, expectStatus: number) {
     const response = await request(this.app.getHttpServer())
       .post(`/posts`)
@@ -12,6 +13,7 @@ export class PostTestManager {
       .expect(expectStatus);
     return response;
   }
+
   async updatePost(
     updatePostData: InputPostCreate,
     postId: string,
@@ -24,6 +26,7 @@ export class PostTestManager {
       .expect(expectStatus);
     return response;
   }
+
   async deletePost(id: string) {
     await request(this.app.getHttpServer())
       .delete(`/posts/${id}`)
@@ -31,6 +34,7 @@ export class PostTestManager {
       .expect(204);
     return;
   }
+
   checkPostBody(response: any) {
     const post = response.body;
     expect(post).toEqual({
@@ -55,6 +59,7 @@ export class PostTestManager {
       },
     });
   }
+
   checkAllPostsBody(response: any) {
     const blogs = response.body;
     expect(blogs).toEqual({
@@ -65,6 +70,7 @@ export class PostTestManager {
       items: expect.any(Array),
     });
   }
+
   checkValidateErrors(response: any) {
     const result = response.body;
 

@@ -3,11 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { add } from 'date-fns/add';
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
-import { EmailService } from '../../auth/infrastructure/email.service';
-import { recoveryPassInputDto } from '../../auth/api/input/new.password.input';
-import { JwtService } from '../../auth/infrastructure/jwt.service';
-import { UsersSqlQueryRepository } from '../infrastructure/users.sql.query.repository';
 import { UsersSqlRepository } from '../infrastructure/users.sql.repository';
+import { UsersSqlQueryRepository } from '../infrastructure/users.sql.query.repository';
+import { EmailService } from '../../auth/infrastructure/email.service';
+import { JwtService } from '../../auth/infrastructure/jwt.service';
+import { recoveryPassInputDto } from '../../auth/api/input/new.password.input';
 
 const saltRounds = 10;
 

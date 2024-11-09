@@ -8,7 +8,7 @@ import { blogsDto, postsDto, usersDto } from '../dtos/test.dto';
 import { TestManager } from '../testManager';
 
 import { CommentTestManager } from './comment-test-manager';
-import { likesStatuses } from '../../src/posts/api/input/likesDtos';
+import { likesStatuses } from '../../src/features/bloggers-platform/posts/api/input/likesDtos';
 
 describe('CommentsController (e2e)', () => {
   let app: INestApplication;
