@@ -40,6 +40,7 @@ import { CommentsOutputType } from '../../comments/api/model/output/comments.out
 import { PostsSqlQueryRepository } from '../infrastructure/posts.sql.query.repository';
 import { CommentsSqlQueryRepository } from '../../comments/infrastructure/comments.sql.query.repository';
 import { SortDirectionPipe } from '../../../../base/pipes/sortDirectionPipe';
+import { UserId } from '../../../../decorators/userId';
 
 @Controller('posts')
 export class PostsController {
@@ -56,10 +57,8 @@ export class PostsController {
   async updateLikes(
     @Body() body: LikesDto,
     @Param('id') postId: string,
-    @Req() req: Request,
+    @UserId() userId: string,
   ) {
-    // @ts-ignore
-    const userId = req.userId;
     const command = new UpdateLikesCommand(body.likeStatus, postId, userId);
     const updateLikes = await this.commandBus.execute<
       UpdateLikesCommand,
@@ -70,16 +69,20 @@ export class PostsController {
   }
 
   @UseGuards(AccessTokenGetId)
+  @UsePipes(SortDirectionPipe)
   @Get()
-  async getAllPosts(@Query() query: QueryPostInputModel, @Req() req: Request) {
+  async getAllPosts(
+    @Query() query: QueryPostInputModel,
+    @UserId() userId: string,
+  ) {
+    debugger;
     const sortData = {
       sortBy: query.sortBy ?? 'createdAt',
       sortDirection: query.sortDirection ?? sortDirection.desc,
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
     };
-    // @ts-ignore
-    const userId = req.userId ? req.userId : null;
+
     const posts = await this.postService.getAllPosts(sortData, userId);
 
     return posts;
@@ -87,11 +90,8 @@ export class PostsController {
 
   @UseGuards(AccessTokenGetId)
   @Get(':id')
-  async getPostById(@Param('id') postId: string, @Req() req: Request) {
-    // @ts-ignore
-    const userId = req.userId ? req.userId : null;
+  async getPostById(@Param('id') postId: string, @UserId() userId: string) {
     const post = await this.postService.getPostById(postId, userId);
-
     if (!post) throw new NotFoundException();
     return post;
   }
@@ -102,7 +102,7 @@ export class PostsController {
   async getCommentsForPost(
     @Param('id') postId: string,
     @Query() query: QueryPostInputModel,
-    @Req() req: Request,
+    @UserId() userId: string,
   ) {
     const sortData = {
       sortBy: query.sortBy ?? 'createdAt',
@@ -110,8 +110,7 @@ export class PostsController {
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
     };
-    // @ts-ignore
-    const userId = req.userId ? req.userId : null;
+
     const comments = await this.commentsQueryRepository.getAllByPostId(
       userId,
       postId,
@@ -180,10 +179,8 @@ export class PostsController {
   async createCommentForPost(
     @Param('id') postId: string,
     @Body() data: CommentsInput,
-    @Req() req: Request,
+    @UserId() userId: string,
   ) {
-    // @ts-ignore
-    const userId = req.userId ? req.userId : null;
     const command = new CreateCommentForPostCommand(
       postId,
       data.content,

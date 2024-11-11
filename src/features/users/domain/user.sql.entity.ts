@@ -6,13 +6,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EmailConfirmation } from './email.confirmation.entity';
-import { Sessions } from '../../../sessions/domain/session.sql.entity';
 import { TokensBlackList } from './tokens.black.list.sql.entity';
 import { LikePost } from '../../bloggers-platform/posts/domain/likePost.sql.entity';
 import {
   Comments,
   CommentsLikes,
 } from '../../bloggers-platform/comments/domain/comment.sql.entity';
+import {Sessions} from "../../auth/sessions/domain/session.sql.entity";
 
 @Entity()
 export class Users extends BaseEntity {

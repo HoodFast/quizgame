@@ -3,10 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../src/app.module';
 import { appSettings } from '../../src/settings/app.settings';
 import { TestManager } from '../testManager';
-import { SessionSqlRepository } from '../../src/sessions/infrastructure/session.sql.repository';
 import { UsersSqlQueryRepository } from '../../src/features/users/infrastructure/users.sql.query.repository';
-import { SessionSqlQueryRepository } from '../../src/sessions/infrastructure/session.sql.query.repository';
-import { SessionEntity } from '../../src/sessions/domain/session.entity';
+import { SessionSqlRepository } from '../../src/features/auth/sessions/infrastructure/session.sql.repository';
+import { SessionSqlQueryRepository } from '../../src/features/auth/sessions/infrastructure/session.sql.query.repository';
+import { SessionEntity } from '../../src/features/auth/sessions/domain/session.entity';
 
 describe('sessions repo tests', () => {
   let app: INestApplication;

@@ -27,6 +27,7 @@ import { TestingModule } from './features/testing/testing.module';
         const sqlDataBaseSettings = configService.get('sqlDataBaseSettings', {
           infer: true,
         });
+
         return {
           type: 'postgres',
           host: sqlDataBaseSettings?.SQL_HOST,

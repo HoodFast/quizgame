@@ -10,7 +10,7 @@ import { EmailService } from '../infrastructure/email.service';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
 import { UserEntity } from '../../users/domain/user.entity';
 import { UsersSqlRepository } from '../../users/infrastructure/users.sql.repository';
-import { SessionSqlRepository } from '../../../sessions/infrastructure/session.sql.repository';
+import { SessionSqlRepository } from '../sessions/infrastructure/session.sql.repository';
 
 const jwt = require('jsonwebtoken');
 
@@ -51,59 +51,48 @@ export class AuthService {
     try {
       await this.emailService.sendEmail(email, subject, message);
     } catch (e) {
+      console.log(e);
       return;
     }
     return;
   }
 
-  async loginTokensPair(
-    loginOrEmail: string,
-    password: string,
-    ip: string,
-    title: string,
-  ) {
-    const userId = await this.usersService.checkCredentials(
-      loginOrEmail,
-      password,
-    );
-
-    if (!userId) return null;
-    const oldSession = await this.sessionSqlRepository.getSessionForUserId(
-      userId.toString(),
-      title,
-    );
-
-    const deviceId = oldSession?.deviceId || randomUUID();
-
-    if (oldSession) {
-      await this.sessionSqlRepository.deleteById(oldSession.id);
-    }
-
-    const accessToken = await this.jwtService.createJWT(userId);
-    if (!accessToken) return null;
-
-    const refreshToken = await this.jwtService.createRefreshJWT(
-      userId,
-      deviceId,
-      ip,
-      title,
-    );
-    if (!refreshToken) return null;
-    // const decoded = jwt.decode(refreshToken, { complete: true });
-    // const iat = await this.jwtService.getIatFromToken(refreshToken);
-    // const tokenMetaData: Session = {
-    //   iat,
-    //   deviceId,
-    //   expireDate: decoded.payload.exp,
-    //   userId,
-    //   ip,
-    //   title,
-    // };
-    // const setTokenMetaData =
-    //   await this.sessionRepository.createNewSession(tokenMetaData);
-    // if (!setTokenMetaData) return null;
-    return { accessToken, refreshToken };
-  }
+  // async loginTokensPair(
+  //   loginOrEmail: string,
+  //   password: string,
+  //   ip: string,
+  //   title: string,
+  // ): Promise<{ accessToken: string; refreshToken: string } | null> {
+  //   const userId = await this.usersService.checkCredentials(
+  //     loginOrEmail,
+  //     password,
+  //   );
+  //
+  //   if (!userId) return null;
+  //   const oldSession = await this.sessionSqlRepository.getSessionForUserId(
+  //     userId.toString(),
+  //     title,
+  //   );
+  //
+  //   const deviceId = oldSession?.deviceId || randomUUID();
+  //
+  //   if (oldSession) {
+  //     await this.sessionSqlRepository.deleteById(oldSession.id);
+  //   }
+  //
+  //   const accessToken = await this.jwtService.createJWT(userId);
+  //   if (!accessToken) return null;
+  //
+  //   const refreshToken = await this.jwtService.createRefreshJWT(
+  //     userId,
+  //     deviceId,
+  //     ip,
+  //     title,
+  //   );
+  //   if (!refreshToken) return null;
+  //
+  //   return { accessToken, refreshToken };
+  // }
 
   async refreshTokensPair(
     user: UserEntity,
@@ -161,33 +150,33 @@ export class AuthService {
     return sendMail;
   }
 
-  async deleteSession(token: string): Promise<boolean> {
-    const dataSession = await this.jwtService.getSessionDataByToken(token);
-    if (!dataSession) return false;
-    const oldSession =
-      await this.sessionSqlRepository.getSessionForRefreshDecodeToken(
-        dataSession.iat,
-        dataSession.deviceId,
-      );
-    if (oldSession) {
-      return await this.sessionSqlRepository.deleteById(oldSession.id);
-    } else {
-      return false;
-    }
-  }
+  // async deleteSession(token: string): Promise<boolean> {
+  //   const dataSession = await this.jwtService.getSessionDataByToken(token);
+  //   if (!dataSession) return false;
+  //   const oldSession =
+  //     await this.sessionSqlRepository.getSessionForRefreshDecodeToken(
+  //       dataSession.iat,
+  //       dataSession.deviceId,
+  //     );
+  //   if (oldSession) {
+  //     return await this.sessionSqlRepository.deleteById(oldSession.id);
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
-  async deleteSessionUsingLogin(
-    userId: string,
-    title: string,
-  ): Promise<boolean> {
-    const dataSession = await this.sessionSqlRepository.getSessionForUserId(
-      userId,
-      title,
-    );
-    if (!dataSession) return false;
-
-    await this.sessionSqlRepository.deleteById(dataSession.id);
-
-    return true;
-  }
+  //   async deleteSessionUsingLogin(
+  //     userId: string,
+  //     title: string,
+  //   ): Promise<boolean> {
+  //     const dataSession = await this.sessionSqlRepository.getSessionForUserId(
+  //       userId,
+  //       title,
+  //     );
+  //     if (!dataSession) return false;
+  //
+  //     await this.sessionSqlRepository.deleteById(dataSession.id);
+  //
+  //     return true;
+  //   }
 }

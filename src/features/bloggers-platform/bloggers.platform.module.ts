@@ -34,10 +34,10 @@ import { LikePost } from './posts/domain/likePost.sql.entity';
 import { Users } from '../users/domain/user.sql.entity';
 import { TokensBlackList } from '../users/domain/tokens.black.list.sql.entity';
 import { EmailConfirmation } from '../users/domain/email.confirmation.entity';
-import { Sessions } from '../../sessions/domain/session.sql.entity';
 import { UserModule } from '../users/user.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BlogExistsValidator } from '../../base/validate/blog.exist.validate';
+import { Sessions } from '../auth/sessions/domain/session.sql.entity';
 
 const useCases = [
   CreateBlogUseCase,

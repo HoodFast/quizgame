@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { InterlayerNotice } from '../../../base/models/Interlayer';
 import { SessionsOutputType } from '../output/session.output';
 import { SessionSqlQueryRepository } from '../../infrastructure/session.sql.query.repository';
+import {InterlayerNotice} from "../../../../../base/models/Interlayer";
 
 export class GetAllSessionCommand {
   constructor(public userId: string) {}

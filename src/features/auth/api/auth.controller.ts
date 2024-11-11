@@ -30,6 +30,10 @@ import { UserInputDto } from '../../users/api/input/userInput.dto';
 import { emailResendingDto } from './input/email.resending.input';
 import { RefreshTokenGuard } from '../../../guards/refresh-token.guards';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
+import { CommandBus } from '@nestjs/cqrs';
+import { LoginCommand, LoginCommandOutput } from './useCases/login.usecase';
+import { InterlayerNotice } from '../../../base/models/Interlayer';
+import { LogoutCommand } from './useCases/logout.usecase';
 
 @Controller('auth')
 export class AuthController {
@@ -38,6 +42,7 @@ export class AuthController {
     private usersService: UsersService,
     private jwtService: JwtService,
     private usersSqlQueryRepository: UsersSqlQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @HttpCode(200)
@@ -54,15 +59,20 @@ export class AuthController {
       if (!body.loginOrEmail || !body.password) {
         throw new BadRequestException('Missing login or password');
       }
-      const tokens = await this.authService.loginTokensPair(
+      const command = new LoginCommand(
         body.loginOrEmail,
         body.password,
         ip,
         title,
       );
+      const login = await this.commandBus.execute<
+        LoginCommand,
+        InterlayerNotice<LoginCommandOutput>
+      >(command);
+      if (login.hasError())
+        throw new UnauthorizedException('get tokens pair error');
 
-      if (!tokens) throw new UnauthorizedException('get tokens pair error');
-      const { accessToken, refreshToken } = tokens;
+      const { accessToken, refreshToken } = login.data!;
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
@@ -78,18 +88,12 @@ export class AuthController {
   @Post('logout')
   async logout(@Req() req: Request) {
     const token = req.cookies.refreshToken;
-    const user = await this.jwtService.checkRefreshToken(token);
-    if (!user) throw new UnauthorizedException('check refresh token error');
-    await this.authService.deleteSession(token);
-    // const title = req.get('User-Agent') || 'none title';
-    // const token = req.cookies.refreshToken;
-    // const checkToken = await this.jwtService.checkRefreshToken(token);
-    // if (!checkToken) {
-    //   await this.authService.deleteSessionUsingLogin(userId, title);
-    //   return;
-    // }
-    // await this.authService.deleteSession(token);
-    // // if (!deleteSession) throw new UnauthorizedException();
+    const command = new LogoutCommand(token);
+    const logout = await this.commandBus.execute<
+      LogoutCommand,
+      InterlayerNotice<boolean>
+    >(command);
+    if (logout.hasError()) throw new Error('logout error');
     return;
   }
 

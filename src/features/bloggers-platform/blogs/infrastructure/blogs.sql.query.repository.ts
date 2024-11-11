@@ -17,15 +17,13 @@ export class BlogsSqlQueryRepository {
     try {
       const { sortBy, sortDirection, searchNameTerm, pageSize, pageNumber } =
         sortData;
-      const mySortDirection =
-        sortDirection.toUpperCase() as typeof sortDirection;
       const offset = (pageNumber - 1) * pageSize;
       const result = await this.blogRepository
         .createQueryBuilder('blog')
         .where('blog.name ILIKE :searchLoginTerm ', {
           searchLoginTerm: `%${searchNameTerm}%`,
         })
-        .orderBy(`blog.${sortBy}`, mySortDirection)
+        .orderBy(`blog.${sortBy}`, sortDirection)
         .skip(offset)
         .take(pageSize)
         .getManyAndCount();

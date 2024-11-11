@@ -5,8 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigurationType } from '../../../settings/configuration';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
 import { UsersSqlRepository } from '../../users/infrastructure/users.sql.repository';
-import { SessionSqlRepository } from '../../../sessions/infrastructure/session.sql.repository';
-import { SessionEntity } from '../../../sessions/domain/session.entity';
+import {SessionEntity} from "../sessions/domain/session.entity";
+import {SessionSqlRepository} from "../sessions/infrastructure/session.sql.repository";
 
 const jwt = require('jsonwebtoken');
 

@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { UserTestManager } from './users/user.test.manager';
 import { randomUUID } from 'crypto';
-import { SessionEntity } from '../src/sessions/domain/session.entity';
+import { SessionEntity } from '../src/features/auth/sessions/domain/session.entity';
 
 export class TestManager {
   constructor(protected readonly app: INestApplication) {}

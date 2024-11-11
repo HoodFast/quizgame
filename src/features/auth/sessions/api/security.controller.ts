@@ -10,16 +10,15 @@ import {
 } from '@nestjs/common';
 
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { UserId } from '../../decorators/userId';
 import { DeleteAllSessionsCommand } from './useCases/delete-all-sessions.usecase';
-import { InterlayerNotice } from '../../base/models/Interlayer';
-import { UpdateOutputData } from '../../base/models/updateOutput';
 import { DeleteSessionByIdCommand } from './useCases/delete-session-by-id.usecase';
-
 import { SessionsOutputType } from './output/session.output';
 import { GetAllSessionCommand } from './useCases/get-all-sessions.usecase';
-import { RefreshTokenGuard } from '../../guards/refresh-token.guards';
-import { TokenPayload } from '../../decorators/token-payload';
+import { RefreshTokenGuard } from '../../../../guards/refresh-token.guards';
+import { InterlayerNotice } from '../../../../base/models/Interlayer';
+import { TokenPayload } from '../../../../decorators/token-payload';
+import { UpdateOutputData } from '../../../../base/models/updateOutput';
+import { UserId } from '../../../../decorators/userId';
 
 @Controller('security')
 export class SecurityController {

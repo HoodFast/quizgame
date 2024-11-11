@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InterlayerNotice } from '../../../base/models/Interlayer';
-import { UpdateOutputData } from '../../../base/models/updateOutput';
 import { SessionSqlRepository } from '../../infrastructure/session.sql.repository';
+import {UpdateOutputData} from "../../../../../base/models/updateOutput";
+import {InterlayerNotice} from "../../../../../base/models/Interlayer";
 
 export class DeleteAllSessionsCommand {
   constructor(

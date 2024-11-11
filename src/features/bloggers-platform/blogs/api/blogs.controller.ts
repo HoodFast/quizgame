@@ -9,11 +9,9 @@ import {
   Post,
   Put,
   Query,
-  Req,
-  Res,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
-import { BlogService } from '../application/blogs.service';
 import { PostInput } from '../../posts/api/input/PostsCreate.dto';
 
 import { CommandBus } from '@nestjs/cqrs';
@@ -40,6 +38,8 @@ import {
 import { AccessTokenGetId } from '../../../../guards/access.token.get.id';
 import { BlogsSqlQueryRepository } from '../infrastructure/blogs.sql.query.repository';
 import { PostsSqlQueryRepository } from '../../posts/infrastructure/posts.sql.query.repository';
+import { SortDirectionPipe } from '../../../../base/pipes/sortDirectionPipe';
+import { UserId } from '../../../../decorators/userId';
 
 export enum sortDirection {
   asc = 'ASC',
@@ -57,18 +57,13 @@ export type queryBlogsInputType = {
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    protected blogService: BlogService,
     protected blogsQueryRepository: BlogsSqlQueryRepository,
     protected postsQueryRepository: PostsSqlQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
-
+  @UsePipes(SortDirectionPipe)
   @Get()
   async getAllBlogs(@Query() query: queryBlogsInputType) {
-    let mySortDirection = sortDirection.desc;
-    if (query.sortDirection) {
-      mySortDirection = query.sortDirection.toUpperCase() as sortDirection;
-    }
     const sortData = {
       searchNameTerm: query.searchNameTerm ?? '',
       sortBy: query.sortBy ?? 'createdAt',
@@ -93,7 +88,7 @@ export class BlogsController {
   async getPostsForBlog(
     @Param('id') blogId: string,
     @Query() query: queryBlogsInputType,
-    @Req() req: Request,
+    @UserId() userId: string,
   ) {
     const sortData = {
       sortBy: query.sortBy ?? 'createdAt',
@@ -101,8 +96,7 @@ export class BlogsController {
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
     };
-    // @ts-ignore
-    const userId = req.userId ? req.userId : null;
+
     const posts = await this.postsQueryRepository.getAllPostsForBlog(
       userId,
       blogId,
