@@ -17,6 +17,7 @@ import { DeleteAllSessionsUseCase } from './sessions/api/useCases/delete-all-ses
 import { SessionSqlRepository } from './sessions/infrastructure/session.sql.repository';
 import { SessionSqlQueryRepository } from './sessions/infrastructure/session.sql.query.repository';
 import { LoginUseCase } from './api/useCases/login.usecase';
+import { CreateUserUseCase } from '../users/api/useCases/create.user.usecase';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { LoginUseCase } from './api/useCases/login.usecase';
     SessionSqlRepository,
     JwtService,
     LoginUseCase,
+    CreateUserUseCase,
   ],
   exports: [JwtService],
 })

@@ -34,6 +34,8 @@ import { CommandBus } from '@nestjs/cqrs';
 import { LoginCommand, LoginCommandOutput } from './useCases/login.usecase';
 import { InterlayerNotice } from '../../../base/models/Interlayer';
 import { LogoutCommand } from './useCases/logout.usecase';
+import { CreateUserCommand } from '../../users/api/useCases/create.user.usecase';
+import { OutputUsersType } from '../../users/api/output/users.output.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -102,8 +104,13 @@ export class AuthController {
   @Post('registration')
   async registration(@Body() data: UserInputDto) {
     const { login, email, password } = data;
-    const res = await this.usersService.createUser(login, email, password);
-    if (!res) throw new UnauthorizedException('create user error');
+    const command = new CreateUserCommand(login, email, password);
+    const createUser = await this.commandBus.execute<
+      CreateUserCommand,
+      InterlayerNotice<OutputUsersType>
+    >(command);
+    if (createUser.hasError())
+      throw new BadRequestException(createUser.extensions[0].message);
     return;
   }
 

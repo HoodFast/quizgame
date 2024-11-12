@@ -68,6 +68,7 @@ export class UsersService {
         await this.sendConfirmCode(createdUser.email);
       }
     } catch (e) {
+      console.log(e);
       return null;
     }
 
