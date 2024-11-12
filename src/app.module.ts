@@ -9,7 +9,7 @@ import configuration, {
 } from './settings/configuration';
 import { UserModule } from './features/users/user.module';
 import { AuthModule } from './features/auth/auth.module';
-import { BloggersPlatform } from './features/bloggers-platform/bloggers.platform.module';
+import { BloggersPlatformModule } from './features/bloggers-platform/bloggers.platform.module';
 import { TestingModule } from './features/testing/testing.module';
 
 @Module({
@@ -42,7 +42,7 @@ import { TestingModule } from './features/testing/testing.module';
     }),
     AuthModule,
     UserModule,
-    BloggersPlatform,
+    BloggersPlatformModule,
     TestingModule,
   ],
   controllers: [AppController],

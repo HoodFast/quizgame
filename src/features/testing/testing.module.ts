@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { TestingController } from '../../testing/api/testing.controller';
-import { TestingSqlQueryRepository } from '../../testing/infrastructure/testing.query.repository';
+import { TestingController } from './api/testing.controller';
+import { TestingSqlQueryRepository } from './infrastructure/testing.query.repository';
 
 @Module({
   imports: [],

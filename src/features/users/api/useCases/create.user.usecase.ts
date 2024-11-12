@@ -1,7 +1,6 @@
 import { InterlayerNotice } from '../../../../base/models/Interlayer';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { OutputUsersType } from '../output/users.output.dto';
-import { BadRequestException } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import { add } from 'date-fns/add';
 import { UsersSqlRepository } from '../../infrastructure/users.sql.repository';
@@ -14,7 +13,7 @@ export class CreateUserCommand {
     public login: string,
     public email: string,
     public password: string,
-    public isConfirmed?: string,
+    public isConfirmed?: boolean,
   ) {}
 }
 
@@ -86,6 +85,7 @@ export class CreateUserUseCase
     notice.addData(createdUser!);
     return notice;
   }
+
   async sendConfirmCode(email: string) {
     try {
       const user = await this.usersSqlQueryRepository.findUser(email);

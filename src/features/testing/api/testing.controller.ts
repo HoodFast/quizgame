@@ -4,6 +4,7 @@ import { TestingSqlQueryRepository } from '../infrastructure/testing.query.repos
 @Controller('testing/all-data')
 export class TestingController {
   constructor(private testingQueryRepository: TestingSqlQueryRepository) {}
+
   @HttpCode(204)
   @Delete()
   async deleteAll() {

@@ -90,4 +90,4 @@ const repositories = [
   ],
   providers: [BlogExistsValidator, ...useCases, ...services, ...repositories],
 })
-export class BloggersPlatform {}
+export class BloggersPlatformModule {}

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,17 +10,20 @@ import {
   Post,
   Query,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { UserInputDto } from './input/userInput.dto';
 import { UsersService } from '../application/users.service';
-import {
-  sortDirection,
-  UsersSortData,
-} from '../../../base/sortData/sortData.model';
+import { UsersSortData } from '../../../base/sortData/sortData.model';
 import { AuthGuard } from '../../../guards/auth.guard';
 import { OutputUsersType } from './output/users.output.dto';
 import { Pagination } from '../../../base/paginationInputDto/paginationOutput';
 import { UsersSqlQueryRepository } from '../infrastructure/users.sql.query.repository';
+import { CreateUserCommand } from './useCases/create.user.usecase';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { InterlayerNotice } from '../../../base/models/Interlayer';
+import { SortDirectionPipe } from '../../../base/pipes/sortDirectionPipe';
+import { GetAllusersCommand } from './useCases/get.all.users.query.usecase';
 
 @UseGuards(AuthGuard)
 @Controller('sa/users')
@@ -27,28 +31,22 @@ export class UsersController {
   constructor(
     protected userService: UsersService,
     protected usersSqlQueryRepository: UsersSqlQueryRepository,
+    protected commandBus: CommandBus,
+    protected queryBus: QueryBus,
   ) {}
 
+  @UsePipes(SortDirectionPipe)
   @Get()
   async getAllUsers(
     @Query() input: UsersSortData,
   ): Promise<Pagination<OutputUsersType>> {
-    let mySortDirection = sortDirection.desc;
-    if (input.sortDirection) {
-      mySortDirection = input.sortDirection.toUpperCase() as sortDirection;
-    }
-
-    const sortData: UsersSortData = {
-      searchLoginTerm: input.searchLoginTerm ?? '',
-      searchEmailTerm: input.searchEmailTerm ?? '',
-      sortBy: input.sortBy ?? 'createdAt',
-      sortDirection: mySortDirection,
-      pageNumber: input.pageNumber ? +input.pageNumber : 1,
-      pageSize: input.pageSize ? +input.pageSize : 10,
-    };
-    const result = await this.usersSqlQueryRepository.getAllUsers(sortData);
-    if (!result) throw new NotFoundException();
-    return result;
+    const commandQuery = new GetAllusersCommand(input);
+    const result = await this.queryBus.execute<
+      GetAllusersCommand,
+      InterlayerNotice<Pagination<OutputUsersType>>
+    >(commandQuery);
+    if (result.hasError()) throw new NotFoundException();
+    return result.data!;
   }
 
   @UseGuards(AuthGuard)
@@ -56,16 +54,15 @@ export class UsersController {
   async createUser(
     @Body() input: UserInputDto,
   ): Promise<OutputUsersType | null> {
-    // await validateOrRejectModel(input, UserInputDto);
     const { login, email, password } = input;
-    const createdUser = await this.userService.createUser(
-      login,
-      email,
-      password,
-      true,
-    );
+    const command = new CreateUserCommand(login, email, password, true);
+    const createdUser = await this.commandBus.execute<
+      CreateUserCommand,
+      InterlayerNotice<OutputUsersType>
+    >(command);
+    if (createdUser.hasError()) throw new BadRequestException();
 
-    return createdUser;
+    return createdUser.data;
   }
 
   @HttpCode(204)
