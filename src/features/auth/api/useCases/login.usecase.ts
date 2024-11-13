@@ -1,7 +1,5 @@
 import { InterlayerNotice } from '../../../../base/models/Interlayer';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsSqlRepository } from '../../../bloggers-platform/blogs/infrastructure/blogs.sql.repository';
-import { AuthService } from '../../application/auth.service';
 import { randomUUID } from 'crypto';
 import { UsersService } from '../../../users/application/users.service';
 import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';

@@ -14,6 +14,8 @@ import { SessionSqlQueryRepository } from '../auth/sessions/infrastructure/sessi
 import { SessionSqlRepository } from '../auth/sessions/infrastructure/session.sql.repository';
 import { CreateUserUseCase } from './api/useCases/create.user.usecase';
 import { CqrsModule } from '@nestjs/cqrs';
+import { DeleteUserUseCase } from './api/useCases/delete.user.usecase';
+import { GetAllUsersQueryUseCase } from './api/useCases/get.all.users.query.usecase';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { CqrsModule } from '@nestjs/cqrs';
     SessionSqlRepository,
     SessionSqlQueryRepository,
     CreateUserUseCase,
+    DeleteUserUseCase,
+    GetAllUsersQueryUseCase,
   ],
   exports: [
     UsersService,

@@ -98,6 +98,7 @@ export class UsersSqlRepository {
       return !!deleteUser.affected;
     } catch (e) {
       console.log(e);
+      return null;
     }
   }
 

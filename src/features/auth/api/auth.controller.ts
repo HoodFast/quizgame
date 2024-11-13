@@ -41,6 +41,11 @@ import { SendRecoveryCodeCommand } from './useCases/send.recovery.code.usecase';
 import { SendConfirmationCodeCommand } from './useCases/send.confirmation.code.usecase';
 import { MyEntity } from './output/me.entity';
 import { GetMeCommand } from './useCases/get.me.query.usecase';
+import {
+  CreateRefreshTokenCommand,
+  CreateRefreshTokenOutput,
+} from './useCases/create.refresh.token.usecase';
+import { ChangePasswordCommand } from './useCases/change.password.usecase';
 
 @Controller('auth')
 export class AuthController {
@@ -62,33 +67,29 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    try {
-      const title = req.get('User-Agent') || 'none title';
-      if (!body.loginOrEmail || !body.password) {
-        throw new BadRequestException('Missing login or password');
-      }
-      const command = new LoginCommand(
-        body.loginOrEmail,
-        body.password,
-        ip,
-        title,
-      );
-      const login = await this.commandBus.execute<
-        LoginCommand,
-        InterlayerNotice<LoginCommandOutput>
-      >(command);
-      if (login.hasError())
-        throw new UnauthorizedException('get tokens pair error');
-
-      const { accessToken, refreshToken } = login.data!;
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-      });
-      return { accessToken };
-    } catch (e) {
-      throw e;
+    const title = req.get('User-Agent') || 'none title';
+    if (!body.loginOrEmail || !body.password) {
+      throw new BadRequestException('Missing login or password');
     }
+    const command = new LoginCommand(
+      body.loginOrEmail,
+      body.password,
+      ip,
+      title,
+    );
+    const login = await this.commandBus.execute<
+      LoginCommand,
+      InterlayerNotice<LoginCommandOutput>
+    >(command);
+    if (login.hasError())
+      throw new UnauthorizedException('get tokens pair error');
+
+    const { accessToken, refreshToken } = login.data!;
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+    return { accessToken };
   }
 
   @UseGuards(RefreshTokenGuard)
@@ -150,7 +151,14 @@ export class AuthController {
   @HttpCode(204)
   @Post('new-password')
   async newPassword(@Body() data: recoveryPassInputDto) {
-    return await this.usersService.changePass(data);
+    const command = new ChangePasswordCommand(data);
+    const result = await this.commandBus.execute<
+      ChangePasswordCommand,
+      InterlayerNotice<boolean>
+    >(command);
+    if (result.hasError())
+      throw new BadRequestException(result.extensions[0].message);
+    return;
   }
 
   @HttpCode(200)
@@ -161,22 +169,17 @@ export class AuthController {
   ) {
     const title = req.headers['user-agent'] || 'none title';
     const ip = req.ip || 'none ip';
-
     const token = req.cookies.refreshToken;
 
-    const user = await this.jwtService.checkRefreshToken(token);
-    if (!user) throw new UnauthorizedException('check refresh token error');
+    const command = new CreateRefreshTokenCommand(title, ip, token);
+    const tokens = await this.commandBus.execute<
+      CreateRefreshTokenCommand,
+      InterlayerNotice<CreateRefreshTokenOutput>
+    >(command);
 
-    const tokens = await this.authService.refreshTokensPair(
-      user,
-      ip,
-      title,
-      token,
-    );
-    const addToBlackList =
-      await this.usersSqlQueryRepository.addTokenToBlackList(user._id, token);
-    if (!addToBlackList) throw new NotFoundException();
-    const { accessToken, refreshToken } = tokens;
+    const accessToken = tokens.data!.accessToken;
+    const refreshToken = tokens.data!.refreshToken;
+
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
@@ -204,7 +207,6 @@ export class AuthController {
       GetMeCommand,
       InterlayerNotice<MyEntity>
     >(new GetMeCommand(userId));
-
     if (my.hasError()) throw new UnauthorizedException('getMe error');
     return {
       userId: my.data!.id,

@@ -1,8 +1,6 @@
 import { InterlayerNotice } from '../../../../base/models/Interlayer';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { Pagination } from '../../../../base/paginationInputDto/paginationOutput';
 import { UsersSqlQueryRepository } from '../../../users/infrastructure/users.sql.query.repository';
-import { OutputUsersType } from '../../../users/api/output/users.output.dto';
 import { MyEntity } from '../output/me.entity';
 
 export class GetMeCommand {
@@ -10,7 +8,7 @@ export class GetMeCommand {
 }
 
 @QueryHandler(GetMeCommand)
-export class GetMyQueryUseCase
+export class GetMeQueryUseCase
   implements IQueryHandler<GetMeCommand, InterlayerNotice<MyEntity>>
 {
   constructor(private usersSqlQueryRepository: UsersSqlQueryRepository) {}

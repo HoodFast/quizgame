@@ -24,6 +24,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { InterlayerNotice } from '../../../base/models/Interlayer';
 import { SortDirectionPipe } from '../../../base/pipes/sortDirectionPipe';
 import { GetAllusersCommand } from './useCases/get.all.users.query.usecase';
+import { DeleteUserCommand } from './useCases/delete.user.usecase';
 
 @UseGuards(AuthGuard)
 @Controller('sa/users')
@@ -69,8 +70,13 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
-    const deleteUser = await this.userService.deleteUser(id);
-    if (!deleteUser) throw new NotFoundException();
+    const command = new DeleteUserCommand(id);
+    const deleteUser = await this.commandBus.execute<
+      DeleteUserCommand,
+      InterlayerNotice<boolean>
+    >(command);
+    if (deleteUser.hasError())
+      throw new NotFoundException(deleteUser.extensions[0].message);
     return;
   }
 }

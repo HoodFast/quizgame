@@ -21,7 +21,10 @@ import { CreateUserUseCase } from '../users/api/useCases/create.user.usecase';
 import { EmailConfirmationUseCase } from './api/useCases/email.confirmation.usecase';
 import { SendConfirmationCodeUseCase } from './api/useCases/send.confirmation.code.usecase';
 import { SendRecoveryCodeUseCase } from './api/useCases/send.recovery.code.usecase';
-import { GetMyQueryUseCase } from './api/useCases/get.me.query.usecase';
+import { GetMeQueryUseCase } from './api/useCases/get.me.query.usecase';
+import { ChangePasswordUseCase } from './api/useCases/change.password.usecase';
+import { CreateRefreshTokenUseCase } from './api/useCases/create.refresh.token.usecase';
+import { LogoutUseCase } from './api/useCases/logout.usecase';
 
 const useCases = [
   GetAllSessionUseCase,
@@ -32,7 +35,10 @@ const useCases = [
   EmailConfirmationUseCase,
   SendConfirmationCodeUseCase,
   SendRecoveryCodeUseCase,
-  GetMyQueryUseCase,
+  GetMeQueryUseCase,
+  ChangePasswordUseCase,
+  CreateRefreshTokenUseCase,
+  LogoutUseCase,
 ];
 @Module({
   imports: [

@@ -8,7 +8,7 @@ export class LogoutCommand {
 }
 
 @CommandHandler(LogoutCommand)
-export class LoginUseCase
+export class LogoutUseCase
   implements ICommandHandler<LogoutCommand, InterlayerNotice<boolean>>
 {
   constructor(
