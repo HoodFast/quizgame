@@ -30,12 +30,17 @@ import { UserInputDto } from '../../users/api/input/userInput.dto';
 import { emailResendingDto } from './input/email.resending.input';
 import { RefreshTokenGuard } from '../../../guards/refresh-token.guards';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { LoginCommand, LoginCommandOutput } from './useCases/login.usecase';
 import { InterlayerNotice } from '../../../base/models/Interlayer';
 import { LogoutCommand } from './useCases/logout.usecase';
 import { CreateUserCommand } from '../../users/api/useCases/create.user.usecase';
 import { OutputUsersType } from '../../users/api/output/users.output.dto';
+import { EmailConfirmationCommand } from './useCases/email.confirmation.usecase';
+import { SendRecoveryCodeCommand } from './useCases/send.recovery.code.usecase';
+import { SendConfirmationCodeCommand } from './useCases/send.confirmation.code.usecase';
+import { MyEntity } from './output/me.entity';
+import { GetMeCommand } from './useCases/get.me.query.usecase';
 
 @Controller('auth')
 export class AuthController {
@@ -45,6 +50,7 @@ export class AuthController {
     private jwtService: JwtService,
     private usersSqlQueryRepository: UsersSqlQueryRepository,
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
   @HttpCode(200)
@@ -119,16 +125,24 @@ export class AuthController {
   @Post('registration-confirmation')
   async emailConfirmation(@Body() data: confirmDto) {
     if (!data.code) throw new BadRequestException('error code', 'code');
-    await this.authService.confirmEmail(data.code);
-    return {};
+    const command = new EmailConfirmationCommand(data.code);
+    const result = await this.commandBus.execute<
+      EmailConfirmationCommand,
+      InterlayerNotice<boolean>
+    >(command);
+    if (result.hasError()) throw new BadRequestException();
+    return;
   }
 
   @UseGuards(Limiter)
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() data: recoveryPass) {
-    const email = data.email;
-    await this.authService.sendRecovery(email);
+    const send = await this.commandBus.execute<
+      SendRecoveryCodeCommand,
+      InterlayerNotice<boolean>
+    >(new SendRecoveryCodeCommand(data.email));
+    if (!send.hasError()) throw new BadRequestException();
     return;
   }
 
@@ -174,19 +188,28 @@ export class AuthController {
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() data: emailResendingDto) {
-    await this.authService.resendConfirmationCode(data.email);
-    return {};
+    const send = await this.commandBus.execute<
+      SendConfirmationCodeCommand,
+      InterlayerNotice<boolean>
+    >(new SendConfirmationCodeCommand(data.email));
+    if (send.hasError())
+      throw new BadRequestException(send.extensions[0].message);
+    return;
   }
 
   @UseGuards(AccessTokenAuthGuard)
   @Get('me')
   async getMe(@UserId() userId: string) {
-    const my = await this.usersSqlQueryRepository.getMe(userId);
-    if (!my) throw new UnauthorizedException('getMe error');
+    const my = await this.queryBus.execute<
+      GetMeCommand,
+      InterlayerNotice<MyEntity>
+    >(new GetMeCommand(userId));
+
+    if (my.hasError()) throw new UnauthorizedException('getMe error');
     return {
-      userId: my.id,
-      login: my.accountData.login,
-      email: my.accountData.email,
+      userId: my.data!.id,
+      login: my.data!.accountData.login,
+      email: my.data!.accountData.email,
     };
   }
 }

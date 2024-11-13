@@ -23,37 +23,37 @@ export class AuthService {
     protected emailService: EmailService,
   ) {}
 
-  async confirmEmail(code: string) {
-    const user = await this.usersSqlQueryRepository.getUserByCode(code);
-    if (!user) throw new BadRequestException('invalid code', 'code');
-    if (user?.emailConfirmation.isConfirmed)
-      throw new BadRequestException('code is already confirm', 'code');
+  // async confirmEmail(code: string) {
+  //   const user = await this.usersSqlQueryRepository.getUserByCode(code);
+  //   if (!user) throw new BadRequestException('invalid code', 'code');
+  //   if (user?.emailConfirmation.isConfirmed)
+  //     throw new BadRequestException('code is already confirm', 'code');
+  //
+  //   if (user?.emailConfirmation.expirationDate < new Date()) {
+  //     throw new BadRequestException({
+  //       message: 'expired',
+  //       field: 'expirationDate',
+  //     });
+  //   }
+  //   const confirmEmail = await this.usersSqlRepository.confirmEmail(user._id);
+  //   return confirmEmail;
+  // }
 
-    if (user?.emailConfirmation.expirationDate < new Date()) {
-      throw new BadRequestException({
-        message: 'expired',
-        field: 'expirationDate',
-      });
-    }
-    const confirmEmail = await this.usersSqlRepository.confirmEmail(user._id);
-    return confirmEmail;
-  }
-
-  async sendRecovery(email: string) {
-    const subject = 'Password recovery';
-    const recoveryCode = this.jwtService.createRecoveryCode(email);
-    const message = `<h1>Password recovery</h1>
-        <p>To finish password recovery please follow the link below:
-          <a href='https://somesite.com/password-recovery?recoveryCode=${recoveryCode}'>recovery password</a>
-      </p>`;
-    try {
-      await this.emailService.sendEmail(email, subject, message);
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-    return;
-  }
+  // async sendRecovery(email: string) {
+  //   const subject = 'Password recovery';
+  //   const recoveryCode = this.jwtService.createRecoveryCode(email);
+  //   const message = `<h1>Password recovery</h1>
+  //       <p>To finish password recovery please follow the link below:
+  //         <a href='https://somesite.com/password-recovery?recoveryCode=${recoveryCode}'>recovery password</a>
+  //     </p>`;
+  //   try {
+  //     await this.emailService.sendEmail(email, subject, message);
+  //   } catch (e) {
+  //     console.log(e);
+  //     return;
+  //   }
+  //   return;
+  // }
 
   async refreshTokensPair(
     user: UserEntity,

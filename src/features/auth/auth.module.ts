@@ -18,7 +18,22 @@ import { SessionSqlRepository } from './sessions/infrastructure/session.sql.repo
 import { SessionSqlQueryRepository } from './sessions/infrastructure/session.sql.query.repository';
 import { LoginUseCase } from './api/useCases/login.usecase';
 import { CreateUserUseCase } from '../users/api/useCases/create.user.usecase';
+import { EmailConfirmationUseCase } from './api/useCases/email.confirmation.usecase';
+import { SendConfirmationCodeUseCase } from './api/useCases/send.confirmation.code.usecase';
+import { SendRecoveryCodeUseCase } from './api/useCases/send.recovery.code.usecase';
+import { GetMyQueryUseCase } from './api/useCases/get.me.query.usecase';
 
+const useCases = [
+  GetAllSessionUseCase,
+  DeleteSessionByIdUseCase,
+  DeleteAllSessionsUseCase,
+  LoginUseCase,
+  CreateUserUseCase,
+  EmailConfirmationUseCase,
+  SendConfirmationCodeUseCase,
+  SendRecoveryCodeUseCase,
+  GetMyQueryUseCase,
+];
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -34,14 +49,10 @@ import { CreateUserUseCase } from '../users/api/useCases/create.user.usecase';
   providers: [
     AuthService,
     UsersService,
-    GetAllSessionUseCase,
-    DeleteSessionByIdUseCase,
-    DeleteAllSessionsUseCase,
+    JwtService,
     SessionSqlQueryRepository,
     SessionSqlRepository,
-    JwtService,
-    LoginUseCase,
-    CreateUserUseCase,
+    ...useCases,
   ],
   exports: [JwtService],
 })
