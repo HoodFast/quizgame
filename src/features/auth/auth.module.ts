@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './api/auth.controller';
-import { JwtService } from './infrastructure/jwt.service';
+import { MyJwtService } from './infrastructure/my-jwt.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../users/domain/user.sql.entity';
 import { TokensBlackList } from '../users/domain/tokens.black.list.sql.entity';
@@ -25,6 +25,12 @@ import { GetMeQueryUseCase } from './api/useCases/get.me.query.usecase';
 import { ChangePasswordUseCase } from './api/useCases/change.password.usecase';
 import { CreateRefreshTokenUseCase } from './api/useCases/create.refresh.token.usecase';
 import { LogoutUseCase } from './api/useCases/logout.usecase';
+import { JwtModule } from '@nestjs/jwt';
+
+const jwtConstants = {
+  secret:
+    'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
+};
 
 const useCases = [
   GetAllSessionUseCase,
@@ -40,6 +46,7 @@ const useCases = [
   CreateRefreshTokenUseCase,
   LogoutUseCase,
 ];
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -48,6 +55,7 @@ const useCases = [
       EmailConfirmation,
       Sessions,
     ]),
+    JwtModule.register({}),
     CqrsModule,
     UserModule,
   ],
@@ -55,11 +63,11 @@ const useCases = [
   providers: [
     AuthService,
     UsersService,
-    JwtService,
+    MyJwtService,
     SessionSqlQueryRepository,
     SessionSqlRepository,
     ...useCases,
   ],
-  exports: [JwtService],
+  exports: [MyJwtService],
 })
 export class AuthModule {}

@@ -4,13 +4,13 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '../features/auth/infrastructure/jwt.service';
+import { MyJwtService } from '../features/auth/infrastructure/my-jwt.service';
 import { UsersSqlQueryRepository } from '../features/users/infrastructure/users.sql.query.repository';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
   constructor(
-    private readonly jwtService: JwtService,
+    private readonly jwtService: MyJwtService,
     private readonly usersQueryRepository: UsersSqlQueryRepository,
   ) {}
 

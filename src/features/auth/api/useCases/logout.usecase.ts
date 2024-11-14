@@ -1,6 +1,6 @@
 import { InterlayerNotice } from '../../../../base/models/Interlayer';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { JwtService } from '../../infrastructure/jwt.service';
+import { MyJwtService } from '../../infrastructure/my-jwt.service';
 import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';
 
 export class LogoutCommand {
@@ -12,7 +12,7 @@ export class LogoutUseCase
   implements ICommandHandler<LogoutCommand, InterlayerNotice<boolean>>
 {
   constructor(
-    private jwtService: JwtService,
+    private jwtService: MyJwtService,
     private sessionSqlRepository: SessionSqlRepository,
   ) {}
 

@@ -1,6 +1,6 @@
 import { InterlayerNotice } from '../../../../base/models/Interlayer';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { JwtService } from '../../infrastructure/jwt.service';
+import { MyJwtService } from '../../infrastructure/my-jwt.service';
 import { EmailService } from '../../infrastructure/email.service';
 
 export class SendRecoveryCodeCommand {
@@ -13,7 +13,7 @@ export class SendRecoveryCodeUseCase
     ICommandHandler<SendRecoveryCodeCommand, InterlayerNotice<boolean>>
 {
   constructor(
-    private jwtService: JwtService,
+    private jwtService: MyJwtService,
     private emailService: EmailService,
   ) {}
 

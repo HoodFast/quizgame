@@ -35,7 +35,7 @@ export class CreateUserUseCase
     const checkUserExistLogin = await this.usersSqlRepository.doesExistByLogin(
       command.login,
     );
-    debugger;
+
     if (checkUserExistLogin) {
       notice.addError('user is already exist');
       return notice;

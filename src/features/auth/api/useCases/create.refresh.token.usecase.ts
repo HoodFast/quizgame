@@ -1,6 +1,6 @@
 import { InterlayerNotice } from '../../../../base/models/Interlayer';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { JwtService } from '../../infrastructure/jwt.service';
+import { MyJwtService } from '../../infrastructure/my-jwt.service';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersSqlQueryRepository } from '../../../users/infrastructure/users.sql.query.repository';
 import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';
@@ -9,6 +9,7 @@ export class CreateRefreshTokenOutput {
   accessToken: string;
   refreshToken: string;
 }
+
 export class CreateRefreshTokenCommand {
   constructor(
     public title: string,
@@ -26,7 +27,7 @@ export class CreateRefreshTokenUseCase
     >
 {
   constructor(
-    private jwtService: JwtService,
+    private jwtService: MyJwtService,
     private usersSqlQueryRepository: UsersSqlQueryRepository,
     private sessionSqlRepository: SessionSqlRepository,
   ) {}
@@ -57,8 +58,8 @@ export class CreateRefreshTokenUseCase
     } else {
       throw new UnauthorizedException('The old session is gone');
     }
-    const accessToken = await this.jwtService.createJWT(user._id);
-    const refreshToken = await this.jwtService.createRefreshJWT(
+    const accessToken = await this.jwtService.createPassportJWT(user._id);
+    const refreshToken = await this.jwtService.createPassportRefreshJWT(
       user._id,
       deviceId,
       command.ip,

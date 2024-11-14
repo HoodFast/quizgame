@@ -1,14 +1,10 @@
 import bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { UsersSqlQueryRepository } from '../infrastructure/users.sql.query.repository';
-import { JwtService } from '../../auth/infrastructure/jwt.service';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    protected usersSqlQueryRepository: UsersSqlQueryRepository,
-    protected jwtService: JwtService,
-  ) {}
+  constructor(protected usersSqlQueryRepository: UsersSqlQueryRepository) {}
 
   // async findUser(loginOrEmail: string) {
   //   const user = await this.usersQueryRepository.findUser(loginOrEmail);

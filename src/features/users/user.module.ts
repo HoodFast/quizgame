@@ -7,7 +7,6 @@ import { UsersController } from './api/users.controller';
 import { UsersSqlRepository } from './infrastructure/users.sql.repository';
 import { UsersSqlQueryRepository } from './infrastructure/users.sql.query.repository';
 import { EmailService } from '../auth/infrastructure/email.service';
-import { JwtService } from '../auth/infrastructure/jwt.service';
 import { UsersService } from './application/users.service';
 import { Sessions } from '../auth/sessions/domain/session.sql.entity';
 import { SessionSqlQueryRepository } from '../auth/sessions/infrastructure/session.sql.query.repository';
@@ -25,6 +24,7 @@ import { GetAllUsersQueryUseCase } from './api/useCases/get.all.users.query.usec
       EmailConfirmation,
       Sessions,
     ]),
+
     CqrsModule,
   ],
   controllers: [UsersController],
@@ -33,7 +33,6 @@ import { GetAllUsersQueryUseCase } from './api/useCases/get.all.users.query.usec
     UsersSqlQueryRepository,
     EmailService,
     UsersService,
-    JwtService,
     SessionSqlRepository,
     SessionSqlQueryRepository,
     CreateUserUseCase,
@@ -45,7 +44,6 @@ import { GetAllUsersQueryUseCase } from './api/useCases/get.all.users.query.usec
     UsersSqlRepository,
     UsersSqlQueryRepository,
     EmailService,
-    JwtService,
   ],
 })
 export class UserModule {}

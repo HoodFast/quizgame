@@ -38,6 +38,7 @@ import { UserModule } from '../users/user.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BlogExistsValidator } from '../../base/validate/blog.exist.validate';
 import { Sessions } from '../auth/sessions/domain/session.sql.entity';
+import { AuthModule } from '../auth/auth.module';
 
 const useCases = [
   CreateBlogUseCase,
@@ -79,6 +80,7 @@ const repositories = [
       EmailConfirmation,
     ]),
     UserModule,
+    AuthModule,
     CqrsModule,
   ],
   controllers: [

@@ -22,7 +22,7 @@ import {
 } from '../../../guards/limitter.guard';
 import { recoveryPass } from './input/recovery.password.input';
 import { recoveryPassInputDto } from './input/new.password.input';
-import { JwtService } from '../infrastructure/jwt.service';
+import { MyJwtService } from '../infrastructure/my-jwt.service';
 import { AccessTokenAuthGuard } from '../../../guards/access.token.auth.guard';
 import { UserId } from '../../../decorators/userId';
 import { confirmDto } from '../../users/api/input/conf.code.dto';
@@ -52,7 +52,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private jwtService: JwtService,
+    private jwtService: MyJwtService,
     private usersSqlQueryRepository: UsersSqlQueryRepository,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,

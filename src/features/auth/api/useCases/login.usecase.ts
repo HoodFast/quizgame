@@ -3,12 +3,13 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { randomUUID } from 'crypto';
 import { UsersService } from '../../../users/application/users.service';
 import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';
-import { JwtService } from '../../infrastructure/jwt.service';
+import { MyJwtService } from '../../infrastructure/my-jwt.service';
 
 export class LoginCommandOutput {
   accessToken: string;
   refreshToken: string;
 }
+
 export class LoginCommand {
   constructor(
     public loginOrEmail: string,
@@ -26,7 +27,7 @@ export class LoginUseCase
   constructor(
     private usersService: UsersService,
     private sessionSqlRepository: SessionSqlRepository,
-    private jwtService: JwtService,
+    private jwtService: MyJwtService,
   ) {}
 
   async execute(
@@ -51,12 +52,12 @@ export class LoginUseCase
     if (oldSession) {
       await this.sessionSqlRepository.deleteById(oldSession.id);
     }
-    const accessToken = await this.jwtService.createJWT(userId);
+    const accessToken = await this.jwtService.createPassportJWT(userId);
     if (!accessToken) {
       notice.addError('login error');
       return notice;
     }
-    const refreshToken = await this.jwtService.createRefreshJWT(
+    const refreshToken = await this.jwtService.createPassportRefreshJWT(
       userId,
       deviceId,
       ip,

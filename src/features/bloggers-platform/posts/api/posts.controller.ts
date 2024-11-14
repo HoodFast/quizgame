@@ -75,7 +75,6 @@ export class PostsController {
     @Query() query: QueryPostInputModel,
     @UserId() userId: string,
   ) {
-    debugger;
     const sortData = {
       sortBy: query.sortBy ?? 'createdAt',
       sortDirection: query.sortDirection ?? sortDirection.desc,

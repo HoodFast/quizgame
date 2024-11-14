@@ -3,6 +3,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Not, Repository } from 'typeorm';
 import { SessionEntity } from '../domain/session.entity';
 import { Sessions } from '../domain/session.sql.entity';
+
 @Injectable()
 export class SessionSqlRepository {
   constructor(
@@ -10,6 +11,7 @@ export class SessionSqlRepository {
     @InjectRepository(Sessions)
     protected sessionRepository: Repository<Sessions>,
   ) {}
+
   async getSessionForUserId(
     userId: string,
     title: string,
@@ -25,6 +27,7 @@ export class SessionSqlRepository {
       return null;
     }
   }
+
   async getSessionByDeviceId(deviceId: string): Promise<SessionEntity | null> {
     const result = await this.sessionRepository.findOne({
       where: { deviceId },
@@ -53,15 +56,18 @@ export class SessionSqlRepository {
       return null;
     }
   }
+
   async deleteById(id: string): Promise<boolean> {
     const result = await this.sessionRepository.delete({ id });
 
     return !!result.affected;
   }
+
   async deleteByDeviceId(deviceId: string): Promise<boolean> {
     const deletedSession = await this.sessionRepository.delete({ deviceId });
     return !!deletedSession.affected;
   }
+
   async getSessionForRefreshDecodeToken(iat: Date, deviceId: string) {
     try {
       const updatedIat = new Date(iat.getTime() + 3 * 60 * 60 * 1000);
@@ -74,7 +80,7 @@ export class SessionSqlRepository {
         })
         .andWhere('sessions.deviceId = :deviceId', { deviceId })
         .getMany();
-      debugger;
+
       return result[0];
     } catch (e) {
       console.log(e);

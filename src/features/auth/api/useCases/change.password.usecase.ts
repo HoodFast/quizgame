@@ -1,6 +1,6 @@
 import { InterlayerNotice } from '../../../../base/models/Interlayer';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { JwtService } from '../../infrastructure/jwt.service';
+import { MyJwtService } from '../../infrastructure/my-jwt.service';
 import { HttpException } from '@nestjs/common';
 import { recoveryPassInputDto } from '../input/new.password.input';
 import bcrypt from 'bcrypt';
@@ -10,6 +10,7 @@ export class CreateRefreshTokenOutput {
   accessToken: string;
   refreshToken: string;
 }
+
 export class ChangePasswordCommand {
   constructor(public data: recoveryPassInputDto) {}
 }
@@ -19,7 +20,7 @@ export class ChangePasswordUseCase
   implements ICommandHandler<ChangePasswordCommand, InterlayerNotice<boolean>>
 {
   constructor(
-    private jwtService: JwtService,
+    private jwtService: MyJwtService,
     private usersSqlRepository: UsersSqlRepository,
   ) {}
 
@@ -31,6 +32,10 @@ export class ChangePasswordUseCase
       const userId = await this.jwtService.getUserIdByRecoveryCode(
         command.data.recoveryCode,
       );
+      if (!userId) {
+        notice.addError('user not found');
+        return notice;
+      }
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(command.data.newPassword, salt);
       const changePassword = await this.usersSqlRepository.changePass(
@@ -46,7 +51,8 @@ export class ChangePasswordUseCase
       return notice;
     } catch (e) {
       console.log(e);
-      throw new HttpException({ message: 'Bad request' }, 400);
+      notice.addError('some error');
+      return notice;
     }
   }
 }

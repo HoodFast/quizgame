@@ -1,11 +1,11 @@
-import { JwtService } from '../infrastructure/jwt.service';
+import { MyJwtService } from '../infrastructure/my-jwt.service';
 import { Injectable } from '@nestjs/common';
 import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    protected jwtService: JwtService,
+    protected jwtService: MyJwtService,
     protected usersSqlQueryRepository: UsersSqlQueryRepository,
   ) {}
 

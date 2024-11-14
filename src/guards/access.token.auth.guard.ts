@@ -4,15 +4,15 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '../features/auth/infrastructure/jwt.service';
+import { MyJwtService } from '../features/auth/infrastructure/my-jwt.service';
 
 @Injectable()
 export class AccessTokenAuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(private jwtService: MyJwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    debugger;
+
     if (!request.headers.authorization) {
       throw new UnauthorizedException('non authorization headers');
     }

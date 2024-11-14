@@ -31,7 +31,7 @@ export class PostsSqlQueryRepository {
         .skip(offset)
         .take(pageSize)
         .getManyAndCount();
-      debugger;
+
       const totalCount = result[1];
       const pagesCount = Math.ceil(totalCount / pageSize);
       return {
