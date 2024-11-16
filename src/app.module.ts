@@ -11,6 +11,7 @@ import { UserModule } from './features/users/user.module';
 import { AuthModule } from './features/auth/auth.module';
 import { BloggersPlatformModule } from './features/bloggers-platform/bloggers.platform.module';
 import { TestingModule } from './features/testing/testing.module';
+import { QuizModule } from './features/quiz/quiz.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { TestingModule } from './features/testing/testing.module';
     UserModule,
     BloggersPlatformModule,
     TestingModule,
+    QuizModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
