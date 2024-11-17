@@ -124,7 +124,9 @@ export class MyJwtService {
         expiresIn: this.RECOVERY_TIME,
       });
       return token;
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   async getUserIdByRecoveryCode(code: string): Promise<string | null> {
