@@ -6,12 +6,19 @@ export class Question extends BaseEntity {
   id: string;
   @Column()
   body: string;
-  @Column()
+  @Column({ type: "json" })
   correctAnswers: string;
   @Column({ default: false })
   published: boolean;
-  @Column()
+  @Column({
+    type: "timestamptz",
+    default: () => "CURRENT_TIMESTAMP",
+  })
   createdAt: Date;
-  @Column({ nullable: true })
+  @Column({
+    type: "timestamptz",
+    default: () => "CURRENT_TIMESTAMP",
+    nullable: true,
+  })
   updatedAt: Date;
 }

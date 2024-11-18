@@ -1,4 +1,4 @@
-export class QuestionsCreateData{
-    body:string
-    correctAnswers:string[]
+export class QuestionsCreateData<A> {
+  body: string;
+  correctAnswers: A;
 }

@@ -13,15 +13,19 @@ import { AuthGuard } from "../../../guards/auth.guard";
 import { QuestionSortData } from "./input/question.sort.data";
 import { QuestionsCreateData } from "./input/questions.create.data";
 import { GetAllQuestionsCommand } from "./useCases/get.all.questions.query.usecase";
-import { QueryBus } from "@nestjs/cqrs";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { InterlayerNotice } from "../../../base/models/Interlayer";
 import { Pagination } from "../../../base/paginationInputDto/paginationOutput";
-import { Question } from "../damain/question.sql.entity";
+import { Question } from "../domain/question.sql.entity";
+import { CreateQuestionCommand } from "./useCases/create.question.usecase";
 
 @UseGuards(AuthGuard)
 @Controller("sa/quiz/questions")
 export class QuizSaController {
-  constructor(private queryBus: QueryBus) {}
+  constructor(
+    private queryBus: QueryBus,
+    private commandBus: CommandBus,
+  ) {}
   @Get()
   async GetAllQuestions(@Query() data: QuestionSortData) {
     const command = new GetAllQuestionsCommand(data);
@@ -34,8 +38,14 @@ export class QuizSaController {
   }
 
   @Post()
-  async CreateQuestion(@Body() data: QuestionsCreateData) {
-    return;
+  async CreateQuestion(@Body() data: QuestionsCreateData<string[]>) {
+    const command = new CreateQuestionCommand(data.body, data.correctAnswers);
+    const res = await this.commandBus.execute<
+      CreateQuestionCommand,
+      InterlayerNotice<Question>
+    >(command);
+    if (res.hasError()) throw new BadRequestException();
+    return res.data;
   }
 
   @Put()

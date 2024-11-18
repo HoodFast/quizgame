@@ -3,7 +3,7 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 import { QuestionSortData } from "../input/question.sort.data";
 import { QuestionsSqlQueryRepository } from "../../infrastructure/questions.sql.query.repository";
-import { Question } from "../../damain/question.sql.entity";
+import { Question } from "../../domain/question.sql.entity";
 
 export class GetAllQuestionsCommand {
   constructor(public data: QuestionSortData) {}
@@ -31,7 +31,7 @@ export class GetAllQuestionsQueryUseCase
       sortBy: command.data.sortBy ?? "createdAt",
       sortDirection: command.data.sortDirection,
       pageNumber: command.data.pageNumber ? +command.data.pageNumber : 1,
-      pageSize: command.data.pageSize ? +command.data.pageSize : 1,
+      pageSize: command.data.pageSize ? +command.data.pageSize : 10,
     };
     const result =
       await this.questionsSqlQueryRepository.getAllQuestions(sortData);

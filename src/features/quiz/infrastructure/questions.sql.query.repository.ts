@@ -1,9 +1,13 @@
 import { QuestionSortData } from "../api/input/question.sort.data";
 import { Like, Repository } from "typeorm";
-import { Question } from "../damain/question.sql.entity";
+import { Question } from "../domain/question.sql.entity";
+import { InjectRepository } from "@nestjs/typeorm";
 
 export class QuestionsSqlQueryRepository {
-  constructor(private questionRepository: Repository<Question>) {}
+  constructor(
+    @InjectRepository(Question)
+    private questionRepository: Repository<Question>,
+  ) {}
   async getAllQuestions(sortData: QuestionSortData) {
     const {
       bodySearchTerm,
@@ -26,6 +30,7 @@ export class QuestionsSqlQueryRepository {
         skip: offset,
         take: pageSize,
       });
+
       const pagesCount = Math.ceil(result[1] / pageSize);
       return {
         pagesCount,
