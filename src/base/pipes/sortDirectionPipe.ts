@@ -1,4 +1,4 @@
-import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
+import { PipeTransform, Injectable, ArgumentMetadata } from "@nestjs/common";
 
 @Injectable()
 export class SortDirectionPipe implements PipeTransform {
@@ -6,6 +6,7 @@ export class SortDirectionPipe implements PipeTransform {
     if (!value || !value.sortDirection) {
       return value;
     }
+
     value.sortDirection = value.sortDirection.toUpperCase();
     return value;
   }

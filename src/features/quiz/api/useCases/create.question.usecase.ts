@@ -1,7 +1,7 @@
 import { InterlayerNotice } from "../../../../base/models/Interlayer";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { Question } from "../../domain/question.sql.entity";
 import { QuestionsSqlRepository } from "../../infrastructure/questions.sql.repository";
+import { QuestionViewType } from "../output/question.view.type";
 
 export class CreateQuestionCommand {
   constructor(
@@ -12,16 +12,17 @@ export class CreateQuestionCommand {
 
 @CommandHandler(CreateQuestionCommand)
 export class CreateQuestionUseCase
-  implements ICommandHandler<CreateQuestionCommand, InterlayerNotice<Question>>
+  implements
+    ICommandHandler<CreateQuestionCommand, InterlayerNotice<QuestionViewType>>
 {
   constructor(private questionsSqlRepository: QuestionsSqlRepository) {}
 
   async execute(
     command: CreateQuestionCommand,
-  ): Promise<InterlayerNotice<Question>> {
-    const notice = new InterlayerNotice<Question>();
+  ): Promise<InterlayerNotice<QuestionViewType>> {
+    const notice = new InterlayerNotice<QuestionViewType>();
 
-    const created: any = await this.questionsSqlRepository.createQuestion({
+    const created = await this.questionsSqlRepository.createQuestion({
       body: command.body,
       correctAnswers: JSON.stringify(command.correctAnswers),
     });

@@ -4,6 +4,7 @@ import { Pagination } from "../../../../base/paginationInputDto/paginationOutput
 import { QuestionSortData } from "../input/question.sort.data";
 import { QuestionsSqlQueryRepository } from "../../infrastructure/questions.sql.query.repository";
 import { Question } from "../../domain/question.sql.entity";
+import { QuestionViewType } from "../output/question.view.type";
 
 export class GetAllQuestionsCommand {
   constructor(public data: QuestionSortData) {}
@@ -14,7 +15,7 @@ export class GetAllQuestionsQueryUseCase
   implements
     IQueryHandler<
       GetAllQuestionsCommand,
-      InterlayerNotice<Pagination<Question>>
+      InterlayerNotice<Pagination<QuestionViewType>>
     >
 {
   constructor(
@@ -23,8 +24,8 @@ export class GetAllQuestionsQueryUseCase
 
   async execute(
     command: GetAllQuestionsCommand,
-  ): Promise<InterlayerNotice<Pagination<Question>>> {
-    const notice = new InterlayerNotice<Pagination<Question>>();
+  ): Promise<InterlayerNotice<Pagination<QuestionViewType>>> {
+    const notice = new InterlayerNotice<Pagination<QuestionViewType>>();
     const sortData: QuestionSortData = {
       bodySearchTerm: command.data.bodySearchTerm ?? "",
       publishedStatus: command.data.publishedStatus,
@@ -33,6 +34,7 @@ export class GetAllQuestionsQueryUseCase
       pageNumber: command.data.pageNumber ? +command.data.pageNumber : 1,
       pageSize: command.data.pageSize ? +command.data.pageSize : 10,
     };
+
     const result =
       await this.questionsSqlQueryRepository.getAllQuestions(sortData);
     if (!result) {

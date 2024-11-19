@@ -2,13 +2,18 @@ import { QuestionSortData } from "../api/input/question.sort.data";
 import { Like, Repository } from "typeorm";
 import { Question } from "../domain/question.sql.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { QuestionViewMapper } from "./mappers/question.view.mapper";
+import { Pagination } from "../../../base/paginationInputDto/paginationOutput";
+import { QuestionViewType } from "../api/output/question.view.type";
 
 export class QuestionsSqlQueryRepository {
   constructor(
     @InjectRepository(Question)
     private questionRepository: Repository<Question>,
   ) {}
-  async getAllQuestions(sortData: QuestionSortData) {
+  async getAllQuestions(
+    sortData: QuestionSortData,
+  ): Promise<Pagination<QuestionViewType> | null> {
     const {
       bodySearchTerm,
       publishedStatus,
@@ -37,11 +42,18 @@ export class QuestionsSqlQueryRepository {
         page: pageNumber,
         pageSize,
         totalCount: result[1],
-        items: result[0],
+        items: result[0].map(QuestionViewMapper),
       };
     } catch (e) {
       console.log(e);
       return null;
     }
+  }
+  async getQuestionById(questionId: string): Promise<QuestionViewType | null> {
+    const res = await this.questionRepository.findOne({
+      where: { id: questionId },
+    });
+    if (!res) return null;
+    return QuestionViewMapper(res);
   }
 }
