@@ -25,9 +25,13 @@ export class QuestionsSqlQueryRepository {
 
     const offset = (pageNumber - 1) * pageSize;
     try {
-      const searchTerms: any = { body: Like(`%${bodySearchTerm}%`) };
-      if (publishedStatus !== "all") {
-        searchTerms.published = publishedStatus === "published";
+      const searchTerms: any = {
+        body: Like(`%${bodySearchTerm}%`),
+      };
+      if (publishedStatus) {
+        if (publishedStatus !== "all") {
+          searchTerms.published = publishedStatus === "published";
+        }
       }
       const result = await this.questionRepository.findAndCount({
         where: searchTerms,

@@ -5,6 +5,7 @@ import { QuestionSortData } from "../input/question.sort.data";
 import { QuestionsSqlQueryRepository } from "../../infrastructure/questions.sql.query.repository";
 import { Question } from "../../domain/question.sql.entity";
 import { QuestionViewType } from "../output/question.view.type";
+import { sortDirection } from "../../../../base/sortData/sortData.model";
 
 export class GetAllQuestionsCommand {
   constructor(public data: QuestionSortData) {}
@@ -30,7 +31,7 @@ export class GetAllQuestionsQueryUseCase
       bodySearchTerm: command.data.bodySearchTerm ?? "",
       publishedStatus: command.data.publishedStatus,
       sortBy: command.data.sortBy ?? "createdAt",
-      sortDirection: command.data.sortDirection,
+      sortDirection: command.data.sortDirection ?? sortDirection.desc,
       pageNumber: command.data.pageNumber ? +command.data.pageNumber : 1,
       pageSize: command.data.pageSize ? +command.data.pageSize : 10,
     };

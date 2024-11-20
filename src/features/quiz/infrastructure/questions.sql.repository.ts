@@ -6,6 +6,8 @@ import { QuestionViewType } from "../api/output/question.view.type";
 import { QuestionViewMapper } from "./mappers/question.view.mapper";
 import { UpdateQuestionCommand } from "../api/useCases/update.question.usecase";
 import { QuestionsSqlQueryRepository } from "./questions.sql.query.repository";
+import { QuestionUpdateDto } from "../api/input/question.update.dto";
+import { QuestionPublishDto } from "../api/input/question.public.dto";
 
 export class QuestionsSqlRepository {
   constructor(
@@ -28,21 +30,22 @@ export class QuestionsSqlRepository {
     }
   }
   async updateQuestion(
-    data: UpdateQuestionCommand,
-  ): Promise<QuestionViewType | null> {
+    questionId,
+    data: QuestionUpdateDto | QuestionPublishDto,
+  ): Promise<boolean> {
     try {
-      const questionUpdate = await this.questionRepository.findOne({
-        where: { id: data.id },
+      const question = await this.questionRepository.update(questionId, {
+        ...data,
       });
-      if (!questionUpdate) return null;
-      if (questionUpdate.published) return null;
-      questionUpdate.body = data.body;
-      questionUpdate.correctAnswers = JSON.stringify(data.correctAnswers);
-      await this.questionRepository.save(questionUpdate);
-      return await this.questionSqlQueryRepository.getQuestionById(data.id);
+
+      return !!question.affected;
     } catch (e) {
       console.log(e);
-      return null;
+      return false;
     }
+  }
+  async deleteQuestion(questionId: string): Promise<boolean> {
+    const deleted = await this.questionRepository.delete(questionId);
+    return !!deleted.affected;
   }
 }
