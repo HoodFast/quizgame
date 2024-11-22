@@ -11,7 +11,7 @@ import { Player } from "./player.sql.entity";
 import { GameQuestions } from "./game.questions.sql.entity";
 
 export enum gameStatuses {
-  pending = "Pending",
+  pending = "PendingSecondPlayer",
   active = "Active",
   finished = "Finished",
 }
@@ -41,5 +41,11 @@ export class Game extends BaseEntity {
     default: () => "CURRENT_TIMESTAMP",
     nullable: true,
   })
-  createdAt: Date;
+  pairCreatedDate: Date;
+
+  @Column({ type: "timestamptz", nullable: true })
+  startGameDate: Date;
+
+  @Column({ type: "timestamptz", nullable: true })
+  finishGameDate: Date;
 }

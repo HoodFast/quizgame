@@ -6,7 +6,12 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Player } from "./player.sql.entity";
+import { IsEnum } from "class-validator";
 
+export enum AnswersStatus {
+  correct = "Correct",
+  incorrect = "Incorrect",
+}
 @Entity()
 export class Answer extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -21,12 +26,13 @@ export class Answer extends BaseEntity {
   @Column({ type: "uuid" })
   questionId: string;
 
+  @IsEnum(AnswersStatus)
   @Column()
-  status: boolean;
+  answerStatus: AnswersStatus;
 
   @Column()
   body: string;
 
   @Column("date")
-  createdAt: Date;
+  addedAt: Date;
 }

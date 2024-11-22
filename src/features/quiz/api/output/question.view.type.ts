@@ -6,3 +6,4 @@ export class QuestionViewType {
   createdAt: Date;
   updatedAt: Date;
 }
+
