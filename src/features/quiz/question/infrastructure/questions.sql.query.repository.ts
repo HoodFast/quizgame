@@ -11,6 +11,7 @@ export class QuestionsSqlQueryRepository {
     @InjectRepository(Question)
     private questionRepository: Repository<Question>,
   ) {}
+
   async getAllQuestions(
     sortData: QuestionSortData,
   ): Promise<Pagination<QuestionViewType> | null> {
@@ -53,11 +54,16 @@ export class QuestionsSqlQueryRepository {
       return null;
     }
   }
+
   async getQuestionById(questionId: string): Promise<QuestionViewType | null> {
     const res = await this.questionRepository.findOne({
       where: { id: questionId },
     });
     if (!res) return null;
     return QuestionViewMapper(res);
+  }
+
+  async getRandomQuestions() {
+    return null;
   }
 }

@@ -10,7 +10,7 @@ import { Game } from "./game.sql.entity";
 import { Question } from "../../question/domain/question.sql.entity";
 
 @Entity()
-export class GameQuestions extends BaseEntity {
+export class GameQuestion extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 

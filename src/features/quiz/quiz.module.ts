@@ -8,7 +8,7 @@ import { UserModule } from "../users/user.module";
 import { DeleteQuestionUseCase } from "./question/api/useCases/delete.question.usecase";
 import { Question } from "./question/domain/question.sql.entity";
 import { Answer } from "./game/domain/answer.sql.entity";
-import { GameQuestions } from "./game/domain/game.questions.sql.entity";
+import { GameQuestion } from "./game/domain/game.questions.sql.entity";
 import { Game } from "./game/domain/game.sql.entity";
 import { Player } from "./game/domain/player.sql.entity";
 import { PublishQuestionUseCase } from "./question/api/useCases/published.question.usecase";
@@ -23,7 +23,7 @@ import { AuthModule } from "../auth/auth.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Question, Answer, GameQuestions, Game, Player]),
+    TypeOrmModule.forFeature([Question, Answer, GameQuestion, Game, Player]),
     CqrsModule,
     // UserModule,
     AuthModule,

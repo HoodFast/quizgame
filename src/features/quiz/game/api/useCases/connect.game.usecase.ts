@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { InterlayerNotice } from "../../../../../base/models/Interlayer";
 import { QuestionViewType } from "../../../question/api/output/question.view.type";
 import { QuestionsSqlRepository } from "../../../question/infrastructure/questions.sql.repository";
+import { GameSqlRepository } from "../../infrastructure/game.sql.repository";
 
 export class ConnectGameCommand {
   constructor(public userId: string) {}
@@ -12,7 +13,7 @@ export class ConnectGameUseCase
   implements
     ICommandHandler<ConnectGameCommand, InterlayerNotice<QuestionViewType>>
 {
-  constructor(private questionsSqlRepository: QuestionsSqlRepository) {}
+  constructor(private gameSqlRepository: GameSqlRepository) {}
 
   async execute(
     command: ConnectGameCommand,

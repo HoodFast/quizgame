@@ -8,13 +8,14 @@ import {
 } from "typeorm";
 import { IsEnum } from "class-validator";
 import { Player } from "./player.sql.entity";
-import { GameQuestions } from "./game.questions.sql.entity";
+import { GameQuestion } from "./game.questions.sql.entity";
 
 export enum gameStatuses {
   pending = "PendingSecondPlayer",
   active = "Active",
   finished = "Finished",
 }
+
 @Entity()
 export class Game extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -30,11 +31,11 @@ export class Game extends BaseEntity {
   @OneToOne(() => Player, { cascade: true, nullable: true })
   player_2: Player;
 
-  @OneToMany(() => GameQuestions, (gameQuestions) => gameQuestions.game, {
+  @OneToMany(() => GameQuestion, (gameQuestions) => gameQuestions.game, {
     cascade: true,
     nullable: true,
   })
-  questions: GameQuestions[];
+  questions: GameQuestion[];
 
   @Column({
     type: "timestamptz",

@@ -5,10 +5,10 @@ import { gameStatuses } from "../../../game/domain/game.sql.entity";
 export class GameViewType {
   id: string;
   firstPlayerProgress: ProgressViewType;
-  secondPlayerProgress: ProgressViewType;
-  questions: QuestionForGameViewType[];
+  secondPlayerProgress: ProgressViewType | null;
+  questions: QuestionForGameViewType[] | null;
   status: gameStatuses;
   pairCreatedDate: Date;
-  startGameDate: Date;
-  finishGameDate: Date;
+  startGameDate: Date | null;
+  finishGameDate: Date | null;
 }
