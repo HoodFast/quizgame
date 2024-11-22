@@ -4,23 +4,24 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-} from 'typeorm';
-import { EmailConfirmation } from './email.confirmation.entity';
-import { TokensBlackList } from './tokens.black.list.sql.entity';
-import { LikePost } from '../../bloggers-platform/posts/domain/likePost.sql.entity';
+} from "typeorm";
+import { EmailConfirmation } from "./email.confirmation.entity";
+import { TokensBlackList } from "./tokens.black.list.sql.entity";
+import { LikePost } from "../../bloggers-platform/posts/domain/likePost.sql.entity";
 import {
   Comments,
   CommentsLikes,
-} from '../../bloggers-platform/comments/domain/comment.sql.entity';
-import {Sessions} from "../../auth/sessions/domain/session.sql.entity";
+} from "../../bloggers-platform/comments/domain/comment.sql.entity";
+import { Sessions } from "../../auth/sessions/domain/session.sql.entity";
+import { Player } from "../../quiz/domain/player.sql.entity";
 
 @Entity()
 export class Users extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
   @Column()
   _passwordHash: string;
-  @Column({ length: 10, collation: 'C' })
+  @Column({ length: 10, collation: "C" })
   login: string;
   @Column()
   email: string;
@@ -50,14 +51,22 @@ export class Users extends BaseEntity {
     nullable: true,
   })
   postLikes: LikePost[];
+
   @OneToMany(() => Comments, (Comments) => Comments.user, {
     cascade: true,
     nullable: true,
   })
   comments: Comments[];
+
   @OneToMany(() => CommentsLikes, (CommentsLikes) => CommentsLikes.user, {
     cascade: true,
     nullable: true,
   })
   commentLikes: Comments[];
+
+  @OneToMany(() => Player, (player) => player.user, {
+    cascade: true,
+    nullable: true,
+  })
+  player: Player[];
 }
