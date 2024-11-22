@@ -1,4 +1,4 @@
-import { AnswersStatus } from "../../domain/answer.sql.entity";
+import { AnswersStatus } from "../../../game/domain/answer.sql.entity";
 
 export class AnswerViewType {
   questionId: string;

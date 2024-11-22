@@ -3,8 +3,8 @@ import { Like, Repository } from "typeorm";
 import { Question } from "../domain/question.sql.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { QuestionViewMapper } from "./mappers/question.view.mapper";
-import { Pagination } from "../../../base/paginationInputDto/paginationOutput";
 import { QuestionViewType } from "../api/output/question.view.type";
+import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 
 export class QuestionsSqlQueryRepository {
   constructor(

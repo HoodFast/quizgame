@@ -13,7 +13,7 @@ import {
   CommentsLikes,
 } from "../../bloggers-platform/comments/domain/comment.sql.entity";
 import { Sessions } from "../../auth/sessions/domain/session.sql.entity";
-import { Player } from "../../quiz/domain/player.sql.entity";
+import { Player } from "../../quiz/game/domain/player.sql.entity";
 
 @Entity()
 export class Users extends BaseEntity {

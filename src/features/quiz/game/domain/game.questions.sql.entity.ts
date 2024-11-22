@@ -7,7 +7,7 @@ import {
 } from "typeorm";
 import { Player } from "./player.sql.entity";
 import { Game } from "./game.sql.entity";
-import { Question } from "./question.sql.entity";
+import { Question } from "../../question/domain/question.sql.entity";
 
 @Entity()
 export class GameQuestions extends BaseEntity {

@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { IsEnum } from "class-validator";
-import { Users } from "../../users/domain/user.sql.entity";
 import { Answer } from "./answer.sql.entity";
+import { Users } from "../../../users/domain/user.sql.entity";
 
 export enum playerStatus {
   winner = "winner",

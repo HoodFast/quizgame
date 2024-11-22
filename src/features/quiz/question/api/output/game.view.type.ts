@@ -1,6 +1,6 @@
 import { ProgressViewType } from "./progress.view.type";
 import { QuestionForGameViewType } from "./question.for.game.view.type";
-import { gameStatuses } from "../../domain/game.sql.entity";
+import { gameStatuses } from "../../../game/domain/game.sql.entity";
 
 export class GameViewType {
   id: string;

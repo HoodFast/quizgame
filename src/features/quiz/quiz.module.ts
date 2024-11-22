@@ -1,29 +1,34 @@
 import { Module } from "@nestjs/common";
-import { QuizController } from "./api/quiz.controller";
-import { GetAllQuestionsQueryUseCase } from "./api/useCases/get.all.questions.query.usecase";
-import { QuestionsSqlQueryRepository } from "./infrastructure/questions.sql.query.repository";
+
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Question } from "./domain/question.sql.entity";
+
 import { CqrsModule } from "@nestjs/cqrs";
-import { QuestionsSqlRepository } from "./infrastructure/questions.sql.repository";
-import { CreateQuestionUseCase } from "./api/useCases/create.question.usecase";
-import { QuizSaController } from "./api/quiz.sa.controller";
+
 import { UserModule } from "../users/user.module";
-import { UpdateQuestionUseCase } from "./api/useCases/update.question.usecase";
-import { PublishQuestionUseCase } from "./api/useCases/published.question.usecase";
-import { DeleteQuestionUseCase } from "./api/useCases/delete.question.usecase";
-import { Answer } from "./domain/answer.sql.entity";
-import { GameQuestions } from "./domain/game.questions.sql.entity";
-import { Game } from "./domain/game.sql.entity";
-import { Player } from "./domain/player.sql.entity";
+import { DeleteQuestionUseCase } from "./question/api/useCases/delete.question.usecase";
+import { Question } from "./question/domain/question.sql.entity";
+import { Answer } from "./game/domain/answer.sql.entity";
+import { GameQuestions } from "./game/domain/game.questions.sql.entity";
+import { Game } from "./game/domain/game.sql.entity";
+import { Player } from "./game/domain/player.sql.entity";
+import { PublishQuestionUseCase } from "./question/api/useCases/published.question.usecase";
+import { GetAllQuestionsQueryUseCase } from "./question/api/useCases/get.all.questions.query.usecase";
+import { QuestionsSqlQueryRepository } from "./question/infrastructure/questions.sql.query.repository";
+import { QuizSaController } from "./question/api/quiz.sa.controller";
+import { GameController } from "./game/api/game.controller";
+import { UpdateQuestionUseCase } from "./question/api/useCases/update.question.usecase";
+import { CreateQuestionUseCase } from "./question/api/useCases/create.question.usecase";
+import { QuestionsSqlRepository } from "./question/infrastructure/questions.sql.repository";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Question, Answer, GameQuestions, Game, Player]),
     CqrsModule,
-    UserModule,
+    // UserModule,
+    AuthModule,
   ],
-  controllers: [QuizController, QuizSaController],
+  controllers: [QuizSaController, GameController],
   providers: [
     DeleteQuestionUseCase,
     UpdateQuestionUseCase,

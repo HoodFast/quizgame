@@ -1,8 +1,8 @@
-import { InterlayerNotice } from "../../../../base/models/Interlayer";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { QuestionsSqlRepository } from "../../infrastructure/questions.sql.repository";
 import { NotFoundException } from "@nestjs/common";
 import { QuestionsSqlQueryRepository } from "../../infrastructure/questions.sql.query.repository";
+import { InterlayerNotice } from "../../../../../base/models/Interlayer";
 
 export class DeleteQuestionCommand {
   constructor(public questionId: string) {}

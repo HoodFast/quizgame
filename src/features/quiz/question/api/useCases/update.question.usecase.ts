@@ -1,19 +1,22 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { InterlayerNotice } from "../../../../base/models/Interlayer";
+import { Question } from "../../domain/question.sql.entity";
 import { QuestionsSqlRepository } from "../../infrastructure/questions.sql.repository";
+import { QuestionViewType } from "../output/question.view.type";
 import { QuestionsSqlQueryRepository } from "../../infrastructure/questions.sql.query.repository";
 import { NotFoundException } from "@nestjs/common";
+import { InterlayerNotice } from "../../../../../base/models/Interlayer";
 
-export class PublishQuestionCommand {
+export class UpdateQuestionCommand {
   constructor(
     public id: string,
-    public published: boolean,
+    public body: string,
+    public correctAnswers: string[],
   ) {}
 }
 
-@CommandHandler(PublishQuestionCommand)
-export class PublishQuestionUseCase
-  implements ICommandHandler<PublishQuestionCommand, InterlayerNotice<boolean>>
+@CommandHandler(UpdateQuestionCommand)
+export class UpdateQuestionUseCase
+  implements ICommandHandler<UpdateQuestionCommand, InterlayerNotice<boolean>>
 {
   constructor(
     private questionsSqlRepository: QuestionsSqlRepository,
@@ -21,14 +24,16 @@ export class PublishQuestionUseCase
   ) {}
 
   async execute(
-    command: PublishQuestionCommand,
+    command: UpdateQuestionCommand,
   ): Promise<InterlayerNotice<boolean>> {
     const notice = new InterlayerNotice<boolean>();
     const questionExist =
       await this.questionsSqlQueryRepository.getQuestionById(command.id);
     if (!questionExist) throw new NotFoundException();
+    if (questionExist.published) notice.addError("question is published");
     const data = {
-      published: command.published,
+      body: command.body,
+      correctAnswers: JSON.stringify(command.correctAnswers),
       updatedAt: new Date(),
     };
     const question = await this.questionsSqlRepository.updateQuestion(

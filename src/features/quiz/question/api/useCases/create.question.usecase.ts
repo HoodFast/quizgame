@@ -1,7 +1,7 @@
-import { InterlayerNotice } from "../../../../base/models/Interlayer";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { QuestionsSqlRepository } from "../../infrastructure/questions.sql.repository";
 import { QuestionViewType } from "../output/question.view.type";
+import { InterlayerNotice } from "../../../../../base/models/Interlayer";
 
 export class CreateQuestionCommand {
   constructor(

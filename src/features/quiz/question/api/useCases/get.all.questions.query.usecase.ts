@@ -1,11 +1,12 @@
-import { InterlayerNotice } from "../../../../base/models/Interlayer";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
+
 import { QuestionSortData } from "../input/question.sort.data";
 import { QuestionsSqlQueryRepository } from "../../infrastructure/questions.sql.query.repository";
 import { Question } from "../../domain/question.sql.entity";
 import { QuestionViewType } from "../output/question.view.type";
-import { sortDirection } from "../../../../base/sortData/sortData.model";
+import { Pagination } from "../../../../../base/paginationInputDto/paginationOutput";
+import { InterlayerNotice } from "../../../../../base/models/Interlayer";
+import { sortDirection } from "../../../../../base/sortData/sortData.model";
 
 export class GetAllQuestionsCommand {
   constructor(public data: QuestionSortData) {}
