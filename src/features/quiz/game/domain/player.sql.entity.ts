@@ -30,8 +30,10 @@ export class Player extends BaseEntity {
   score: number;
 
   @IsEnum(playerStatus)
-  status: playerStatus;
-
+  @Column({ nullable: true })
+  status: playerStatus | null;
+  @Column({ nullable: true })
+  gameId: string;
   @OneToMany(() => Answer, (answer) => answer.player, {
     cascade: true,
     nullable: true,

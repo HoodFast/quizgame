@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { InterlayerNotice } from "../../../../../base/models/Interlayer";
-import { QuestionViewType } from "../../../question/api/output/question.view.type";
-import { QuestionsSqlRepository } from "../../../question/infrastructure/questions.sql.repository";
 import { GameSqlRepository } from "../../infrastructure/game.sql.repository";
+import { PlayerSqlRepository } from "../../infrastructure/player.sql.repository";
+import { GameViewType } from "../../../question/api/output/game.view.type";
 
 export class ConnectGameCommand {
   constructor(public userId: string) {}
@@ -11,22 +11,42 @@ export class ConnectGameCommand {
 @CommandHandler(ConnectGameCommand)
 export class ConnectGameUseCase
   implements
-    ICommandHandler<ConnectGameCommand, InterlayerNotice<QuestionViewType>>
+    ICommandHandler<ConnectGameCommand, InterlayerNotice<GameViewType>>
 {
-  constructor(private gameSqlRepository: GameSqlRepository) {}
+  constructor(
+    private gameSqlRepository: GameSqlRepository,
+    private playerSqlRepository: PlayerSqlRepository,
+  ) {}
 
   async execute(
     command: ConnectGameCommand,
-  ): Promise<InterlayerNotice<QuestionViewType>> {
-    const notice = new InterlayerNotice<QuestionViewType>();
+  ): Promise<InterlayerNotice<GameViewType>> {
+    const notice = new InterlayerNotice<GameViewType>();
+    const player = await this.playerSqlRepository.checkPlayer(command.userId);
+    if (!player) {
+      notice.addError("player already in game or pending");
+      return notice;
+    }
+    const getGame = await this.gameSqlRepository.getGameWithStatusPending();
+    if (getGame) {
+      const getQuestions = [];
+      const connectGame = [];
+    }
 
-    const created: any = [];
-    if (!created) {
+    const createGame = await this.gameSqlRepository.createNewGame(
+      command.userId,
+    );
+    if (!createGame) {
+      notice.addError("error DAL");
+      return notice;
+    }
+    const game = await this.gameSqlRepository.getGameById(createGame);
+    if (!game) {
       notice.addError("error DAL");
       return notice;
     }
 
-    notice.addData(created);
+    notice.addData(game);
     return notice;
   }
 }

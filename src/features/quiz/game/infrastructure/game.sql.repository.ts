@@ -28,7 +28,7 @@ export class GameSqlRepository {
       newGame.status = gameStatuses.pending;
       newGame.pairCreatedDate = new Date();
       const savedGame = await this.gamesRepository.save<Game>(newGame);
-      return savedGame;
+      return savedGame.id;
     } catch (e) {
       console.log(e);
       return null;
@@ -44,5 +44,13 @@ export class GameSqlRepository {
       return GameViewMapper(currentGame);
     }
     return null;
+  }
+  async getGameWithStatusPending(): Promise<Game | null> {
+    const currentGame = await this.gamesRepository.findOne({
+      where: { status: gameStatuses.pending },
+    });
+    if (!currentGame) return null;
+
+    return currentGame;
   }
 }
