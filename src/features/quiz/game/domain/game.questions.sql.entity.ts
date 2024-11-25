@@ -13,7 +13,8 @@ import { Question } from "../../question/domain/question.sql.entity";
 export class GameQuestion extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-
+  @Column()
+  index: number;
   @Column("uuid")
   gameId: string;
 

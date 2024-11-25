@@ -24,10 +24,12 @@ export class Game extends BaseEntity {
   @IsEnum(gameStatuses)
   @Column({ default: gameStatuses.pending })
   status: gameStatuses;
-
+  @Column()
+  player_1Id: string;
   @OneToOne(() => Player, { cascade: true })
   player_1: Player;
-
+  @Column()
+  player_2Id: string;
   @OneToOne(() => Player, { cascade: true, nullable: true })
   player_2: Player;
 
@@ -35,7 +37,7 @@ export class Game extends BaseEntity {
     cascade: true,
     nullable: true,
   })
-  questions: GameQuestion[];
+  questions: GameQuestion[] | null;
 
   @Column({
     type: "timestamptz",

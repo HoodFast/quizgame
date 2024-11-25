@@ -20,6 +20,10 @@ import { UpdateQuestionUseCase } from "./question/api/useCases/update.question.u
 import { CreateQuestionUseCase } from "./question/api/useCases/create.question.usecase";
 import { QuestionsSqlRepository } from "./question/infrastructure/questions.sql.repository";
 import { AuthModule } from "../auth/auth.module";
+import { GameSqlRepository } from "./game/infrastructure/game.sql.repository";
+import { GameSqlQueryRepository } from "./game/infrastructure/game.sql.query.repository";
+import { PlayerSqlRepository } from "./game/infrastructure/player.sql.repository";
+import { PlayerSqlQueryRepository } from "./game/infrastructure/player.sql.query.repository";
 
 @Module({
   imports: [
@@ -37,6 +41,10 @@ import { AuthModule } from "../auth/auth.module";
     GetAllQuestionsQueryUseCase,
     QuestionsSqlQueryRepository,
     QuestionsSqlRepository,
+    GameSqlRepository,
+    GameSqlQueryRepository,
+    PlayerSqlRepository,
+    PlayerSqlQueryRepository,
   ],
   exports: [],
 })

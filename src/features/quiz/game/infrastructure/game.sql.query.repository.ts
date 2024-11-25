@@ -8,31 +8,34 @@ import { Answer } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
 import { GameViewMapper } from "./mappers/game.view.mapper";
 
-export class PlayerSqlRepository {
+export class GameSqlQueryRepository {
   constructor(
+    @InjectRepository(Game)
+    protected gamesRepository: Repository<Game>,
     @InjectRepository(Player)
     protected playersRepository: Repository<Player>,
+    @InjectRepository(GameQuestion)
+    protected gameQuestionsRepository: Repository<GameQuestion>,
     @InjectRepository(Answer)
     protected answersRepository: Repository<Answer>,
   ) {}
-  async createNewPlayer(userId: string) {
-    const player = new Player();
-    player.userId = userId;
-    return await this.playersRepository.save<Player>(player);
-  }
-  async checkPlayer(userId: string): Promise<boolean> {
-    try {
-      const player = await this.playersRepository.find({
-        where: { userId },
-      });
-      if (player.length === 0) return true;
-      player.forEach((i) => {
-        if (!i.status) return false;
-      });
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
+
+  async getGameById(gameId: string): Promise<GameViewType | null> {
+    const currentGame = await this.gamesRepository.findOne({
+      where: { id: gameId },
+    });
+    if (!currentGame) return null;
+    if (currentGame.status === gameStatuses.pending) {
+      return GameViewMapper(currentGame);
     }
+    return null;
+  }
+  async getGameWithStatusPending(): Promise<Game | null> {
+    const currentGame = await this.gamesRepository.findOne({
+      where: { status: gameStatuses.pending },
+    });
+    if (!currentGame) return null;
+
+    return currentGame;
   }
 }

@@ -6,7 +6,6 @@ import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { GameViewType } from "../../question/api/output/game.view.type";
 import { Answer } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
-import { GameViewMapper } from "./mappers/game.view.mapper";
 
 export class GameSqlRepository {
   constructor(
@@ -17,14 +16,13 @@ export class GameSqlRepository {
     @InjectRepository(GameQuestion)
     protected gameQuestionsRepository: Repository<GameQuestion>,
     @InjectRepository(Answer)
-    protected answersRepository: Repository<Answer>,
-    protected questionQueryRepository: QuestionsSqlQueryRepository,
+    protected questionsSqlQueryRepository: QuestionsSqlQueryRepository,
   ) {}
 
-  async createNewGame(data: any) {
+  async createNewGame(userId: string) {
     try {
       const newGame = new Game();
-      newGame.player_1 = data.userId;
+      newGame.player_1Id = userId;
       newGame.status = gameStatuses.pending;
       newGame.pairCreatedDate = new Date();
       const savedGame = await this.gamesRepository.save<Game>(newGame);
@@ -35,22 +33,24 @@ export class GameSqlRepository {
     }
   }
 
-  async getGameById(gameId: string): Promise<GameViewType | null> {
-    const currentGame = await this.gamesRepository.findOne({
-      where: { id: gameId },
-    });
-    if (!currentGame) return null;
-    if (currentGame.status === gameStatuses.pending) {
-      return GameViewMapper(currentGame);
+  async connectToGame(game: Game, playerId: string): Promise<Game | null> {
+    try {
+      const questions =
+        await this.questionsSqlQueryRepository.getRandomQuestions();
+      for (let i = 0; i < questions.length; i++) {
+        const gameQuestion = new GameQuestion();
+        gameQuestion.gameId = game.id;
+        gameQuestion.questionId = questions[i].id;
+        gameQuestion.index = i;
+        await this.gameQuestionsRepository.save(gameQuestion);
+      }
+      game.player_2Id = playerId;
+      game.status = gameStatuses.active;
+      game.startGameDate = new Date();
+      return await this.gamesRepository.save<Game>(game);
+    } catch (e) {
+      console.log(e);
+      return null;
     }
-    return null;
-  }
-  async getGameWithStatusPending(): Promise<Game | null> {
-    const currentGame = await this.gamesRepository.findOne({
-      where: { status: gameStatuses.pending },
-    });
-    if (!currentGame) return null;
-
-    return currentGame;
   }
 }

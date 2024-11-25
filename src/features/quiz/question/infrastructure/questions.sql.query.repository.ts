@@ -64,6 +64,11 @@ export class QuestionsSqlQueryRepository {
   }
 
   async getRandomQuestions() {
-    return null;
+    const questions = await this.questionRepository
+      .createQueryBuilder("question")
+      .orderBy("RANDOM()")
+      .limit(5)
+      .getMany();
+    return questions;
   }
 }
