@@ -60,6 +60,17 @@ export class ConnectGameUseCase
       return notice;
     }
     debugger;
+    if (pendingGame) {
+      const game = await this.gameSqlQueryRepository.getPendingGameById(
+        pendingGame.id,
+      );
+      if (!game) {
+        notice.addError("");
+        return notice;
+      }
+      notice.addData(game);
+      return notice;
+    }
     if (player.length > 1) {
       notice.addError("double active players");
       return notice;
@@ -72,6 +83,7 @@ export class ConnectGameUseCase
       notice.addError("player is pending");
       return notice;
     }
+
     notice.addError("impossible mistake");
     return notice;
   }
@@ -82,7 +94,7 @@ export class ConnectGameUseCase
     const newGame = await this.gameSqlRepository.createNewGame(userId);
 
     if (!newGame) return null;
-    return await this.gameSqlQueryRepository.getGameById(newGame);
+    return await this.gameSqlQueryRepository.getPendingGameById(newGame);
   }
   async createNewPlayerAndConnectToGame(
     game: Game,

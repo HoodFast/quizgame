@@ -23,9 +23,36 @@ export class GameSqlQueryRepository {
     protected answersRepository: Repository<Answer>,
   ) {}
 
+  async getPendingGameById(gameId: string): Promise<GameViewType | null> {
+    const currentGame = await this.gamesRepository.findOne({
+      // relations: ["player_1"],
+      where: { id: gameId },
+    });
+    if (!currentGame) return null;
+    const answers_1 = await this.answersRepository.find({
+      where: { playerId: currentGame.player_1Id },
+    });
+    const answers_2 = await this.answersRepository.find({
+      where: { playerId: currentGame.player_2Id },
+    });
+    const currentQuestion = await this.gameQuestionsRepository.find({
+      where: { gameId },
+    });
+    let questions: Question[] = [];
+    for (let i = 0; i < currentQuestion.length; i++) {
+      const question = await this.questionsRepository.findOne({
+        where: { id: currentQuestion[i].questionId },
+      });
+      if (question) {
+        questions.push(question);
+      }
+    }
+    if (!currentGame) return null;
+    return GameViewMapper(currentGame, answers_1, answers_2, questions);
+  }
   async getGameById(gameId: string): Promise<GameViewType | null> {
     const currentGame = await this.gamesRepository.findOne({
-      relations: ["player_1"],
+      relations: ["player_1", "player_2", "questions"],
       where: { id: gameId },
     });
     if (!currentGame) return null;

@@ -26,6 +26,7 @@ export class Game extends BaseEntity {
   status: gameStatuses;
   @Column()
   player_1Id: string;
+
   @OneToOne(() => Player, { cascade: true })
   player_1: Player;
   @Column({ nullable: true })
@@ -51,4 +52,5 @@ export class Game extends BaseEntity {
 
   @Column({ type: "timestamptz", nullable: true })
   finishGameDate: Date;
+  mnnnnnnnnn;
 }
