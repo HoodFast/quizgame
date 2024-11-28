@@ -1,7 +1,8 @@
 import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, Repository } from "typeorm";
-import { Player } from "../domain/player.sql.entity";
+import { Repository } from "typeorm";
+import { Player, playerActive } from "../domain/player.sql.entity";
 import { Answer } from "../domain/answer.sql.entity";
+
 export class PlayerSqlQueryRepository {
   constructor(
     @InjectRepository(Player)
@@ -10,15 +11,20 @@ export class PlayerSqlQueryRepository {
     protected answersRepository: Repository<Answer>,
   ) {}
 
-  async getPlayerByUserIdAndNoStatus(userId: string): Promise<Player | null> {
+  async getInGameOrPendingPlayerByUserId(userId: string): Promise<Player[]> {
     try {
-      const players = await this.playersRepository.find({
-        where: { userId: userId, status: IsNull() },
+      return await this.playersRepository.find({
+        where: {
+          userId: userId,
+          active: playerActive.pending || playerActive.inGame,
+        },
       });
-      return players[0];
     } catch (e) {
       console.log(e);
-      return null;
+      throw new Error();
     }
+  }
+  async getPlayerToUserId(userId: string) {
+    return await this.playersRepository.findOne({ where: { userId } });
   }
 }

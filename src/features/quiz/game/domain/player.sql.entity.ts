@@ -4,22 +4,32 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { IsEnum } from "class-validator";
 import { Answer } from "./answer.sql.entity";
 import { Users } from "../../../users/domain/user.sql.entity";
+import { Game } from "./game.sql.entity";
 
 export enum playerStatus {
   winner = "winner",
   lose = "lose",
   draft = "draft",
 }
+export enum playerActive {
+  pending = "pending",
+  inGame = "inGame",
+  finished = "finished",
+}
 @Entity()
 export class Player extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Column({ nullable: true })
+  @OneToOne(() => Game)
+  gameId: string;
   @Column("uuid")
   userId: string;
 
@@ -30,8 +40,12 @@ export class Player extends BaseEntity {
   score: number;
 
   @IsEnum(playerStatus)
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: playerActive.pending })
   status: playerStatus;
+
+  @IsEnum(playerActive)
+  @Column({ nullable: true, default: playerActive.pending })
+  active: playerActive;
 
   @OneToMany(() => Answer, (answer) => answer.player, {
     cascade: true,

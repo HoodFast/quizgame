@@ -28,7 +28,7 @@ export class Game extends BaseEntity {
   player_1Id: string;
   @OneToOne(() => Player, { cascade: true })
   player_1: Player;
-  @Column()
+  @Column({ nullable: true })
   player_2Id: string;
   @OneToOne(() => Player, { cascade: true, nullable: true })
   player_2: Player;

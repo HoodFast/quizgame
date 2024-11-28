@@ -1,9 +1,8 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Game, gameStatuses } from "../domain/game.sql.entity";
 import { Repository } from "typeorm";
-import { Player } from "../domain/player.sql.entity";
+import { Player, playerActive } from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
-import { GameViewType } from "../../question/api/output/game.view.type";
 import { Answer } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
 
@@ -21,8 +20,11 @@ export class GameSqlRepository {
 
   async createNewGame(userId: string) {
     try {
+      const newPlayer = new Player();
+      newPlayer.userId = userId;
+      const savedPlayer = await this.playersRepository.save<Player>(newPlayer);
       const newGame = new Game();
-      newGame.player_1Id = userId;
+      newGame.player_1Id = savedPlayer.id;
       newGame.status = gameStatuses.pending;
       newGame.pairCreatedDate = new Date();
       const savedGame = await this.gamesRepository.save<Game>(newGame);
@@ -33,7 +35,11 @@ export class GameSqlRepository {
     }
   }
 
-  async connectToGame(game: Game, playerId: string): Promise<Game | null> {
+  async connectToGame(
+    game: Game,
+    player_1: Player,
+    player_2: Player,
+  ): Promise<Game | null> {
     try {
       const questions =
         await this.questionsSqlQueryRepository.getRandomQuestions();
@@ -44,9 +50,16 @@ export class GameSqlRepository {
         gameQuestion.index = i;
         await this.gameQuestionsRepository.save(gameQuestion);
       }
-      game.player_2Id = playerId;
+      game.player_2Id = player_2.id;
       game.status = gameStatuses.active;
       game.startGameDate = new Date();
+
+      player_1.active = playerActive.inGame;
+      await this.playersRepository.save(player_1);
+
+      player_2.active = playerActive.inGame;
+      await this.playersRepository.save(player_2);
+
       return await this.gamesRepository.save<Game>(game);
     } catch (e) {
       console.log(e);

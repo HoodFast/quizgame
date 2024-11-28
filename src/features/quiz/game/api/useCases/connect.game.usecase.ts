@@ -5,8 +5,7 @@ import { PlayerSqlRepository } from "../../infrastructure/player.sql.repository"
 import { GameViewType } from "../../../question/api/output/game.view.type";
 import { PlayerSqlQueryRepository } from "../../infrastructure/player.sql.query.repository";
 import { Game } from "../../domain/game.sql.entity";
-import { Player } from "../../domain/player.sql.entity";
-import { QuestionsSqlQueryRepository } from "../../../question/infrastructure/questions.sql.query.repository";
+import { playerActive } from "../../domain/player.sql.entity";
 import { GameSqlQueryRepository } from "../../infrastructure/game.sql.query.repository";
 
 export class ConnectGameCommand {
@@ -23,80 +22,80 @@ export class ConnectGameUseCase
     private gameSqlQueryRepository: GameSqlQueryRepository,
     private playerSqlRepository: PlayerSqlRepository,
     private playerQuerySqlRepository: PlayerSqlQueryRepository,
-    private questionsSqlQueryRepository: QuestionsSqlQueryRepository,
   ) {}
 
   async execute(
     command: ConnectGameCommand,
   ): Promise<InterlayerNotice<GameViewType>> {
     const notice = new InterlayerNotice<GameViewType>();
+    //-----------------------------------------
+    const pendingGame =
+      await this.gameSqlQueryRepository.getGameWithStatusPending();
+    const player =
+      await this.playerQuerySqlRepository.getInGameOrPendingPlayerByUserId(
+        command.userId,
+      );
 
-    const getGame =
-      await this.gameSqlQueryRepository.getGameWithStatusPending(); //пытаемя достать игру со статусом пендинг
-    if (getGame) {
-      //если игра есть
-      const getPlayer = //пытаемся достать player без статуса
-        await this.playerQuerySqlRepository.getPlayerByUserIdAndNoStatus(
+    if (player.length == 0) {
+      if (!pendingGame) {
+        const newGame = await this.createNewPlayerAndStartPendingGame(
           command.userId,
         );
-      if (!getPlayer) {
-        //если нет активного (status null) player
-        const newPlayer = await this.createNewPlayer(command.userId); //создаем нового
-        const game = await this.connectToGame(getGame, newPlayer); //конектим его к игре достаем вопросы и стартуем игру
-        if (!game) {
-          notice.addError("error connect game");
+        if (!newGame) {
+          notice.addError("error create new game");
           return notice;
         }
-        notice.addData(game);
+        notice.addData(newGame);
         return notice;
       }
-
-      if (
-        // если есть player без статуса
-        getPlayer.id === getGame.player_1.id || // проверяем является ли он игроком в игре кокторую мы достали
-        getPlayer.id === getGame.player_2.id
-      ) {
-        //если игрок уже в игре то ошибка
-        notice.addError("forbidden");
+      const connectToGame = await this.createNewPlayerAndConnectToGame(
+        pendingGame,
+        command.userId,
+      );
+      if (!connectToGame) {
+        notice.addError("error create new game");
         return notice;
       }
-      const game = await this.connectToGame(getGame, getPlayer); //если player без статуса и не находится ни в одной игре подключаем и стартуем игру
-      if (!game) {
-        notice.addError("error connect game");
-        return notice;
-      }
-      notice.addData(game);
+      notice.addData(connectToGame);
       return notice;
     }
-    //если игры со статусом pending нету создаем игру со статусом pending
-    const createGameAndGetId = await this.gameSqlRepository.createNewGame(
-      command.userId,
-    );
-    if (!createGameAndGetId) {
-      notice.addError("error DAL");
+    debugger;
+    if (player.length > 1) {
+      notice.addError("double active players");
       return notice;
     }
-    const game = //достаем игру по id
-      await this.gameSqlQueryRepository.getGameById(createGameAndGetId);
-    if (!game) {
-      notice.addError("error DAL");
+    if (player[0].active === playerActive.inGame) {
+      notice.addError("player is already in the game");
       return notice;
     }
-
-    notice.addData(game);
+    if (player[0].active === playerActive.pending) {
+      notice.addError("player is pending");
+      return notice;
+    }
+    notice.addError("impossible mistake");
     return notice;
   }
 
-  async createNewPlayer(userId: string) {
-    return await this.playerSqlRepository.createNewPlayer(userId);
-  }
-  async connectToGame(
-    game: Game,
-    player: Player,
+  async createNewPlayerAndStartPendingGame(
+    userId: string,
   ): Promise<GameViewType | null> {
+    const newGame = await this.gameSqlRepository.createNewGame(userId);
+
+    if (!newGame) return null;
+    return await this.gameSqlQueryRepository.getGameById(newGame);
+  }
+  async createNewPlayerAndConnectToGame(
+    game: Game,
+    userId: string,
+  ): Promise<GameViewType | null> {
+    const player_1 = await this.playerSqlRepository.createNewPlayer(userId);
+    const player_2 =
+      await this.playerQuerySqlRepository.getPlayerToUserId(userId);
+    if (!player_2) return null;
     const connectToGame = await this.gameSqlRepository.connectToGame(
       game,
-      player.id,
+      player_1,
+      player_2,
     );
     if (!connectToGame) return null;
     return await this.gameSqlQueryRepository.getGameById(connectToGame.id);
