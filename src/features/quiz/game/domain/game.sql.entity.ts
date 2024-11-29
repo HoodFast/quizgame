@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -24,14 +25,27 @@ export class Game extends BaseEntity {
   @IsEnum(gameStatuses)
   @Column({ default: gameStatuses.pending })
   status: gameStatuses;
-  @Column()
+
+  @Column({ nullable: true })
   player_1Id: string;
 
-  @OneToOne(() => Player, { cascade: true })
+  @JoinColumn({ name: "player_1Id" })
+  @OneToOne(() => Player, {
+    cascade: true,
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   player_1: Player;
+
   @Column({ nullable: true })
   player_2Id: string;
-  @OneToOne(() => Player, { cascade: true, nullable: true })
+
+  @JoinColumn({ name: "player_2Id" })
+  @OneToOne(() => Player, {
+    cascade: true,
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   player_2: Player;
 
   @OneToMany(() => GameQuestion, (gameQuestions) => gameQuestions.game, {
@@ -52,5 +66,4 @@ export class Game extends BaseEntity {
 
   @Column({ type: "timestamptz", nullable: true })
   finishGameDate: Date;
-  mnnnnnnnnn;
 }

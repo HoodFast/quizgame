@@ -59,9 +59,9 @@ export class ConnectGameUseCase
       notice.addData(connectToGame);
       return notice;
     }
-    debugger;
+
     if (pendingGame) {
-      const game = await this.gameSqlQueryRepository.getPendingGameById(
+      const game = await this.gameSqlQueryRepository.getGameById(
         pendingGame.id,
       );
       if (!game) {
@@ -94,16 +94,19 @@ export class ConnectGameUseCase
     const newGame = await this.gameSqlRepository.createNewGame(userId);
 
     if (!newGame) return null;
-    return await this.gameSqlQueryRepository.getPendingGameById(newGame);
+    return await this.gameSqlQueryRepository.getGameById(newGame);
   }
   async createNewPlayerAndConnectToGame(
     game: Game,
     userId: string,
   ): Promise<GameViewType | null> {
-    const player_1 = await this.playerSqlRepository.createNewPlayer(userId);
-    const player_2 =
-      await this.playerQuerySqlRepository.getPlayerToUserId(userId);
-    if (!player_2) return null;
+    const player_1 = await this.playerQuerySqlRepository.getPlayerToPlayerId(
+      game.player_1Id,
+    );
+
+    if (!player_1) return null;
+    const player_2 = await this.playerSqlRepository.createNewPlayer(userId);
+
     const connectToGame = await this.gameSqlRepository.connectToGame(
       game,
       player_1,

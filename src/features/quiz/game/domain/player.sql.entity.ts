@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -27,9 +28,13 @@ export class Player extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ nullable: true })
-  @OneToOne(() => Game)
-  gameId: string;
+  // @Column({ nullable: true })
+  // gameId: string;
+
+  // @JoinColumn({ name: "gameId" })
+  // @OneToOne(() => Game, { nullable: true })
+  // game: Game;
+
   @Column("uuid")
   userId: string;
 
@@ -40,7 +45,7 @@ export class Player extends BaseEntity {
   score: number;
 
   @IsEnum(playerStatus)
-  @Column({ nullable: true, default: playerActive.pending })
+  @Column({ nullable: true })
   status: playerStatus;
 
   @IsEnum(playerActive)

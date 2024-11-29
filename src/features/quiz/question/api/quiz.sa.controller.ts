@@ -74,7 +74,6 @@ export class QuizSaController {
       data.body,
       data.correctAnswers,
     );
-    debugger;
     const res = await this.commandBus.execute<
       UpdateQuestionCommand,
       InterlayerNotice<boolean>

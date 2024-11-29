@@ -27,4 +27,7 @@ export class PlayerSqlQueryRepository {
   async getPlayerToUserId(userId: string) {
     return await this.playersRepository.findOne({ where: { userId } });
   }
+  async getPlayerToPlayerId(id: string) {
+    return await this.playersRepository.findOne({ where: { id } });
+  }
 }

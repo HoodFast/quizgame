@@ -14,7 +14,6 @@ export class GameSqlRepository {
     protected playersRepository: Repository<Player>,
     @InjectRepository(GameQuestion)
     protected gameQuestionsRepository: Repository<GameQuestion>,
-    @InjectRepository(Answer)
     protected questionsSqlQueryRepository: QuestionsSqlQueryRepository,
   ) {}
 
@@ -24,13 +23,16 @@ export class GameSqlRepository {
       newPlayer.userId = userId;
       const savedPlayer = await this.playersRepository.save<Player>(newPlayer);
       const newGame = new Game();
+
       newGame.player_1Id = savedPlayer.id;
       newGame.status = gameStatuses.pending;
       newGame.pairCreatedDate = new Date();
       const savedGame = await this.gamesRepository.save<Game>(newGame);
+      // savedPlayer.gameId = savedGame.id;
+      await this.playersRepository.save(savedPlayer);
       return savedGame.id;
     } catch (e) {
-      console.log(e);
+      console.log(`errors create new game: ${e}`);
       return null;
     }
   }
@@ -45,8 +47,8 @@ export class GameSqlRepository {
         await this.questionsSqlQueryRepository.getRandomQuestions();
       for (let i = 0; i < questions.length; i++) {
         const gameQuestion = new GameQuestion();
-        gameQuestion.gameId = game.id;
-        gameQuestion.questionId = questions[i].id;
+        gameQuestion.game = game;
+        gameQuestion.question = questions[i];
         gameQuestion.index = i;
         await this.gameQuestionsRepository.save(gameQuestion);
       }
@@ -57,6 +59,7 @@ export class GameSqlRepository {
       player_1.active = playerActive.inGame;
       await this.playersRepository.save(player_1);
 
+      // player_2.gameId = game.id;
       player_2.active = playerActive.inGame;
       await this.playersRepository.save(player_2);
 
@@ -65,5 +68,11 @@ export class GameSqlRepository {
       console.log(e);
       return null;
     }
+  }
+  async deleteAllGame() {
+    const deleteGameQuestions = await this.gameQuestionsRepository.delete({});
+    const deletedPlayer = await this.playersRepository.delete({});
+    const deletedGame = await this.gamesRepository.delete({});
+    return await this.gamesRepository.find({});
   }
 }
