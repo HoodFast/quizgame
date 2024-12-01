@@ -38,7 +38,7 @@ export class InterlayerNotice<D = null> {
     return this.code !== 0;
   }
   public exception() {
-    if (this.code === 0) return;
+    if (this.code === 0) return this.data;
     const message = this.extensions[0].message;
     switch (this.code) {
       case ERRORS_CODE.BAD_REQUEST:

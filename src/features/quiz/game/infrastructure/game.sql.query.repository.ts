@@ -68,19 +68,23 @@ export class GameSqlQueryRepository {
   async getPlayersUserIdByGameId(
     gameId: string,
   ): Promise<getGameAndUserIdOutput | null> {
-    const getGameWithUsers = await this.gamesRepository.findOne({
-      relations: ["player_1", "player_2"],
-      where: { id: gameId },
-    });
-    if (!getGameWithUsers) return null;
+    try {
+      const getGameWithUsers = await this.gamesRepository.findOne({
+        relations: ["player_1", "player_2"],
+        where: { id: gameId },
+      });
+      if (!getGameWithUsers) return null;
 
-    return {
-      player_1UserId: getGameWithUsers!.player_1.userId,
-      player_2UserId: getGameWithUsers!.player_2
-        ? getGameWithUsers!.player_2.userId
-        : null,
-      gameStatus: getGameWithUsers!.status,
-    };
+      return {
+        player_1UserId: getGameWithUsers!.player_1.userId,
+        player_2UserId: getGameWithUsers!.player_2
+          ? getGameWithUsers!.player_2.userId
+          : null,
+        gameStatus: getGameWithUsers!.status,
+      };
+    } catch (e) {
+      return null;
+    }
   }
   async getAllGame() {
     return await this.gamesRepository.find({});

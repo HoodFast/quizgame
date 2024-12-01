@@ -43,9 +43,8 @@ export class GameController {
       GetGameCommand,
       InterlayerNotice<GameViewType>
     >(command);
-    res.exception();
 
-    return res.data;
+    return res.exception();
   }
   @Delete("allgame")
   async deleteGame() {
