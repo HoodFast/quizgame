@@ -65,6 +65,7 @@ export class GameSqlQueryRepository {
       throw new Error();
     }
   }
+
   async getPlayersUserIdByGameId(
     gameId: string,
   ): Promise<getGameAndUserIdOutput | null> {
@@ -85,6 +86,13 @@ export class GameSqlQueryRepository {
     } catch (e) {
       return null;
     }
+  }
+  async getGameByPlayerId(playerId: string) {
+    const game = await this.gamesRepository.findOne({
+      where: [{ player_1Id: playerId }, { player_2Id: playerId }],
+    });
+    if (!game) return null;
+    return await this.getGameById(game.id);
   }
   async getAllGame() {
     return await this.gamesRepository.find({});

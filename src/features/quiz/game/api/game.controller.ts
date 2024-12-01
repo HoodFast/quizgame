@@ -3,6 +3,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Query,
   UseGuards,
@@ -15,6 +16,8 @@ import { InterlayerNotice } from "../../../../base/models/Interlayer";
 import { GameSqlRepository } from "../infrastructure/game.sql.repository";
 import { GetGameCommand } from "./useCases/get.game.usecase";
 import { GameViewType } from "../../question/api/output/game.view.type";
+import { IS_UUID, IsUUID } from "class-validator";
+import { GetCurrentGameCommand } from "./useCases/get.current.game.usecase";
 
 @Controller("pair-game-quiz")
 export class GameController {
@@ -37,13 +40,27 @@ export class GameController {
 
   @UseGuards(AccessTokenAuthGuard)
   @Get("pairs/:id")
-  async getGameById(@Param("id") gameId: string, @UserId() userId: string) {
+  async getGameById(
+    @Param("id", new ParseUUIDPipe())
+    gameId: string,
+    @UserId() userId: string,
+  ) {
     const command = new GetGameCommand(gameId, userId);
     const res = await this.queryBus.execute<
       GetGameCommand,
       InterlayerNotice<GameViewType>
     >(command);
+    return res.exception();
+  }
 
+  @UseGuards(AccessTokenAuthGuard)
+  @Get("pairs/:id")
+  async getCurrentGameByUser(@UserId() userId: string) {
+    const command = new GetCurrentGameCommand(userId);
+    const res = await this.queryBus.execute<
+      GetCurrentGameCommand,
+      InterlayerNotice<GameViewType>
+    >(command);
     return res.exception();
   }
   @Delete("allgame")

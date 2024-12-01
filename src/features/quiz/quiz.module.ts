@@ -26,6 +26,7 @@ import { PlayerSqlRepository } from "./game/infrastructure/player.sql.repository
 import { PlayerSqlQueryRepository } from "./game/infrastructure/player.sql.query.repository";
 import { ConnectGameUseCase } from "./game/api/useCases/connect.game.usecase";
 import { GetGameUseCase } from "./game/api/useCases/get.game.usecase";
+import { GetCurrentGameUseCase } from "./game/api/useCases/get.current.game.usecase";
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { GetGameUseCase } from "./game/api/useCases/get.game.usecase";
   ],
   controllers: [QuizSaController, GameController],
   providers: [
+    GetCurrentGameUseCase,
     GetGameUseCase,
     ConnectGameUseCase,
     DeleteQuestionUseCase,
