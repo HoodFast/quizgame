@@ -5,10 +5,14 @@ import { Player } from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { GameViewType } from "../../question/api/output/game.view.type";
 import { Answer } from "../domain/answer.sql.entity";
-import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
 import { GameViewMapper } from "./mappers/game.view.mapper";
 import { Question } from "../../question/domain/question.sql.entity";
 
+type getGameAndUserIdOutput = {
+  player_1UserId: string;
+  player_2UserId: string | null;
+  gameStatus: gameStatuses;
+};
 export class GameSqlQueryRepository {
   constructor(
     @InjectRepository(Game)
@@ -60,6 +64,23 @@ export class GameSqlQueryRepository {
       console.log(e);
       throw new Error();
     }
+  }
+  async getPlayersUserIdByGameId(
+    gameId: string,
+  ): Promise<getGameAndUserIdOutput | null> {
+    const getGameWithUsers = await this.gamesRepository.findOne({
+      relations: ["player_1", "player_2"],
+      where: { id: gameId },
+    });
+    if (!getGameWithUsers) return null;
+
+    return {
+      player_1UserId: getGameWithUsers!.player_1.userId,
+      player_2UserId: getGameWithUsers!.player_2
+        ? getGameWithUsers!.player_2.userId
+        : null,
+      gameStatus: getGameWithUsers!.status,
+    };
   }
   async getAllGame() {
     return await this.gamesRepository.find({});
