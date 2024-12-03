@@ -24,10 +24,11 @@ export class PlayerSqlQueryRepository {
       throw new Error();
     }
   }
-  async getPlayerToUserId(userId: string) {
-    return await this.playersRepository.findOne({ where: { userId } });
-  }
+
   async getPlayerToPlayerId(id: string) {
     return await this.playersRepository.findOne({ where: { id } });
+  }
+  async getAnswers(id: string) {
+    return await this.answersRepository.find({ where: { playerId: id } });
   }
 }

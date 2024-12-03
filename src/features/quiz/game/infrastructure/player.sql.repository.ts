@@ -12,27 +12,10 @@ export class PlayerSqlRepository {
   constructor(
     @InjectRepository(Player)
     protected playersRepository: Repository<Player>,
-    @InjectRepository(Answer)
-    protected answersRepository: Repository<Answer>,
   ) {}
   async createNewPlayer(userId: string) {
     const player = new Player();
     player.userId = userId;
     return await this.playersRepository.save<Player>(player);
-  }
-  async checkPlayer(userId: string): Promise<boolean> {
-    try {
-      const player = await this.playersRepository.find({
-        where: { userId },
-      });
-      if (player.length === 0) return true;
-      player.forEach((i) => {
-        if (!i.status) return false;
-      });
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
   }
 }

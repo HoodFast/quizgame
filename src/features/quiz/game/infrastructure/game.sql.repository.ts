@@ -3,8 +3,10 @@ import { Game, gameStatuses } from "../domain/game.sql.entity";
 import { Repository } from "typeorm";
 import { Player, playerActive } from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
-import { Answer } from "../domain/answer.sql.entity";
+import { Answer, AnswersStatus } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
+import { AnswerViewMapper } from "./mappers/answer.view.mapper";
+import { AnswerViewType } from "../../question/api/output/answer.view.type";
 
 export class GameSqlRepository {
   constructor(
@@ -12,6 +14,8 @@ export class GameSqlRepository {
     protected gamesRepository: Repository<Game>,
     @InjectRepository(Player)
     protected playersRepository: Repository<Player>,
+    @InjectRepository(Answer)
+    protected answersRepository: Repository<Answer>,
     @InjectRepository(GameQuestion)
     protected gameQuestionsRepository: Repository<GameQuestion>,
     protected questionsSqlQueryRepository: QuestionsSqlQueryRepository,
@@ -80,5 +84,45 @@ export class GameSqlRepository {
       status: gameStatuses.finished,
     });
     return;
+  }
+  async addAnswer(
+    gameId: string,
+    questionIndex: number,
+    body: string,
+    playerId: string,
+  ): Promise<Answer | null> {
+    try {
+      const question = await this.gameQuestionsRepository.findOne({
+        where: { gameId: gameId, index: questionIndex },
+      });
+      if (!question) return null;
+      const player = await this.playersRepository.findOne({
+        where: { id: playerId },
+      });
+      if (!player) return null;
+
+      const currentQuestion =
+        await this.questionsSqlQueryRepository.getQuestionById(
+          question?.questionId,
+        );
+      if (!currentQuestion) return null;
+      const answer = new Answer();
+      answer.addedAt = new Date();
+      answer.body = body;
+      answer.playerId = playerId;
+      answer.questionId = currentQuestion.id;
+      if (body in currentQuestion.correctAnswers) {
+        answer.answerStatus = AnswersStatus.correct;
+        // player.score = player.score + 1
+        // await this.playersRepository.save(player)
+      } else {
+        answer.answerStatus = AnswersStatus.incorrect;
+      }
+      const saved = await this.answersRepository.save(answer);
+      return saved;
+    } catch (e) {
+      console.log(e);
+      throw new Error();
+    }
   }
 }

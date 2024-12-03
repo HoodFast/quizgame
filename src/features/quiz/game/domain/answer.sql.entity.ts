@@ -27,12 +27,12 @@ export class Answer extends BaseEntity {
   questionId: string;
 
   @IsEnum(AnswersStatus)
-  @Column()
+  @Column({ nullable: true })
   answerStatus: AnswersStatus;
 
   @Column()
   body: string;
 
-  @Column("date")
+  @Column({ type: "timestamptz", nullable: true })
   addedAt: Date;
 }

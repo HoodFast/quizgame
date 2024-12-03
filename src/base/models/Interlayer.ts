@@ -37,7 +37,7 @@ export class InterlayerNotice<D = null> {
   public hasError(): boolean {
     return this.code !== 0;
   }
-  public exception() {
+  public execute() {
     if (this.code === 0) return this.data;
     const message = this.extensions[0].message;
     switch (this.code) {

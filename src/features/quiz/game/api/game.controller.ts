@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -18,6 +19,9 @@ import { GetGameCommand } from "./useCases/get.game.usecase";
 import { GameViewType } from "../../question/api/output/game.view.type";
 import { IS_UUID, IsUUID } from "class-validator";
 import { GetCurrentGameCommand } from "./useCases/get.current.game.usecase";
+import { AnswerDto } from "./input/answer.input.dto";
+import { AnswerGameCommand } from "./useCases/answer.game.usecase";
+import { AnswerViewType } from "../../question/api/output/answer.view.type";
 
 @Controller("pair-game-quiz")
 export class GameController {
@@ -50,7 +54,7 @@ export class GameController {
       GetGameCommand,
       InterlayerNotice<GameViewType>
     >(command);
-    return res.exception();
+    return res.execute();
   }
 
   @UseGuards(AccessTokenAuthGuard)
@@ -61,7 +65,17 @@ export class GameController {
       GetCurrentGameCommand,
       InterlayerNotice<GameViewType>
     >(command);
-    return res.exception();
+    return res.execute();
+  }
+  @UseGuards(AccessTokenAuthGuard)
+  @Post()
+  async myAnswers(@Body() data: AnswerDto, @UserId() userId: string) {
+    const command = new AnswerGameCommand(userId, data.answer);
+    const res = await this.commandBus.execute<
+      AnswerGameCommand,
+      InterlayerNotice<AnswerViewType>
+    >(command);
+    return res.execute();
   }
   @Delete("allgame")
   async deleteGame() {
