@@ -1,12 +1,15 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Game, gameStatuses } from "../domain/game.sql.entity";
 import { Repository } from "typeorm";
-import { Player, playerActive } from "../domain/player.sql.entity";
+import {
+  Player,
+  playerActive,
+  playerStatus,
+} from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { Answer, AnswersStatus } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
-import { AnswerViewMapper } from "./mappers/answer.view.mapper";
-import { AnswerViewType } from "../../question/api/output/answer.view.type";
+import { GameSqlQueryRepository } from "./game.sql.query.repository";
 
 export class GameSqlRepository {
   constructor(
@@ -19,6 +22,7 @@ export class GameSqlRepository {
     @InjectRepository(GameQuestion)
     protected gameQuestionsRepository: Repository<GameQuestion>,
     protected questionsSqlQueryRepository: QuestionsSqlQueryRepository,
+    protected gamesSqlQueryRepository: GameSqlQueryRepository,
   ) {}
 
   async createNewGame(userId: string) {
@@ -111,10 +115,9 @@ export class GameSqlRepository {
       answer.body = body;
       answer.playerId = playerId;
       answer.questionId = currentQuestion.id;
-      if (body in currentQuestion.correctAnswers) {
+
+      if (currentQuestion.correctAnswers.includes(body)) {
         answer.answerStatus = AnswersStatus.correct;
-        // player.score = player.score + 1
-        // await this.playersRepository.save(player)
       } else {
         answer.answerStatus = AnswersStatus.incorrect;
       }
@@ -124,5 +127,41 @@ export class GameSqlRepository {
       console.log(e);
       throw new Error();
     }
+  }
+  async addPoint(playerId: string, point: number) {
+    try {
+      const player = await this.playersRepository.findOne({
+        where: { id: playerId },
+      });
+      if (!player) return null;
+      player.score = player.score + point;
+      return await this.playersRepository.save(player);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+  async finishGame(gameId: string, player_1Id: string, player_2Id: string) {
+    try {
+      await this.playersRepository.update(player_1Id, {
+        active: playerActive.finished,
+      });
+      await this.playersRepository.update(player_2Id, {
+        active: playerActive.finished,
+      });
+      return await this.gamesRepository.update(gameId, {
+        status: gameStatuses.finished,
+        finishGameDate: new Date(),
+      });
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async getGames() {
+    const games = await this.gamesRepository.find({});
+
+    return this.gamesSqlQueryRepository.getGameById(games[0].id);
   }
 }

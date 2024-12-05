@@ -31,12 +31,12 @@ export class GetCurrentGameUseCase
       await this.playerSqlQueryRepository.getInGameOrPendingPlayerByUserId(
         command.userId,
       );
-    if (getActivePlayer.length === 0) {
+    if (!getActivePlayer) {
       notice.addError("not found", "error", ERRORS_CODE.NOT_FOUND);
       return notice;
     }
     const game = await this.gameSqlQueryRepository.getGameByPlayerId(
-      getActivePlayer[0].id,
+      getActivePlayer.id,
     );
     if (!game) {
       notice.addError("not found", "error", ERRORS_CODE.NOT_FOUND);

@@ -94,9 +94,19 @@ export class GameSqlQueryRepository {
     if (!game) return null;
     return await this.getGameById(game.id);
   }
+  async getDomainActiveGameByPlayerId(playerId: string): Promise<Game | null> {
+    return await this.gamesRepository.findOne({
+      where: [
+        { player_1Id: playerId, status: gameStatuses.active },
+        { player_2Id: playerId, status: gameStatuses.active },
+      ],
+    });
+  }
+
   async getAllGame() {
     return await this.gamesRepository.find({});
   }
+
   async getQuestions(playerId: string): Promise<GameQuestion[] | null> {
     const game = await this.gamesRepository.findOne({
       where: [

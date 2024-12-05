@@ -11,13 +11,21 @@ export class PlayerSqlQueryRepository {
     protected answersRepository: Repository<Answer>,
   ) {}
 
-  async getInGameOrPendingPlayerByUserId(userId: string): Promise<Player[]> {
+  async getInGameOrPendingPlayerByUserId(
+    userId: string,
+  ): Promise<Player | null> {
     try {
-      return await this.playersRepository.find({
-        where: {
-          userId: userId,
-          active: playerActive.pending || playerActive.inGame,
-        },
+      return await this.playersRepository.findOne({
+        where: [
+          {
+            userId: userId,
+            active: playerActive.pending,
+          },
+          {
+            userId: userId,
+            active: playerActive.inGame,
+          },
+        ],
       });
     } catch (e) {
       console.log(e);
@@ -28,7 +36,13 @@ export class PlayerSqlQueryRepository {
   async getPlayerToPlayerId(id: string) {
     return await this.playersRepository.findOne({ where: { id } });
   }
-  async getAnswers(id: string) {
-    return await this.answersRepository.find({ where: { playerId: id } });
+  async getAnswers(playerId: string) {
+    return await this.answersRepository.find({ where: { playerId: playerId } });
+  }
+
+  async getAnswersByQuestionId(playerId: string, questionId: string) {
+    return await this.answersRepository.findOne({
+      where: { playerId: playerId, questionId: questionId },
+    });
   }
 }

@@ -36,7 +36,7 @@ export class ConnectGameUseCase
         command.userId,
       );
 
-    if (player.length == 0) {
+    if (!player) {
       if (!pendingGame) {
         const newGame = await this.createNewPlayerAndStartPendingGame(
           command.userId,
@@ -71,15 +71,12 @@ export class ConnectGameUseCase
       notice.addData(game);
       return notice;
     }
-    if (player.length > 1) {
-      notice.addError("double active players");
-      return notice;
-    }
-    if (player[0].active === playerActive.inGame) {
+
+    if (player.active === playerActive.inGame) {
       notice.addError("player is already in the game");
       return notice;
     }
-    if (player[0].active === playerActive.pending) {
+    if (player.active === playerActive.pending) {
       notice.addError("player is pending");
       return notice;
     }

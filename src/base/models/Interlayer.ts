@@ -52,7 +52,7 @@ export class InterlayerNotice<D = null> {
       case ERRORS_CODE.ERROR:
         throw new Error(message);
       default:
-        throw new Error();
+        throw new Error(message);
     }
   }
 }

@@ -2,6 +2,7 @@ import { GameViewType } from "../../../question/api/output/game.view.type";
 import { Game } from "../../domain/game.sql.entity";
 import { Answer } from "../../domain/answer.sql.entity";
 import { Question } from "../../../question/domain/question.sql.entity";
+import { AnswerViewMapper } from "./answer.view.mapper";
 
 export const GameViewMapper = (
   game: Game,
@@ -16,6 +17,8 @@ export const GameViewMapper = (
       game.player_1Id,
       game.player_1.user.login,
       game.player_1.score,
+      // game.player_1.status,
+      // game.player_1.active,
     ),
     secondPlayerProgress: game.player_2Id
       ? playerMapper(
@@ -23,10 +26,13 @@ export const GameViewMapper = (
           game.player_2Id,
           game.player_2.user.login,
           game.player_2.score,
+          // game.player_1.status,
+          // game.player_1.active,
         )
       : [],
     questions: questions ? questions.map(questionsMapper) : [],
     status: game.status,
+
     pairCreatedDate: game.pairCreatedDate,
     startGameDate: game.startGameDate,
     finishGameDate: game.finishGameDate,
@@ -36,10 +42,18 @@ export const GameViewMapper = (
 const questionsMapper = (question: Question) => {
   return { id: question.id, body: question.body };
 };
-const playerMapper = (answers_1, player_1Id, login, score) => {
+const playerMapper = (
+  answers_1,
+  player_1Id,
+  login,
+  score,
+  // status, active
+) => {
   return {
-    answers: answers_1,
+    answers: answers_1.map(AnswerViewMapper),
     player: { id: player_1Id, login },
     score,
+    // active,
+    // status,
   };
 };

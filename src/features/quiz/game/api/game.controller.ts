@@ -39,7 +39,18 @@ export class GameController {
       ConnectGameCommand,
       InterlayerNotice<GameViewType>
     >(command);
-    return res.data;
+    return res.execute();
+  }
+
+  @UseGuards(AccessTokenAuthGuard)
+  @Get("pairs/my-current")
+  async getCurrentGameByUser(@UserId() userId: string) {
+    const command = new GetCurrentGameCommand(userId);
+    const res = await this.queryBus.execute<
+      GetCurrentGameCommand,
+      InterlayerNotice<GameViewType>
+    >(command);
+    return res.execute();
   }
 
   @UseGuards(AccessTokenAuthGuard)
@@ -58,17 +69,7 @@ export class GameController {
   }
 
   @UseGuards(AccessTokenAuthGuard)
-  @Get("pairs/:id")
-  async getCurrentGameByUser(@UserId() userId: string) {
-    const command = new GetCurrentGameCommand(userId);
-    const res = await this.queryBus.execute<
-      GetCurrentGameCommand,
-      InterlayerNotice<GameViewType>
-    >(command);
-    return res.execute();
-  }
-  @UseGuards(AccessTokenAuthGuard)
-  @Post()
+  @Post("pairs/my-current/answers")
   async myAnswers(@Body() data: AnswerDto, @UserId() userId: string) {
     const command = new AnswerGameCommand(userId, data.answer);
     const res = await this.commandBus.execute<
@@ -84,5 +85,9 @@ export class GameController {
   @Post("pairs/:id")
   async finish(@Param("id") id: string) {
     await this.gameRepo.finish(id);
+  }
+  @Get("allgame")
+  async getGames() {
+    return await this.gameRepo.getGames();
   }
 }
