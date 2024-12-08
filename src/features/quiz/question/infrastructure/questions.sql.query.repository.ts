@@ -76,4 +76,7 @@ export class QuestionsSqlQueryRepository {
       return [];
     }
   }
+  async getAllForTest() {
+    return await this.questionRepository.find({});
+  }
 }
