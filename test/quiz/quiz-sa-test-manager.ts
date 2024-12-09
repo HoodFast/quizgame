@@ -2,6 +2,8 @@ import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { InputPostCreate } from "../../src/features/bloggers-platform/posts/api/input/PostsCreate.dto";
 import { isBoolean } from "class-validator";
+import { AnswersStatus } from "../../src/features/quiz/game/domain/answer.sql.entity";
+import { gameStatuses } from "../../src/features/quiz/game/domain/game.sql.entity";
 
 export class QuizSaTestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -92,15 +94,75 @@ export class QuizSaTestManager {
     });
   }
 
-  checkValidateErrors(response: any) {
-    const result = response.body;
-
-    expect(result).toEqual({
-      errorsMessages: [
-        { message: expect.any(String), field: expect.any(String) },
-        { message: expect.any(String), field: expect.any(String) },
-        { message: expect.any(String), field: expect.any(String) },
-      ],
+  async checkPendingGameResponse(response: any) {
+    const pendingGame = response.body;
+    debugger;
+    expect(pendingGame).toEqual({
+      id: expect.any(String),
+      firstPlayerProgress: {
+        answers: [
+          {
+            questionId: expect.any(String),
+            answerStatus: expect.any(String),
+            addedAt: expect.any(String),
+          },
+        ],
+        player: {
+          id: expect.any(String),
+          login: expect.any(String),
+        },
+        score: 0,
+      },
+      secondPlayerProgress: null,
+      questions: null,
+      status: gameStatuses.pending,
+      pairCreatedDate: expect.any(String),
+      startGameDate: null,
+      finishGameDate: null,
+    });
+  }
+  async checkGameResponse(response: any) {
+    const game = response.body;
+    expect(game).toEqual({
+      id: expect.any(String),
+      firstPlayerProgress: {
+        answers: [
+          {
+            questionId: expect.any(String),
+            answerStatus: expect.any(String),
+            addedAt: expect.any(String),
+          },
+        ],
+        player: {
+          id: expect.any(String),
+          login: expect.any(String),
+        },
+        score: expect.any(Number),
+      },
+      secondPlayerProgress: {
+        answers: expect.any(
+          Array({
+            questionId: expect.any(String),
+            answerStatus: expect.any(String),
+            addedAt: expect.any(String),
+          }),
+        ),
+        player: {
+          id: expect.any(String),
+          login: expect.any(String),
+        },
+        score: expect.any(Number),
+      },
+      questions: expect.any(
+        Array({
+          id: expect.any(String),
+          body: expect.any(String),
+        }),
+      ),
+      status: gameStatuses.active,
+      pairCreatedDate: expect.any(String),
+      startGameDate: expect.any(String),
+      finishGameDate: null,
     });
   }
 }

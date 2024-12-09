@@ -9,6 +9,7 @@ import { QuestionsSqlQueryRepository } from "../../src/features/quiz/question/in
 describe("QuizSaController", () => {
   let app: INestApplication;
   let httpServer;
+
   let quizSaTestManager;
   let questionsSqlQueryRepository;
   beforeAll(async () => {

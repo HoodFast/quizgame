@@ -1,8 +1,8 @@
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { UserTestManager } from './users/user.test.manager';
-import { randomUUID } from 'crypto';
-import { SessionEntity } from '../src/features/auth/sessions/domain/session.entity';
+import { INestApplication } from "@nestjs/common";
+import request from "supertest";
+import { UserTestManager } from "./users/user.test.manager";
+import { randomUUID } from "crypto";
+import { SessionEntity } from "../src/features/auth/sessions/domain/session.entity";
 
 export class TestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -26,7 +26,7 @@ export class TestManager {
       email: `usermail${random}@mail.ru`,
     };
     await userTestManager.createUser(createUserData, 201);
-    const userResponse = await request(httpServer).post('/auth/login').send({
+    const userResponse = await request(httpServer).post("/auth/login").send({
       loginOrEmail: createUserData.login,
       password: createUserData.password,
     });
@@ -42,20 +42,20 @@ export class TestManager {
       email: `usermail${random}@mail.ru`,
     };
     await userTestManager.createUser(createUserData, 201);
-    const userResponse1 = await request(httpServer).post('/auth/login').send({
+    const userResponse1 = await request(httpServer).post("/auth/login").send({
       loginOrEmail: createUserData.login,
       password: createUserData.password,
     });
     const userResponse2 = await request(httpServer)
-      .post('/auth/login')
-      .set('User-Agent', '123')
+      .post("/auth/login")
+      .set("User-Agent", "123")
       .send({
         loginOrEmail: createUserData.login,
         password: createUserData.password,
       });
     const refreshToken = userResponse1.headers[`set-cookie`][0]
-      .split('=')[1]
-      .split(';')[0];
+      .split("=")[1]
+      .split(";")[0];
 
     const accessToken = userResponse1.body.accessToken;
     return { accessToken, refreshToken };
