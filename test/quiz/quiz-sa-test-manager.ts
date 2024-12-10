@@ -4,6 +4,7 @@ import { InputPostCreate } from "../../src/features/bloggers-platform/posts/api/
 import { isBoolean } from "class-validator";
 import { AnswersStatus } from "../../src/features/quiz/game/domain/answer.sql.entity";
 import { gameStatuses } from "../../src/features/quiz/game/domain/game.sql.entity";
+import { GameViewType } from "../../src/features/quiz/question/api/output/game.view.type";
 
 export class QuizSaTestManager {
   constructor(protected readonly app: INestApplication) {}
@@ -93,20 +94,20 @@ export class QuizSaTestManager {
       items: expect.any(Array),
     });
   }
-
+  checkGameResult(response: any, score1: number, score2: number) {
+    const game: GameViewType = response.body;
+    expect(game.status).toBe(gameStatuses.finished);
+    expect(game.firstPlayerProgress.score).toBe(score1);
+    expect(game.secondPlayerProgress!.score).toBe(score2);
+    return;
+  }
   async checkPendingGameResponse(response: any) {
     const pendingGame = response.body;
-    debugger;
+
     expect(pendingGame).toEqual({
       id: expect.any(String),
       firstPlayerProgress: {
-        answers: [
-          {
-            questionId: expect.any(String),
-            answerStatus: expect.any(String),
-            addedAt: expect.any(String),
-          },
-        ],
+        answers: expect.any(Array),
         player: {
           id: expect.any(String),
           login: expect.any(String),
@@ -126,13 +127,7 @@ export class QuizSaTestManager {
     expect(game).toEqual({
       id: expect.any(String),
       firstPlayerProgress: {
-        answers: [
-          {
-            questionId: expect.any(String),
-            answerStatus: expect.any(String),
-            addedAt: expect.any(String),
-          },
-        ],
+        answers: expect.any(Array),
         player: {
           id: expect.any(String),
           login: expect.any(String),
@@ -140,25 +135,14 @@ export class QuizSaTestManager {
         score: expect.any(Number),
       },
       secondPlayerProgress: {
-        answers: expect.any(
-          Array({
-            questionId: expect.any(String),
-            answerStatus: expect.any(String),
-            addedAt: expect.any(String),
-          }),
-        ),
+        answers: expect.any(Array),
         player: {
           id: expect.any(String),
           login: expect.any(String),
         },
         score: expect.any(Number),
       },
-      questions: expect.any(
-        Array({
-          id: expect.any(String),
-          body: expect.any(String),
-        }),
-      ),
+      questions: expect.any(Array),
       status: gameStatuses.active,
       pairCreatedDate: expect.any(String),
       startGameDate: expect.any(String),

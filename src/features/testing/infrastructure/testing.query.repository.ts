@@ -4,6 +4,7 @@ import { DataSource, Repository } from "typeorm";
 import { GameQuestion } from "../../quiz/game/domain/game.questions.sql.entity";
 import { Player } from "../../quiz/game/domain/player.sql.entity";
 import { Game } from "../../quiz/game/domain/game.sql.entity";
+import { Users } from "../../users/domain/user.sql.entity";
 
 @Injectable()
 export class TestingSqlQueryRepository {
@@ -13,6 +14,7 @@ export class TestingSqlQueryRepository {
     protected gameQuestionsRepository: Repository<GameQuestion>,
     @InjectRepository(Player) protected playersRepository: Repository<Player>,
     @InjectRepository(Game) protected gamesRepository: Repository<Game>,
+    @InjectRepository(Users) protected usersRepository: Repository<Users>,
   ) {}
 
   async deleteAll(): Promise<boolean> {
@@ -22,6 +24,10 @@ export class TestingSqlQueryRepository {
     await this.gameQuestionsRepository.delete({});
     await this.playersRepository.delete({});
     await this.gamesRepository.delete({});
+    const res = await this.usersRepository.find({
+      relations: ["emailConfirmation"],
+    });
+
     return true;
   }
 }

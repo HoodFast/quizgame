@@ -17,8 +17,6 @@ export const GameViewMapper = (
       game.player_1Id,
       game.player_1.user.login,
       game.player_1.score,
-      // game.player_1.status,
-      // game.player_1.active,
     ),
     secondPlayerProgress: game.player_2Id
       ? playerMapper(
@@ -26,11 +24,9 @@ export const GameViewMapper = (
           game.player_2Id,
           game.player_2.user.login,
           game.player_2.score,
-          // game.player_1.status,
-          // game.player_1.active,
         )
-      : [],
-    questions: questions ? questions.map(questionsMapper) : [],
+      : null,
+    questions: questions.length > 0 ? questions.map(questionsMapper) : null,
     status: game.status,
 
     pairCreatedDate: game.pairCreatedDate,
@@ -42,18 +38,10 @@ export const GameViewMapper = (
 const questionsMapper = (question: Question) => {
   return { id: question.id, body: question.body };
 };
-const playerMapper = (
-  answers_1,
-  player_1Id,
-  login,
-  score,
-  // status, active
-) => {
+const playerMapper = (answers_1, player_1Id, login, score) => {
   return {
     answers: answers_1.map(AnswerViewMapper),
     player: { id: player_1Id, login },
     score,
-    // active,
-    // status,
   };
 };

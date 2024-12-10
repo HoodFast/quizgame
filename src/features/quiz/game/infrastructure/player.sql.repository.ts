@@ -29,7 +29,6 @@ export class PlayerSqlRepository {
         });
         return true;
       }
-      debugger;
       await this.playersRepository.update(id_1, {
         status: playerStatus.winner,
       });

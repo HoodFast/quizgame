@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { OutputUsersType } from '../api/output/users.output.dto';
-import { Users } from '../domain/user.sql.entity';
-import { EmailConfirmation } from '../domain/email.confirmation.entity';
-import { TokensBlackList } from '../domain/tokens.black.list.sql.entity';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
+import { DataSource, Repository } from "typeorm";
+import { OutputUsersType } from "../api/output/users.output.dto";
+import { Users } from "../domain/user.sql.entity";
+import { EmailConfirmation } from "../domain/email.confirmation.entity";
+import { TokensBlackList } from "../domain/tokens.black.list.sql.entity";
 
 @Injectable()
 export class UsersSqlRepository {
