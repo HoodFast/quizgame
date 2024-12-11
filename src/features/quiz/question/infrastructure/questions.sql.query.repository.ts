@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { QuestionViewMapper } from "./mappers/question.view.mapper";
 import { QuestionViewType } from "../api/output/question.view.type";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
+import { publish } from "rxjs";
 
 export class QuestionsSqlQueryRepository {
   constructor(
@@ -68,6 +69,7 @@ export class QuestionsSqlQueryRepository {
       const questions = await this.questionRepository
         .createQueryBuilder("question")
         .orderBy("RANDOM()")
+        .where("question.publish:true")
         .limit(5)
         .getMany();
       return questions;
