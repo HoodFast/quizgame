@@ -17,7 +17,6 @@ export class Question extends BaseEntity {
   createdAt: Date;
   @Column({
     type: "timestamptz",
-    default: () => "CURRENT_TIMESTAMP",
     nullable: true,
   })
   updatedAt: Date;

@@ -30,6 +30,7 @@ import { SortDirectionPipe } from "../../../../base/pipes/sortDirectionPipe";
 import { AuthGuard } from "../../../../guards/auth.guard";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 import { InterlayerNotice } from "../../../../base/models/Interlayer";
+import { QuestionsPublishedData } from "./input/questions.published.data";
 
 @UseGuards(AuthGuard)
 @Controller("sa/quiz/questions")
@@ -85,7 +86,7 @@ export class QuizSaController {
   @Put(":id/publish")
   async PublishQuestion(
     @Param("id") id: string,
-    @Body() data: { published: boolean },
+    @Body() data: QuestionsPublishedData,
   ) {
     const command = new PublishQuestionCommand(id, data.published);
     const res = await this.commandBus.execute<
