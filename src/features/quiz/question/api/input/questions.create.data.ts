@@ -5,8 +5,8 @@ export class QuestionsCreateData<A> {
   @Trim()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(30)
-  @MinLength(500)
+  @MaxLength(500)
+  @MinLength(30)
   body: string;
   correctAnswers: A;
 }
