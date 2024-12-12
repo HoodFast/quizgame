@@ -26,8 +26,14 @@ export class QuizSaTestManager {
         correctAnswers: expect.any(Array),
         published: expect.any(Boolean),
         createdAt: expect.any(String),
-        updatedAt: expect.any(String),
+        updatedAt: null,
       });
+
+      await request(this.app.getHttpServer())
+        .put(`/sa/quiz/questions/${res.body.id}/publish`)
+        .auth("admin", "qwerty")
+        .send({ published: true })
+        .expect(204);
     }
 
     return;

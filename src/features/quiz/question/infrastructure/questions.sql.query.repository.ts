@@ -69,7 +69,7 @@ export class QuestionsSqlQueryRepository {
       const questions = await this.questionRepository
         .createQueryBuilder("question")
         .orderBy("RANDOM()")
-        .where("question.publish:true")
+        .where("question.published = :published", { published: true })
         .limit(5)
         .getMany();
       return questions;
