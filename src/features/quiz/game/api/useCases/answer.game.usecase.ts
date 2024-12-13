@@ -11,7 +11,7 @@ import { GameSqlQueryRepository } from "../../infrastructure/game.sql.query.repo
 import { AnswerViewType } from "../../../question/api/output/answer.view.type";
 import { AnswerViewMapper } from "../../infrastructure/mappers/answer.view.mapper";
 import { AnswersStatus } from "../../domain/answer.sql.entity";
-import { gameStatuses } from "../../domain/game.sql.entity";
+import { Game, gameStatuses } from "../../domain/game.sql.entity";
 
 export class AnswerGameCommand {
   constructor(
@@ -111,7 +111,7 @@ export class AnswerGameUseCase
               secondPlayer.id,
               1,
             );
-            await this.finishGame(player.id, secondPlayerId, game.id);
+            await this.finishGame(player.id, secondPlayerId, game);
           }
         }
       }
@@ -126,12 +126,14 @@ export class AnswerGameUseCase
     notice.addError(`${message}`, "error", ERRORS_CODE.FORBIDDEN);
     return notice;
   }
-  async finishGame(player_1Id: string, player2_Id: string, gameId: string) {
+  async finishGame(player_1Id: string, player2_Id: string, game: Game) {
     const player_1 =
       await this.playerQuerySqlRepository.getPlayerToPlayerId(player_1Id);
+    if (!player_1) return;
     const player_2 =
       await this.playerQuerySqlRepository.getPlayerToPlayerId(player2_Id);
-    await this.gameSqlRepository.finishGame(gameId, player_1Id, player2_Id);
+    if (!player_2) return;
+    await this.gameSqlRepository.finishGame(game, player_1, player_2);
     if (player_1!.score === player_2!.score) {
       await this.playerSqlRepository.makePlayerStatus(
         player_1!.id,

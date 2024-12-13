@@ -1,11 +1,7 @@
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { Game, gameStatuses } from "../domain/game.sql.entity";
-import { Repository } from "typeorm";
-import {
-  Player,
-  playerActive,
-  playerStatus,
-} from "../domain/player.sql.entity";
+import { DataSource, Repository } from "typeorm";
+import { Player, playerActive } from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { Answer, AnswersStatus } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
@@ -21,6 +17,8 @@ export class GameSqlRepository {
     protected answersRepository: Repository<Answer>,
     @InjectRepository(GameQuestion)
     protected gameQuestionsRepository: Repository<GameQuestion>,
+    @InjectDataSource()
+    protected dataSource: DataSource,
     protected questionsSqlQueryRepository: QuestionsSqlQueryRepository,
     protected gamesSqlQueryRepository: GameSqlQueryRepository,
   ) {}
@@ -45,6 +43,16 @@ export class GameSqlRepository {
     }
   }
 
+  async saveMultipleGameQuestions(entity: GameQuestion[]) {
+    const res = await this.gameQuestionsRepository
+      .createQueryBuilder("gameQuestions")
+      .insert()
+      .into(GameQuestion)
+      .values(entity)
+      .execute();
+
+    return res;
+  }
   async connectToGame(
     game: Game,
     player_1: Player,
@@ -53,13 +61,16 @@ export class GameSqlRepository {
     try {
       const questions =
         await this.questionsSqlQueryRepository.getRandomQuestions();
+      const entities: GameQuestion[] = [];
       for (let i = 0; i < questions.length; i++) {
         const gameQuestion = new GameQuestion();
         gameQuestion.game = game;
         gameQuestion.question = questions[i];
         gameQuestion.index = i;
-        await this.gameQuestionsRepository.save(gameQuestion);
+        entities.push(gameQuestion);
+        // await this.gameQuestionsRepository.save(gameQuestion);
       }
+      await this.saveMultipleGameQuestions(entities);
       game.player_2Id = player_2.id;
       game.status = gameStatuses.active;
       game.startGameDate = new Date();
@@ -141,18 +152,31 @@ export class GameSqlRepository {
       return null;
     }
   }
-  async finishGame(gameId: string, player_1Id: string, player_2Id: string) {
+  async finishGame(game: Game, player_1: Player, player_2: Player) {
     try {
-      await this.playersRepository.update(player_1Id, {
-        active: playerActive.finished,
-      });
-      await this.playersRepository.update(player_2Id, {
-        active: playerActive.finished,
-      });
-      return await this.gamesRepository.update(gameId, {
-        status: gameStatuses.finished,
-        finishGameDate: new Date(),
-      });
+      const res = await this.dataSource.manager.transaction(
+        async (transactionalEntityManager) => {
+          player_1.active = playerActive.finished;
+          player_2.active = playerActive.finished;
+          game.status = gameStatuses.finished;
+          game.finishGameDate = new Date();
+          await transactionalEntityManager.save(player_1);
+          await transactionalEntityManager.save(player_2);
+          await transactionalEntityManager.save(game);
+        },
+      );
+
+      return;
+      // await this.playersRepository.update(player_1Id, {
+      //   active: playerActive.finished,
+      // });
+      // await this.playersRepository.update(player_2Id, {
+      //   active: playerActive.finished,
+      // });
+      // return await this.gamesRepository.update(gameId, {
+      //   status: gameStatuses.finished,
+      //   finishGameDate: new Date(),
+      // });
     } catch (e) {
       console.log(e);
       return null;
