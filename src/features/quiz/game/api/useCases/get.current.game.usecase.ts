@@ -42,6 +42,8 @@ export class GetCurrentGameUseCase
       notice.addError("not found", "error", ERRORS_CODE.NOT_FOUND);
       return notice;
     }
+    const adele = await this.gameSqlQueryRepository.getAllGames();
+    console.log(adele);
     notice.addData(game);
     return notice;
   }
