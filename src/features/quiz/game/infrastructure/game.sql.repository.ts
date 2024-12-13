@@ -165,7 +165,10 @@ export class GameSqlRepository {
           await transactionalEntityManager.save(game);
         },
       );
-
+      const players = await this.playersRepository.find({});
+      const games = await this.gamesRepository.find({});
+      const view = await this.gamesSqlQueryRepository.getGameById(game.id);
+      debugger;
       return;
       // await this.playersRepository.update(player_1Id, {
       //   active: playerActive.finished,

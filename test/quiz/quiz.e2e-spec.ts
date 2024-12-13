@@ -33,7 +33,7 @@ describe("QuizGame", () => {
       accessTokens.push(accessToken);
     }
 
-    await quizSaTestManager.createQuestions(201, 10);
+    await quizSaTestManager.createQuestions(200, 10);
   });
   beforeEach(() => {});
   afterAll(() => {

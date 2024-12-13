@@ -6,7 +6,7 @@ import {
 import { GameSqlRepository } from "../../infrastructure/game.sql.repository";
 import { PlayerSqlRepository } from "../../infrastructure/player.sql.repository";
 import { PlayerSqlQueryRepository } from "../../infrastructure/player.sql.query.repository";
-import { playerActive } from "../../domain/player.sql.entity";
+import { Player, playerActive } from "../../domain/player.sql.entity";
 import { GameSqlQueryRepository } from "../../infrastructure/game.sql.query.repository";
 import { AnswerViewType } from "../../../question/api/output/answer.view.type";
 import { AnswerViewMapper } from "../../infrastructure/mappers/answer.view.mapper";
@@ -40,7 +40,6 @@ export class AnswerGameUseCase
       await this.playerQuerySqlRepository.getInGameOrPendingPlayerByUserId(
         command.userId,
       );
-
     if (!currentPlayer || currentPlayer.active === playerActive.pending) {
       return this.isForbidden(notice, "user is not inside active pair");
     }
@@ -48,8 +47,12 @@ export class AnswerGameUseCase
       await this.gameSqlQueryRepository.getDomainActiveGameByPlayerId(
         currentPlayer.id,
       );
+
     if (!game) {
       return this.isForbidden(notice, "not found active game");
+    }
+    if (game.status === gameStatuses.finished) {
+      notice.addError("game is finished", "error", ERRORS_CODE.FORBIDDEN);
     }
     const secondPlayerId =
       game.player_1Id === currentPlayer.id ? game.player_2Id : game.player_1Id;
@@ -57,6 +60,7 @@ export class AnswerGameUseCase
       currentPlayer.id,
     );
     const questionsIndex = currentAnswers.length;
+
     if (questionsIndex > 4) {
       return this.isForbidden(notice, "already answered to all questions");
     }
@@ -77,44 +81,81 @@ export class AnswerGameUseCase
       return notice;
     }
     if (addAnswer.answerStatus === AnswersStatus.correct) {
-      const addPoints = this.gameSqlRepository.addPoint(addAnswer.playerId, 1);
+      await this.gameSqlRepository.addPoint(addAnswer.playerId, 1);
     }
+    // if (questionsIndex === 4) {
+    //   const player = await this.playerQuerySqlRepository.getPlayerToPlayerId(
+    //     currentPlayer.id,
+    //   );
+    //   const secondPlayer =
+    //     await this.playerQuerySqlRepository.getPlayerToPlayerId(secondPlayerId);
+    //   if (!player) return this.isForbidden(notice);
+    //   if (!secondPlayer) return this.isForbidden(notice);
+    //   const secondPlayerLastAnswers =
+    //     await this.playerQuerySqlRepository.getAnswersByQuestionId(
+    //       secondPlayerId,
+    //       addAnswer.questionId,
+    //     );
+    //   if (secondPlayerLastAnswers && game.status !== gameStatuses.finished) {
+    //     if (
+    //       addAnswer.addedAt < secondPlayerLastAnswers.addedAt &&
+    //       player.score > 0
+    //     ) {
+    //       const addPoints = await this.gameSqlRepository.addPoint(
+    //         addAnswer.playerId,
+    //         1,
+    //       );
+    //       // await this.finishGame(player.id, secondPlayerId, game.id);
+    //     } else {
+    //       if (
+    //         (secondPlayerLastAnswers.addedAt > addAnswer.addedAt,
+    //         secondPlayer.score > 0)
+    //       ) {
+    //         const addPoints = await this.gameSqlRepository.addPoint(
+    //           secondPlayer.id,
+    //           1,
+    //         );
+    //         await this.finishGame(player.id, secondPlayerId, game);
+    //       }
+    //     }
+    //   }
+    // }
     if (questionsIndex === 4) {
-      const player = await this.playerQuerySqlRepository.getPlayerToPlayerId(
-        currentPlayer.id,
-      );
-      const secondPlayer =
-        await this.playerQuerySqlRepository.getPlayerToPlayerId(secondPlayerId);
-      if (!player) return this.isForbidden(notice);
-      if (!secondPlayer) return this.isForbidden(notice);
       const secondPlayerLastAnswers =
         await this.playerQuerySqlRepository.getAnswersByQuestionId(
           secondPlayerId,
           addAnswer.questionId,
         );
-      if (secondPlayerLastAnswers && game.status !== gameStatuses.finished) {
-        if (
-          addAnswer.addedAt < secondPlayerLastAnswers.addedAt &&
-          player.score > 0
-        ) {
-          const addPoints = await this.gameSqlRepository.addPoint(
-            addAnswer.playerId,
-            1,
-          );
-          // await this.finishGame(player.id, secondPlayerId, game.id);
-        } else {
-          if (
-            (secondPlayerLastAnswers.addedAt > addAnswer.addedAt,
-            secondPlayer.score > 0)
-          ) {
-            const addPoints = await this.gameSqlRepository.addPoint(
-              secondPlayer.id,
-              1,
-            );
-            await this.finishGame(player.id, secondPlayerId, game);
-          }
-        }
+      if (!secondPlayerLastAnswers) {
+        notice.addData(AnswerViewMapper(addAnswer));
+        return notice;
       }
+      let player = await this.playerQuerySqlRepository.getPlayerToPlayerId(
+        currentPlayer.id,
+      );
+      let secondPlayer =
+        await this.playerQuerySqlRepository.getPlayerToPlayerId(secondPlayerId);
+      if (!player) return this.isForbidden(notice);
+      if (!secondPlayer) return this.isForbidden(notice);
+      if (
+        secondPlayerLastAnswers.addedAt < addAnswer.addedAt &&
+        secondPlayer.score > 0
+      ) {
+        secondPlayer = await this.gameSqlRepository.addPoint(
+          secondPlayer.id,
+          1,
+        );
+      }
+      if (
+        secondPlayerLastAnswers.addedAt > addAnswer.addedAt &&
+        player.score > 0
+      ) {
+        player = await this.gameSqlRepository.addPoint(player.id, 1);
+      }
+
+      await this.finishGame(player!, secondPlayer!, game);
+      notice.addData(AnswerViewMapper(addAnswer));
+      return notice;
     }
     notice.addData(AnswerViewMapper(addAnswer));
     return notice;
@@ -126,32 +167,26 @@ export class AnswerGameUseCase
     notice.addError(`${message}`, "error", ERRORS_CODE.FORBIDDEN);
     return notice;
   }
-  async finishGame(player_1Id: string, player2_Id: string, game: Game) {
-    const player_1 =
-      await this.playerQuerySqlRepository.getPlayerToPlayerId(player_1Id);
-    if (!player_1) return;
-    const player_2 =
-      await this.playerQuerySqlRepository.getPlayerToPlayerId(player2_Id);
-    if (!player_2) return;
-    await this.gameSqlRepository.finishGame(game, player_1, player_2);
-    if (player_1!.score === player_2!.score) {
+  async finishGame(player1: Player, player2: Player, game: Game) {
+    // const player_1 =
+    //   await this.playerQuerySqlRepository.getPlayerToPlayerId(player_1Id);
+    // if (!player_1) return;
+    // const player_2 =
+    //   await this.playerQuerySqlRepository.getPlayerToPlayerId(player2_Id);
+    // if (!player_2) return;
+    await this.gameSqlRepository.finishGame(game, player1, player2);
+    if (player1.score === player2.score) {
       await this.playerSqlRepository.makePlayerStatus(
-        player_1!.id,
-        player_2!.id,
+        player1.id,
+        player2.id,
         true,
       );
       return;
     }
-    if (player_1!.score > player_2!.score) {
-      await this.playerSqlRepository.makePlayerStatus(
-        player_1!.id,
-        player_2!.id,
-      );
+    if (player1.score > player2.score) {
+      await this.playerSqlRepository.makePlayerStatus(player1.id, player2.id);
     } else {
-      await this.playerSqlRepository.makePlayerStatus(
-        player_2!.id,
-        player_1!.id,
-      );
+      await this.playerSqlRepository.makePlayerStatus(player2.id, player1.id);
     }
     return;
   }

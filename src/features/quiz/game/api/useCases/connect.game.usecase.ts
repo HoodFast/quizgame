@@ -1,5 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { InterlayerNotice } from "../../../../../base/models/Interlayer";
+import {
+  ERRORS_CODE,
+  InterlayerNotice,
+} from "../../../../../base/models/Interlayer";
 import { GameSqlRepository } from "../../infrastructure/game.sql.repository";
 import { PlayerSqlRepository } from "../../infrastructure/player.sql.repository";
 import { GameViewType } from "../../../question/api/output/game.view.type";
@@ -42,7 +45,11 @@ export class ConnectGameUseCase
           command.userId,
         );
         if (!newGame) {
-          notice.addError("error create new game");
+          notice.addError(
+            "error create new game",
+            "error",
+            ERRORS_CODE.FORBIDDEN,
+          );
           return notice;
         }
         notice.addData(newGame);
@@ -53,7 +60,11 @@ export class ConnectGameUseCase
         command.userId,
       );
       if (!connectToGame) {
-        notice.addError("error create new game");
+        notice.addError(
+          "error create new game",
+          "error",
+          ERRORS_CODE.FORBIDDEN,
+        );
         return notice;
       }
       notice.addData(connectToGame);
@@ -61,27 +72,31 @@ export class ConnectGameUseCase
     }
 
     if (pendingGame) {
-      const game = await this.gameSqlQueryRepository.getGameById(
-        pendingGame.id,
-      );
-      if (!game) {
-        notice.addError("");
-        return notice;
-      }
-      notice.addData(game);
+      // const game = await this.gameSqlQueryRepository.getGameById(
+      //   pendingGame.id,
+      // );
+      // if (!game) {
+      //   notice.addError("game not found", "error", ERRORS_CODE.NOT_FOUND);
+      //   return notice;
+      // }
+      notice.addError("already pending", "error", ERRORS_CODE.FORBIDDEN);
       return notice;
     }
 
     if (player.active === playerActive.inGame) {
-      notice.addError("player is already in the game");
+      notice.addError(
+        "player is already in the game",
+        "error",
+        ERRORS_CODE.FORBIDDEN,
+      );
       return notice;
     }
     if (player.active === playerActive.pending) {
-      notice.addError("player is pending");
+      notice.addError("player is pending", "error", ERRORS_CODE.FORBIDDEN);
       return notice;
     }
 
-    notice.addError("impossible mistake");
+    notice.addError("impossible mistake", "error", ERRORS_CODE.BAD_REQUEST);
     return notice;
   }
 

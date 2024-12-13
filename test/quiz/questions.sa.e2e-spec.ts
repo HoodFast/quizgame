@@ -22,7 +22,7 @@ describe("QuizSaController", () => {
     httpServer = app.getHttpServer();
     quizSaTestManager = new QuizSaTestManager(app);
     questionsSqlQueryRepository = module.get(QuestionsSqlQueryRepository);
-    await quizSaTestManager.createQuestions(201, 1);
+    await quizSaTestManager.createQuestions(200, 1);
   });
   beforeEach(() => {});
   it("should be defined", async () => {

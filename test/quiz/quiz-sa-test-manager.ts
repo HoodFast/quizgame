@@ -39,52 +39,6 @@ export class QuizSaTestManager {
     return;
   }
 
-  async updatePost(
-    updatePostData: InputPostCreate,
-    postId: string,
-    expectStatus: number,
-  ) {
-    const response = await request(this.app.getHttpServer())
-      .put(`/posts/${postId}`)
-      .auth("admin", "qwerty")
-      .send(updatePostData)
-      .expect(expectStatus);
-    return response;
-  }
-
-  async deletePost(id: string) {
-    await request(this.app.getHttpServer())
-      .delete(`/posts/${id}`)
-      .auth("admin", "qwerty")
-      .expect(204);
-    return;
-  }
-
-  checkPostBody(response: any) {
-    const post = response.body;
-    expect(post).toEqual({
-      id: expect.any(String),
-      title: expect.any(String),
-      shortDescription: expect.any(String),
-      content: expect.any(String),
-      blogId: expect.any(String),
-      blogName: expect.any(String),
-      createdAt: expect.any(String),
-      extendedLikesInfo: {
-        likesCount: expect.any(Number),
-        dislikesCount: expect.any(Number),
-        myStatus: expect.any(String),
-        newestLikes: [
-          {
-            addedAt: expect.any(String),
-            userId: expect.any(String),
-            login: expect.any(String),
-          },
-        ],
-      },
-    });
-  }
-
   checkAllQuestsBody(
     response: any,
     pageSize: number,

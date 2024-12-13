@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
@@ -67,7 +69,7 @@ export class GameController {
     >(command);
     return res.execute();
   }
-
+  @HttpCode(200)
   @UseGuards(AccessTokenAuthGuard)
   @Post("pairs/my-current/answers")
   async myAnswers(@Body() data: AnswerDto, @UserId() userId: string) {
@@ -82,10 +84,10 @@ export class GameController {
   async deleteGame() {
     return await this.gameRepo.deleteAllGame();
   }
-  @Post("pairs/:id")
-  async finish(@Param("id") id: string) {
-    await this.gameRepo.finish(id);
-  }
+  // @Post("pairs/:id")
+  // async finish(@Param("id") id: string) {
+  //   await this.gameRepo.finish(id);
+  // }
   @Get("allgame")
   async getGames() {
     return await this.gameRepo.getGames();

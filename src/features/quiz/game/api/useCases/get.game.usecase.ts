@@ -40,10 +40,10 @@ export class GetGameUseCase
       notice.addError("forbidden", "error", ERRORS_CODE.FORBIDDEN);
       return notice;
     }
-    if (getUserId.gameStatus !== gameStatuses.finished) {
-      notice.addError("game don`t finish", "error", ERRORS_CODE.FORBIDDEN);
-      return notice;
-    }
+    // if (getUserId.gameStatus !== gameStatuses.finished) {
+    //   notice.addError("game don`t finish", "error", ERRORS_CODE.FORBIDDEN);
+    //   return notice;
+    // }
     const game = await this.gameSqlQueryRepository.getGameById(command.gameId);
     if (!game) {
       notice.addError("game not found", "error", ERRORS_CODE.NOT_FOUND);
