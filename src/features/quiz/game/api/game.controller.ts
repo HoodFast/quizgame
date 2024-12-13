@@ -32,7 +32,7 @@ export class GameController {
     private commandBus: CommandBus,
     private gameRepo: GameSqlRepository,
   ) {}
-
+  @HttpCode(200)
   @UseGuards(AccessTokenAuthGuard)
   @Post("pairs/connection")
   async connection(@UserId() userId: string) {
