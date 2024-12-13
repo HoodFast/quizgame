@@ -1,6 +1,6 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Game, gameStatuses } from "../domain/game.sql.entity";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { Player } from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { GameViewType } from "../../question/api/output/game.view.type";
@@ -122,7 +122,16 @@ export class GameSqlQueryRepository {
   }
   async getGameByPlayerId(playerId: string) {
     const game = await this.gamesRepository.findOne({
-      where: [{ player_1Id: playerId }, { player_2Id: playerId }],
+      where: [
+        {
+          player_1Id: playerId,
+          status: In([gameStatuses.active, gameStatuses.pending]),
+        },
+        {
+          player_2Id: playerId,
+          status: In([gameStatuses.active, gameStatuses.pending]),
+        },
+      ],
     });
     if (!game) return null;
     return await this.getGameById(game.id);
