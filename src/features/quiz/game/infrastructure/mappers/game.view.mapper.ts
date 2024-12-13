@@ -10,6 +10,7 @@ export const GameViewMapper = (
   answers_2: Answer[],
   questions: Question[],
 ): GameViewType => {
+  debugger;
   return {
     id: game.id,
     firstPlayerProgress: playerMapper(

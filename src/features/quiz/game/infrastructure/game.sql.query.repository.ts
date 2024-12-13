@@ -52,6 +52,7 @@ export class GameSqlQueryRepository {
         questions.push(question);
       }
     }
+    debugger;
     if (!currentGame) return null;
     return GameViewMapper(currentGame, answers_1, answers_2, questions);
   }
