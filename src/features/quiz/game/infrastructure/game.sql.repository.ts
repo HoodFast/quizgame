@@ -187,8 +187,8 @@ export class GameSqlRepository {
   }
 
   async getGames() {
-    const games = await this.gamesRepository.find({});
+    // const games = await this.gamesRepository.find({});
 
-    return this.gamesSqlQueryRepository.getGameById(games[0].id);
+    return await this.gamesSqlQueryRepository.getAllGames();
   }
 }
