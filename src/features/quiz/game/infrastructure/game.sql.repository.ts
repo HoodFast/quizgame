@@ -163,6 +163,7 @@ export class GameSqlRepository {
       let status_player_2: playerStatus = playerStatus.draft;
       const player_1 = game.player_1;
       const player_2 = game.player_2;
+
       if (player_1.score > player_2.score) {
         status_player_1 = playerStatus.winner;
         status_player_2 = playerStatus.lose;

@@ -96,9 +96,6 @@ describe("QuizGame", () => {
     const finishedFirstGame = await request(httpServer)
       .get(`/pair-game-quiz/pairs/${firstGameId}`)
       .set("Authorization", `Bearer ${player1}`);
-    const game = await request(httpServer)
-      .get(`/pair-game-quiz/pairs/my-current`)
-      .set("Authorization", `Bearer ${player1}`);
 
     quizSaTestManager.checkGameResult(finishedFirstGame, 5, 2);
   });
@@ -127,9 +124,7 @@ describe("QuizGame", () => {
     const finishedFirstGame = await request(httpServer)
       .get(`/pair-game-quiz/pairs/${secondGameId}`)
       .set("Authorization", `Bearer ${player1}`);
-    console.log(`player1: ${finishedFirstGame.body.firstPlayerProgress.score},
-    player2: ${finishedFirstGame.body.secondPlayerProgress!.score}
-    `);
+
     quizSaTestManager.checkGameResult(finishedFirstGame, 5, 5);
   });
 });

@@ -95,12 +95,15 @@ export class AnswerGameUseCase
         notice.addData(AnswerViewMapper(addAnswer));
         return notice;
       }
-      const lastAnswerPlayer1 = currentGame.player_1.answers
-        .sort((a, b) => a.addedAt.getTime() - b.addedAt.getTime())
-        .slice(-1)[0];
-      const lastAnswerPlayer2 = currentGame.player_2.answers
-        .sort((a, b) => a.addedAt.getTime() - b.addedAt.getTime())
-        .slice(-1)[0];
+
+      const lastQuestionId = currentGame.questions!.slice(-1)[0].questionId;
+      const lastAnswerPlayer1 = currentGame.player_1.answers.filter(
+        (i) => i.questionId === lastQuestionId,
+      )[0];
+      const lastAnswerPlayer2 = currentGame.player_2.answers.filter(
+        (i) => i.questionId === lastQuestionId,
+      )[0];
+
       if (
         lastAnswerPlayer2.addedAt < lastAnswerPlayer1.addedAt &&
         currentGame.player_2.score > 0
@@ -113,7 +116,8 @@ export class AnswerGameUseCase
       ) {
         currentGame.player_1.score = currentGame.player_1.score + 1;
       }
-      await this.gameSqlRepository.finishGame(game);
+
+      await this.gameSqlRepository.finishGame(currentGame);
       notice.addData(AnswerViewMapper(addAnswer));
       return notice;
     }

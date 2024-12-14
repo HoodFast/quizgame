@@ -88,6 +88,7 @@ export class GameSqlQueryRepository {
         "player_2.user",
         "player_1.answers",
         "player_2.answers",
+        "questions",
       ],
       where: { id: gameId },
     });
