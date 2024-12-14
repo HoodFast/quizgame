@@ -112,18 +112,16 @@ export class GameSqlRepository {
   ): Promise<Answer | null> {
     try {
       const question = await this.gameQuestionsRepository.findOne({
+        relations: ["question"],
         where: { gameId: gameId, index: questionIndex },
       });
       if (!question) return null;
-      const player = await this.playersRepository.findOne({
-        where: { id: playerId },
-      });
-      if (!player) return null;
 
-      const currentQuestion =
-        await this.questionsSqlQueryRepository.getQuestionById(
-          question?.questionId,
-        );
+      const currentQuestion = question.question;
+      // const currentQuestion =
+      //   await this.questionsSqlQueryRepository.getQuestionById(
+      //     question?.questionId,
+      //   );
       if (!currentQuestion) return null;
       const answer = new Answer();
       answer.addedAt = new Date();
