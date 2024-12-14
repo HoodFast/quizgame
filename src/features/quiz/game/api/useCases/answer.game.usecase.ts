@@ -113,7 +113,7 @@ export class AnswerGameUseCase
       ) {
         currentGame.player_1.score = currentGame.player_1.score + 1;
       }
-      await this.finishGame(currentGame);
+      await this.gameSqlRepository.finishGame(game);
       notice.addData(AnswerViewMapper(addAnswer));
       return notice;
     }
@@ -126,9 +126,5 @@ export class AnswerGameUseCase
   ) {
     notice.addError(`${message}`, "error", ERRORS_CODE.FORBIDDEN);
     return notice;
-  }
-  async finishGame(game: Game) {
-    await this.gameSqlRepository.finishGame(game);
-    return;
   }
 }
