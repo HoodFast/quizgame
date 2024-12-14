@@ -33,18 +33,35 @@ export class GameSqlQueryRepository {
 
   async getGameById(gameId: string): Promise<GameViewType | null> {
     const currentGame = await this.gamesRepository.findOne({
-      relations: ["player_1", "player_1.user", "player_2", "player_2.user"],
+      relations: [
+        "player_1",
+        "player_1.user",
+        "player_2",
+        "player_2.user",
+        "player_1.answers",
+        "player_2.answers",
+      ],
       where: { id: gameId },
     });
     if (!currentGame) return null;
-    const answers_1 = await this.answersRepository.find({
-      where: { playerId: currentGame.player_1Id },
-      order: { addedAt: ORDER.asc },
-    });
-    const answers_2 = await this.answersRepository.find({
-      where: { playerId: currentGame.player_2Id },
-      order: { addedAt: ORDER.asc },
-    });
+    const answers_1 = currentGame.player_1
+      ? currentGame.player_1.answers.sort(
+          (a, b) => a.addedAt.getTime() - b.addedAt.getTime(),
+        )
+      : [];
+    const answers_2 = currentGame.player_2
+      ? currentGame.player_2.answers.sort(
+          (a, b) => a.addedAt.getTime() - b.addedAt.getTime(),
+        )
+      : [];
+    // const answers_1 = await this.answersRepository.find({
+    //   where: { playerId: currentGame.player_1Id },
+    //   order: { addedAt: ORDER.asc },
+    // });
+    // const answers_2 = await this.answersRepository.find({
+    //   where: { playerId: currentGame.player_2Id },
+    //   order: { addedAt: ORDER.asc },
+    // });
     const currentQuestion = await this.gameQuestionsRepository.find({
       where: { gameId },
       order: { index: ORDER.asc },
@@ -58,9 +75,24 @@ export class GameSqlQueryRepository {
         questions.push(question);
       }
     }
-    debugger;
+
     if (!currentGame) return null;
     return GameViewMapper(currentGame, answers_1, answers_2, questions);
+  }
+  async getDomainGameById(gameId: string): Promise<Game | null> {
+    const currentGame = await this.gamesRepository.findOne({
+      relations: [
+        "player_1",
+        "player_1.user",
+        "player_2",
+        "player_2.user",
+        "player_1.answers",
+        "player_2.answers",
+      ],
+      where: { id: gameId },
+    });
+    if (!currentGame) return null;
+    return currentGame;
   }
   async getAllGames(): Promise<GameViewType | null> {
     const currentGames = await this.gamesRepository.find({
@@ -90,7 +122,7 @@ export class GameSqlQueryRepository {
         }
       }
       if (!currentGame) return null;
-      debugger;
+
       res.push(GameViewMapper(currentGame, answers_1, answers_2, questions));
     }
     return res;

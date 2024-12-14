@@ -10,7 +10,6 @@ export const GameViewMapper = (
   answers_2: Answer[],
   questions: Question[],
 ): GameViewType => {
-  debugger;
   return {
     id: game.id,
     firstPlayerProgress: playerMapper(
@@ -39,9 +38,9 @@ export const GameViewMapper = (
 const questionsMapper = (question: Question) => {
   return { id: question.id, body: question.body };
 };
-const playerMapper = (answers_1, userId, login, score) => {
+const playerMapper = (answers, userId, login, score) => {
   return {
-    answers: answers_1.map(AnswerViewMapper),
+    answers: answers.map(AnswerViewMapper),
     player: { id: userId, login },
     score,
   };

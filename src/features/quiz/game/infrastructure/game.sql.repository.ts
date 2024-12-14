@@ -1,7 +1,11 @@
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { Game, gameStatuses } from "../domain/game.sql.entity";
 import { DataSource, Repository } from "typeorm";
-import { Player, playerActive } from "../domain/player.sql.entity";
+import {
+  Player,
+  playerActive,
+  playerStatus,
+} from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { Answer, AnswersStatus } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
@@ -132,7 +136,7 @@ export class GameSqlRepository {
       } else {
         answer.answerStatus = AnswersStatus.incorrect;
       }
-      debugger;
+
       const saved = await this.answersRepository.save(answer);
       return saved;
     } catch (e) {
@@ -153,12 +157,27 @@ export class GameSqlRepository {
       return null;
     }
   }
-  async finishGame(game: Game, player_1: Player, player_2: Player) {
+  async finishGame(game: Game) {
     try {
+      let status_player_1: playerStatus = playerStatus.draft;
+      let status_player_2: playerStatus = playerStatus.draft;
+      const player_1 = game.player_1;
+      const player_2 = game.player_2;
+      if (player_1.score > player_2.score) {
+        status_player_1 = playerStatus.winner;
+        status_player_2 = playerStatus.lose;
+      }
+      if (player_1.score < player_2.score) {
+        status_player_1 = playerStatus.lose;
+        status_player_2 = playerStatus.winner;
+      }
+
       const res = await this.dataSource.manager.transaction(
         async (transactionalEntityManager) => {
-          player_1.active = playerActive.finished;
-          player_2.active = playerActive.finished;
+          game.player_1.active = playerActive.finished;
+          game.player_2.active = playerActive.finished;
+          player_1.status = status_player_1;
+          player_2.status = status_player_2;
           game.status = gameStatuses.finished;
           game.finishGameDate = new Date();
           await transactionalEntityManager.save(player_1);
@@ -166,24 +185,11 @@ export class GameSqlRepository {
           await transactionalEntityManager.save(game);
         },
       );
-      const players = await this.playersRepository.find({});
-      const games = await this.gamesRepository.find({});
-      const view = await this.gamesSqlQueryRepository.getGameById(game.id);
-      debugger;
-      return;
-      // await this.playersRepository.update(player_1Id, {
-      //   active: playerActive.finished,
-      // });
-      // await this.playersRepository.update(player_2Id, {
-      //   active: playerActive.finished,
-      // });
-      // return await this.gamesRepository.update(gameId, {
-      //   status: gameStatuses.finished,
-      //   finishGameDate: new Date(),
-      // });
+
+      return true;
     } catch (e) {
       console.log(e);
-      return null;
+      return false;
     }
   }
 

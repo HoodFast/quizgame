@@ -54,8 +54,6 @@ export class AnswerGameUseCase
     if (game.status === gameStatuses.finished) {
       notice.addError("game is finished", "error", ERRORS_CODE.FORBIDDEN);
     }
-    const secondPlayerId =
-      game.player_1Id === currentPlayer.id ? game.player_2Id : game.player_1Id;
     const currentAnswers = await this.playerQuerySqlRepository.getAnswers(
       currentPlayer.id,
     );
@@ -83,77 +81,39 @@ export class AnswerGameUseCase
     if (addAnswer.answerStatus === AnswersStatus.correct) {
       await this.gameSqlRepository.addPoint(addAnswer.playerId, 1);
     }
-    // if (questionsIndex === 4) {
-    //   const player = await this.playerQuerySqlRepository.getPlayerToPlayerId(
-    //     currentPlayer.id,
-    //   );
-    //   const secondPlayer =
-    //     await this.playerQuerySqlRepository.getPlayerToPlayerId(secondPlayerId);
-    //   if (!player) return this.isForbidden(notice);
-    //   if (!secondPlayer) return this.isForbidden(notice);
-    //   const secondPlayerLastAnswers =
-    //     await this.playerQuerySqlRepository.getAnswersByQuestionId(
-    //       secondPlayerId,
-    //       addAnswer.questionId,
-    //     );
-    //   if (secondPlayerLastAnswers && game.status !== gameStatuses.finished) {
-    //     if (
-    //       addAnswer.addedAt < secondPlayerLastAnswers.addedAt &&
-    //       player.score > 0
-    //     ) {
-    //       const addPoints = await this.gameSqlRepository.addPoint(
-    //         addAnswer.playerId,
-    //         1,
-    //       );
-    //       // await this.finishGame(player.id, secondPlayerId, game.id);
-    //     } else {
-    //       if (
-    //         (secondPlayerLastAnswers.addedAt > addAnswer.addedAt,
-    //         secondPlayer.score > 0)
-    //       ) {
-    //         const addPoints = await this.gameSqlRepository.addPoint(
-    //           secondPlayer.id,
-    //           1,
-    //         );
-    //         await this.finishGame(player.id, secondPlayerId, game);
-    //       }
-    //     }
-    //   }
-    // }
+
     if (questionsIndex === 4) {
-      const secondPlayerLastAnswers =
-        await this.playerQuerySqlRepository.getAnswersByQuestionId(
-          secondPlayerId,
-          addAnswer.questionId,
-        );
-      if (!secondPlayerLastAnswers) {
+      const currentGame = await this.gameSqlQueryRepository.getDomainGameById(
+        game.id,
+      );
+      if (!currentGame) return this.isForbidden(notice);
+
+      if (
+        currentGame.player_1.answers.length < 5 ||
+        currentGame.player_2.answers.length < 5
+      ) {
         notice.addData(AnswerViewMapper(addAnswer));
         return notice;
       }
-      let player = await this.playerQuerySqlRepository.getPlayerToPlayerId(
-        currentPlayer.id,
-      );
-      let secondPlayer =
-        await this.playerQuerySqlRepository.getPlayerToPlayerId(secondPlayerId);
-      if (!player) return this.isForbidden(notice);
-      if (!secondPlayer) return this.isForbidden(notice);
+      const lastAnswerPlayer1 = currentGame.player_1.answers
+        .sort((a, b) => a.addedAt.getTime() - b.addedAt.getTime())
+        .slice(-1)[0];
+      const lastAnswerPlayer2 = currentGame.player_2.answers
+        .sort((a, b) => a.addedAt.getTime() - b.addedAt.getTime())
+        .slice(-1)[0];
       if (
-        secondPlayerLastAnswers.addedAt < addAnswer.addedAt &&
-        secondPlayer.score > 0
+        lastAnswerPlayer2.addedAt < lastAnswerPlayer1.addedAt &&
+        currentGame.player_2.score > 0
       ) {
-        secondPlayer = await this.gameSqlRepository.addPoint(
-          secondPlayer.id,
-          1,
-        );
+        currentGame.player_2.score = currentGame.player_2.score + 1;
       }
       if (
-        secondPlayerLastAnswers.addedAt > addAnswer.addedAt &&
-        player.score > 0
+        lastAnswerPlayer2.addedAt > lastAnswerPlayer1.addedAt &&
+        currentGame.player_1.score > 0
       ) {
-        player = await this.gameSqlRepository.addPoint(player.id, 1);
+        currentGame.player_1.score = currentGame.player_1.score + 1;
       }
-
-      await this.finishGame(player!, secondPlayer!, game);
+      await this.finishGame(currentGame);
       notice.addData(AnswerViewMapper(addAnswer));
       return notice;
     }
@@ -167,27 +127,8 @@ export class AnswerGameUseCase
     notice.addError(`${message}`, "error", ERRORS_CODE.FORBIDDEN);
     return notice;
   }
-  async finishGame(player1: Player, player2: Player, game: Game) {
-    // const player_1 =
-    //   await this.playerQuerySqlRepository.getPlayerToPlayerId(player_1Id);
-    // if (!player_1) return;
-    // const player_2 =
-    //   await this.playerQuerySqlRepository.getPlayerToPlayerId(player2_Id);
-    // if (!player_2) return;
-    await this.gameSqlRepository.finishGame(game, player1, player2);
-    if (player1.score === player2.score) {
-      await this.playerSqlRepository.makePlayerStatus(
-        player1.id,
-        player2.id,
-        true,
-      );
-      return;
-    }
-    if (player1.score > player2.score) {
-      await this.playerSqlRepository.makePlayerStatus(player1.id, player2.id);
-    } else {
-      await this.playerSqlRepository.makePlayerStatus(player2.id, player1.id);
-    }
+  async finishGame(game: Game) {
+    await this.gameSqlRepository.finishGame(game);
     return;
   }
 }

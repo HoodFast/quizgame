@@ -6,7 +6,7 @@ import { TestingSqlQueryRepository } from "../../src/features/testing/infrastruc
 import { TestManager } from "../testManager";
 import { QuizSaTestManager } from "../quiz/quiz-sa-test-manager";
 
-describe("QuizGame", () => {
+describe("create users and questions", () => {
   let app: INestApplication;
   let httpServer;
   let quizSaTestManager;
