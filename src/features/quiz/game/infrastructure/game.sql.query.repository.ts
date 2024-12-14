@@ -8,6 +8,10 @@ import { Answer } from "../domain/answer.sql.entity";
 import { GameViewMapper } from "./mappers/game.view.mapper";
 import { Question } from "../../question/domain/question.sql.entity";
 
+enum ORDER {
+  asc = "ASC",
+  desc = "DESC",
+}
 type getGameAndUserIdOutput = {
   player_1UserId: string;
   player_2UserId: string | null;
@@ -35,13 +39,15 @@ export class GameSqlQueryRepository {
     if (!currentGame) return null;
     const answers_1 = await this.answersRepository.find({
       where: { playerId: currentGame.player_1Id },
+      order: { addedAt: ORDER.asc },
     });
     const answers_2 = await this.answersRepository.find({
       where: { playerId: currentGame.player_2Id },
+      order: { addedAt: ORDER.asc },
     });
     const currentQuestion = await this.gameQuestionsRepository.find({
       where: { gameId },
-      order: { index: "DESC" },
+      order: { index: ORDER.asc },
     });
     let questions: Question[] = [];
     for (let i = 0; i < currentQuestion.length; i++) {
