@@ -99,12 +99,7 @@ export class GameSqlRepository {
     const deletedGame = await this.gamesRepository.delete({});
     return await this.gamesRepository.find({});
   }
-  async finish(id: string) {
-    const game = await this.gamesRepository.update(id, {
-      status: gameStatuses.finished,
-    });
-    return;
-  }
+
   async addAnswer(
     gameId: string,
     question: GameQuestion,
@@ -191,10 +186,11 @@ export class GameSqlRepository {
       return false;
     }
   }
-
+  async gameSave(game: Game) {
+    await this.gamesRepository.save(game);
+    return;
+  }
   async getGames() {
-    // const games = await this.gamesRepository.find({});
-
     return await this.gamesSqlQueryRepository.getAllGames();
   }
 }

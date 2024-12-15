@@ -35,10 +35,11 @@ import { GameSqlQueryRepository } from "./features/quiz/game/infrastructure/game
           host: sqlDataBaseSettings?.SQL_HOST,
           username: sqlDataBaseSettings?.SQL_USERNAME,
           password: sqlDataBaseSettings?.SQL_PASS,
-          database: "neondb",
+          database: "'default_db'",
           ssl: true,
           autoLoadEntities: true,
           synchronize: true,
+          port: 5432,
         };
       },
     }),

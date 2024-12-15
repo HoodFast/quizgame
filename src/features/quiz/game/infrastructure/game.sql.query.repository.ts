@@ -182,7 +182,16 @@ export class GameSqlQueryRepository {
         { player_1Id: playerId, status: gameStatuses.active },
         { player_2Id: playerId, status: gameStatuses.active },
       ],
-      relations: ["questions", "questions.question"],
+      relations: [
+        "player_1",
+        "player_1.user",
+        "player_2",
+        "player_2.user",
+        "player_1.answers",
+        "player_2.answers",
+        "questions",
+        "questions.question",
+      ],
     });
   }
 

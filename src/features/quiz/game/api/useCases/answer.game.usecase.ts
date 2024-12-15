@@ -81,14 +81,21 @@ export class AnswerGameUseCase
       return notice;
     }
     if (addAnswer.answerStatus === AnswersStatus.correct) {
+      if (game.player_1Id === currentPlayer.id) {
+        game.player_1.score = game.player_1.score + 1;
+      }
+      if (game.player_2Id === currentPlayer.id) {
+        game.player_2.score = game.player_2.score + 1;
+      }
       await this.gameSqlRepository.addPoint(addAnswer.playerId, 1);
     }
-
+    // await this.gameSqlRepository.gameSave(game);
     if (questionsIndex === 4) {
       const currentGame = await this.gameSqlQueryRepository.getDomainGameById(
         game.id,
       );
       if (!currentGame) return this.isForbidden(notice);
+      // const currentGame = game;
 
       if (
         currentGame.player_1.answers.length < 5 ||
@@ -123,6 +130,7 @@ export class AnswerGameUseCase
       notice.addData(AnswerViewMapper(addAnswer));
       return notice;
     }
+
     notice.addData(AnswerViewMapper(addAnswer));
     return notice;
   }
