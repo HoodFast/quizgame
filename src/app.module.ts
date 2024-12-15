@@ -12,7 +12,6 @@ import { AuthModule } from "./features/auth/auth.module";
 import { BloggersPlatformModule } from "./features/bloggers-platform/bloggers.platform.module";
 import { TestingModule } from "./features/testing/testing.module";
 import { QuizModule } from "./features/quiz/quiz.module";
-import { GameSqlQueryRepository } from "./features/quiz/game/infrastructure/game.sql.query.repository";
 
 @Module({
   imports: [
@@ -36,9 +35,13 @@ import { GameSqlQueryRepository } from "./features/quiz/game/infrastructure/game
           username: sqlDataBaseSettings?.SQL_USERNAME,
           password: sqlDataBaseSettings?.SQL_PASS,
           database: "default_db",
-          ssl: true,
+          // ssl: true,
+          ssl: {
+            rejectUnauthorized: false, // Добавлено для игнорирования проверки сертификата
+          },
           autoLoadEntities: true,
           synchronize: true,
+          port: 5432,
         };
       },
     }),
