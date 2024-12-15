@@ -62,10 +62,12 @@ export class AnswerGameUseCase
     if (questionsIndex > 4) {
       return this.isForbidden(notice, "already answered to all questions");
     }
+    if (!game.questions) return this.isForbidden(notice, "not questions");
+    const question = game.questions.filter((i) => i.index === questionsIndex);
 
     const addAnswer = await this.gameSqlRepository.addAnswer(
       game.id,
-      questionsIndex,
+      question[0],
       command.body,
       currentPlayer.id,
     );

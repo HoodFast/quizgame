@@ -10,6 +10,7 @@ import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { Answer, AnswersStatus } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
 import { GameSqlQueryRepository } from "./game.sql.query.repository";
+import { Question } from "../../question/domain/question.sql.entity";
 
 export class GameSqlRepository {
   constructor(
@@ -106,22 +107,21 @@ export class GameSqlRepository {
   }
   async addAnswer(
     gameId: string,
-    questionIndex: number,
+    question: GameQuestion,
     body: string,
     playerId: string,
   ): Promise<Answer | null> {
     try {
-      const question = await this.gameQuestionsRepository.findOne({
-        relations: ["question"],
-        where: { gameId: gameId, index: questionIndex },
-      });
-      if (!question) return null;
+      // const question = await this.gameQuestionsRepository.findOne({
+      //   relations: ["question"],
+      //   where: { gameId: gameId, index: questionIndex },
 
       const currentQuestion = question.question;
       // const currentQuestion =
       //   await this.questionsSqlQueryRepository.getQuestionById(
       //     question?.questionId,
       //   );
+
       if (!currentQuestion) return null;
       const answer = new Answer();
       answer.addedAt = new Date();

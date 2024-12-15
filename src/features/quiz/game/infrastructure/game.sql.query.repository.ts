@@ -111,7 +111,7 @@ export class GameSqlQueryRepository {
       });
       const currentQuestion = await this.gameQuestionsRepository.find({
         where: { gameId },
-        order: { index: "DESC" },
+        order: { index: ORDER.asc },
       });
       let questions: Question[] = [];
       for (let i = 0; i < currentQuestion.length; i++) {
@@ -182,6 +182,7 @@ export class GameSqlQueryRepository {
         { player_1Id: playerId, status: gameStatuses.active },
         { player_2Id: playerId, status: gameStatuses.active },
       ],
+      relations: ["questions", "questions.question"],
     });
   }
 
