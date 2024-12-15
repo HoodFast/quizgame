@@ -35,11 +35,10 @@ import { GameSqlQueryRepository } from "./features/quiz/game/infrastructure/game
           host: sqlDataBaseSettings?.SQL_HOST,
           username: sqlDataBaseSettings?.SQL_USERNAME,
           password: sqlDataBaseSettings?.SQL_PASS,
-          database: "'default_db'",
+          database: "default_db",
           ssl: true,
           autoLoadEntities: true,
           synchronize: true,
-          port: 5432,
         };
       },
     }),
@@ -53,3 +52,18 @@ import { GameSqlQueryRepository } from "./features/quiz/game/infrastructure/game
   providers: [AppService, ConfigService],
 })
 export class AppModule {}
+
+const param = [
+  "AC_SECRET+",
+  "ENV+",
+  "RECOVERY_SECRET+",
+  "RECOVERY_TIME+",
+  "SQL_DATABASE+",
+  "SQL_PASS+",
+  "AC_TIME+",
+  "PORT+",
+  "RT_SECRET+",
+  "RT_TIME+",
+  "SQL_HOST+",
+  "SQL_USERNAME+",
+];
