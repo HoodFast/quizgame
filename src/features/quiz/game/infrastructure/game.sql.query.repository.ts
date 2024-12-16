@@ -7,6 +7,7 @@ import { GameViewType } from "../../question/api/output/game.view.type";
 import { Answer } from "../domain/answer.sql.entity";
 import { GameViewMapper } from "./mappers/game.view.mapper";
 import { Question } from "../../question/domain/question.sql.entity";
+import { SortData } from "../../../../base/sortData/sortData.model";
 
 enum ORDER {
   asc = "ASC",
@@ -54,14 +55,7 @@ export class GameSqlQueryRepository {
           (a, b) => a.addedAt.getTime() - b.addedAt.getTime(),
         )
       : [];
-    // const answers_1 = await this.answersRepository.find({
-    //   where: { playerId: currentGame.player_1Id },
-    //   order: { addedAt: ORDER.asc },
-    // });
-    // const answers_2 = await this.answersRepository.find({
-    //   where: { playerId: currentGame.player_2Id },
-    //   order: { addedAt: ORDER.asc },
-    // });
+
     const currentQuestion = await this.gameQuestionsRepository.find({
       where: { gameId },
       order: { index: ORDER.asc },
@@ -95,38 +89,24 @@ export class GameSqlQueryRepository {
     if (!currentGame) return null;
     return currentGame;
   }
-  async getAllGames(): Promise<GameViewType | null> {
-    const currentGames = await this.gamesRepository.find({
-      relations: ["player_1", "player_1.user", "player_2", "player_2.user"],
-    });
-    const res: any = [];
-    for (let i = 0; i < currentGames.length; i++) {
-      const currentGame = currentGames[i];
-      const gameId = currentGames[i].id;
-      const answers_1 = await this.answersRepository.find({
-        where: { playerId: currentGame.player_1Id },
-      });
-      const answers_2 = await this.answersRepository.find({
-        where: { playerId: currentGame.player_2Id },
-      });
-      const currentQuestion = await this.gameQuestionsRepository.find({
-        where: { gameId },
-        order: { index: ORDER.asc },
-      });
-      let questions: Question[] = [];
-      for (let i = 0; i < currentQuestion.length; i++) {
-        const question = await this.questionsRepository.findOne({
-          where: { id: currentQuestion[i].questionId },
-        });
-        if (question) {
-          questions.push(question);
-        }
-      }
-      if (!currentGame) return null;
-
-      res.push(GameViewMapper(currentGame, answers_1, answers_2, questions));
-    }
-    return res;
+  async getAllGamesByUserId(
+    sortData: SortData,
+    userId: string,
+  ): Promise<Game[] | null> {
+    const { sortBy, sortDirection, pageSize, pageNumber } = sortData;
+    const offset = (pageNumber - 1) * pageSize;
+    const res = await this.gamesRepository
+      .createQueryBuilder("game")
+      .leftJoinAndSelect("game.player_1", "player_1")
+      .leftJoinAndSelect("game.player_2", "player_2")
+      .where("player_1.userId = :userId", { userId })
+      .orWhere("player_2.userId = :userId", { userId })
+      .orderBy(`game.${sortBy}`, sortDirection)
+      .skip(offset)
+      .take(pageSize)
+      .getManyAndCount();
+    const pagesCount = Math.ceil(res[1] / pageSize);
+    return res[0];
   }
   async getGameWithStatusPending(): Promise<Game | null> {
     try {

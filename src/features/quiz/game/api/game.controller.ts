@@ -10,6 +10,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UsePipes,
 } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { AccessTokenAuthGuard } from "../../../../guards/access.token.auth.guard";
@@ -24,6 +25,10 @@ import { GetCurrentGameCommand } from "./useCases/get.current.game.usecase";
 import { AnswerDto } from "./input/answer.input.dto";
 import { AnswerGameCommand } from "./useCases/answer.game.usecase";
 import { AnswerViewType } from "../../question/api/output/answer.view.type";
+import { SortDirectionPipe } from "../../../../base/pipes/sortDirectionPipe";
+import { QuestionSortData } from "../../question/api/input/question.sort.data";
+import { SortData } from "../../../../base/sortData/sortData.model";
+import { GetAllGamesCommand } from "./useCases/get.all.games.query.usecase";
 
 @Controller("pair-game-quiz")
 export class GameController {
@@ -80,6 +85,14 @@ export class GameController {
     >(command);
     return res.execute();
   }
+  @UseGuards(AccessTokenAuthGuard)
+  @UsePipes(SortDirectionPipe)
+  @Get("my")
+  async getMyGames(@UserId() userId: string, @Query() data: SortData) {
+    const command = new GetAllGamesCommand(userId, data);
+    const res = await this.queryBus.execute(command);
+    return res;
+  }
   @Delete("allgame")
   async deleteGame() {
     return await this.gameRepo.deleteAllGame();
@@ -88,8 +101,8 @@ export class GameController {
   // async finish(@Param("id") id: string) {
   //   await this.gameRepo.finish(id);
   // }
-  @Get("allgame")
-  async getGames() {
-    return await this.gameRepo.getGames();
-  }
+  // @Get("allgame")
+  // async getGames() {
+  //   return await this.gameRepo.getGames();
+  // }
 }

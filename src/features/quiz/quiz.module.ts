@@ -28,6 +28,7 @@ import { ConnectGameUseCase } from "./game/api/useCases/connect.game.usecase";
 import { GetGameUseCase } from "./game/api/useCases/get.game.usecase";
 import { GetCurrentGameUseCase } from "./game/api/useCases/get.current.game.usecase";
 import { AnswerGameUseCase } from "./game/api/useCases/answer.game.usecase";
+import { GetAllGamesQueryUseCase } from "./game/api/useCases/get.all.games.query.usecase";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AnswerGameUseCase } from "./game/api/useCases/answer.game.usecase";
   ],
   controllers: [QuizSaController, GameController],
   providers: [
+    GetAllGamesQueryUseCase,
     AnswerGameUseCase,
     GetCurrentGameUseCase,
     GetGameUseCase,

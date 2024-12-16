@@ -190,7 +190,4 @@ export class GameSqlRepository {
     await this.gamesRepository.save(game);
     return;
   }
-  async getGames() {
-    return await this.gamesSqlQueryRepository.getAllGames();
-  }
 }

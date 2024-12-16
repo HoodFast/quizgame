@@ -5,10 +5,56 @@ import { isBoolean } from "class-validator";
 import { AnswersStatus } from "../../src/features/quiz/game/domain/answer.sql.entity";
 import { gameStatuses } from "../../src/features/quiz/game/domain/game.sql.entity";
 import { GameViewType } from "../../src/features/quiz/question/api/output/game.view.type";
+import { TestManager } from "../testManager";
 
+export enum winnerPlayers {
+  player_1 = "player_1",
+  player_2 = "player_2",
+  draft = "draft",
+}
 export class QuizSaTestManager {
   constructor(protected readonly app: INestApplication) {}
 
+  async createGames(
+    player1: string,
+    player2: string,
+    finish: winnerPlayers = winnerPlayers.draft,
+  ) {
+    await request(this.app.getHttpServer())
+      .post(`/pair-game-quiz/pairs/connection`)
+      .set("Authorization", `Bearer ${player1}`);
+    const game = await request(this.app.getHttpServer())
+      .post(`/pair-game-quiz/pairs/connection`)
+      .set("Authorization", `Bearer ${player2}`);
+
+    let player_1Answer = { answer: "def" };
+    let player_2Answer = { answer: "abc" };
+    if (finish === winnerPlayers.player_1) {
+      player_1Answer = { answer: "111" };
+      player_2Answer = { answer: "abc" };
+    }
+    if (finish === winnerPlayers.player_2) {
+      player_2Answer = { answer: "111" };
+      player_1Answer = { answer: "abc" };
+    }
+
+    for (let i = 0; i < 5; i++) {
+      await request(this.app.getHttpServer())
+        .post(`/pair-game-quiz/pairs/my-current/answers`)
+        .set("Authorization", `Bearer ${player1}`)
+        .send(player_1Answer);
+    }
+    for (let i = 0; i < 5; i++) {
+      await request(this.app.getHttpServer())
+        .post(`/pair-game-quiz/pairs/my-current/answers`)
+        .set("Authorization", `Bearer ${player2}`)
+        .send(player_2Answer);
+    }
+    const res = await request(this.app.getHttpServer())
+      .get(`/pair-game-quiz/pairs/${game.body.id}`)
+      .set("Authorization", `Bearer ${player1}`);
+    return res.body;
+  }
   async createQuestions(expectStatus: number, quantity: number = 1) {
     const questionsData = {
       body: "question text",
