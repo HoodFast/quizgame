@@ -4,12 +4,21 @@ import { Answer } from "../../domain/answer.sql.entity";
 import { Question } from "../../../question/domain/question.sql.entity";
 import { AnswerViewMapper } from "./answer.view.mapper";
 
-export const GameViewMapper = (
-  game: Game,
-  answers_1: Answer[],
-  answers_2: Answer[],
-  questions: Question[],
-): GameViewType => {
+export const GameViewMapper = (game: Game): GameViewType => {
+  const answers_1 = game.player_1
+    ? game.player_1.answers.sort(
+        (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
+      )
+    : null;
+  const answers_2 = game.player_2
+    ? game.player_1.answers.sort(
+        (a, b) => b.addedAt.getTime() - a.addedAt.getTime(),
+      )
+    : null;
+  const questions = game.questions
+    ? game.questions.sort((a, b) => b.index - a.index).map((i) => i.question)
+    : [];
+
   return {
     id: game.id,
     firstPlayerProgress: playerMapper(

@@ -29,6 +29,7 @@ import { SortDirectionPipe } from "../../../../base/pipes/sortDirectionPipe";
 import { QuestionSortData } from "../../question/api/input/question.sort.data";
 import { SortData } from "../../../../base/sortData/sortData.model";
 import { GetAllGamesCommand } from "./useCases/get.all.games.query.usecase";
+import { GetMyStatisticCommand } from "./useCases/get.statistic.query.usecase";
 
 @Controller("pair-game-quiz")
 export class GameController {
@@ -91,7 +92,14 @@ export class GameController {
   async getMyGames(@UserId() userId: string, @Query() data: SortData) {
     const command = new GetAllGamesCommand(userId, data);
     const res = await this.queryBus.execute(command);
-    return res;
+    return res.execute();
+  }
+  @UseGuards(AccessTokenAuthGuard)
+  @Get("my-statistic")
+  async getMyStatistic(@UserId() userId: string) {
+    const command = new GetMyStatisticCommand(userId);
+    const res = await this.queryBus.execute(command);
+    return res.execute();
   }
   @Delete("allgame")
   async deleteGame() {

@@ -41,6 +41,8 @@ describe("create users and questions and game statistics", () => {
   it("create statistics games", async () => {
     const player1 = await testManager.createAccessToken();
     const player2 = await testManager.createAccessToken();
+    const player3 = await testManager.createAccessToken();
+    const player4 = await testManager.createAccessToken();
     for (let i = 0; i < 5; i++) {
       await quizSaTestManager.createGames(
         player1,
@@ -57,6 +59,9 @@ describe("create users and questions and game statistics", () => {
     }
     for (let i = 0; i < 5; i++) {
       await quizSaTestManager.createGames(player1, player2);
+    }
+    for (let i = 0; i < 5; i++) {
+      await quizSaTestManager.createGames(player2, player3);
     }
     console.log(`player_1:   ${player1},
     player_2:   ${player2}`);
