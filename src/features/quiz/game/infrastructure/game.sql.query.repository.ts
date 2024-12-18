@@ -1,15 +1,19 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Game, gameStatuses } from "../domain/game.sql.entity";
 import { In, Repository } from "typeorm";
-import { Player } from "../domain/player.sql.entity";
+import {
+  Player,
+  playerActive,
+  playerStatus,
+} from "../domain/player.sql.entity";
 import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { GameViewType } from "../../question/api/output/game.view.type";
 import { Answer } from "../domain/answer.sql.entity";
 import { GameViewMapper } from "./mappers/game.view.mapper";
 import { Question } from "../../question/domain/question.sql.entity";
 import { SortData } from "../../../../base/sortData/sortData.model";
-import { commentSqlOrmMapper } from "../../../bloggers-platform/comments/infrastructure/mappers/comments.sql.mapper";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
+import { StatisticViewDto } from "../api/output/statistics.output.dto";
 
 enum ORDER {
   asc = "ASC",
@@ -33,7 +37,43 @@ export class GameSqlQueryRepository {
     @InjectRepository(Answer)
     protected answersRepository: Repository<Answer>,
   ) {}
+  async getStatistic(userId: string): Promise<StatisticViewDto> {
+    const players = await this.playersRepository.find({
+      where: { userId, active: playerActive.finished },
+    });
+    let sumScore = 0;
+    let avgScores = 0;
+    let winsCount = 0;
+    let lossesCount = 0;
+    let drawsCount = 0;
+    const gamesCount = players.length;
+    if (gamesCount > 0) {
+      sumScore = players.reduce((acc, i) => {
+        return acc + i.score;
+      }, 0);
+      avgScores = Number.isInteger(sumScore / gamesCount)
+        ? sumScore / gamesCount
+        : parseFloat((sumScore / gamesCount).toFixed(2));
+      winsCount = players.filter(
+        (i) => i.status === playerStatus.winner,
+      ).length;
+      lossesCount = players.filter(
+        (i) => i.status === playerStatus.lose,
+      ).length;
+      lossesCount = players.filter(
+        (i) => i.status === playerStatus.draft,
+      ).length;
+    }
 
+    return {
+      sumScore,
+      avgScores,
+      gamesCount,
+      winsCount,
+      lossesCount,
+      drawsCount,
+    };
+  }
   async getGameById(gameId: string): Promise<GameViewType | null> {
     try {
       const currentGame = await this.gamesRepository
@@ -58,18 +98,6 @@ export class GameSqlQueryRepository {
   }
   async getDomainGameById(gameId: string): Promise<Game | null> {
     try {
-      const currentGame = await this.gamesRepository.findOne({
-        relations: [
-          "player_1",
-          "player_1.user",
-          "player_2",
-          "player_2.user",
-          "player_1.answers",
-          "player_2.answers",
-          "questions",
-        ],
-        where: { id: gameId },
-      });
       const game = await this.gamesRepository
         .createQueryBuilder("game")
         .leftJoinAndSelect("game.player_1", "player_1")

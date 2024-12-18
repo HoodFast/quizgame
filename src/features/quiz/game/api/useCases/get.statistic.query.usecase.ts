@@ -2,12 +2,9 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
 import { Pagination } from "../../../../../base/paginationInputDto/paginationOutput";
 import { InterlayerNotice } from "../../../../../base/models/Interlayer";
-import {
-  SortData,
-  sortDirection,
-} from "../../../../../base/sortData/sortData.model";
 import { GameViewType } from "../../../question/api/output/game.view.type";
 import { GameSqlQueryRepository } from "../../infrastructure/game.sql.query.repository";
+import { StatisticViewDto } from "../output/statistics.output.dto";
 
 export class GetMyStatisticCommand {
   constructor(public userId: string) {}
@@ -16,21 +13,16 @@ export class GetMyStatisticCommand {
 @QueryHandler(GetMyStatisticCommand)
 export class GetMyStatisticQueryUseCase
   implements
-    IQueryHandler<
-      GetMyStatisticCommand,
-      InterlayerNotice<Pagination<GameViewType>>
-    >
+    IQueryHandler<GetMyStatisticCommand, InterlayerNotice<StatisticViewDto>>
 {
   constructor(private gamesSqlQueryRepository: GameSqlQueryRepository) {}
 
   async execute(
     command: GetMyStatisticCommand,
-  ): Promise<InterlayerNotice<Pagination<GameViewType>>> {
-    const notice = new InterlayerNotice<Pagination<GameViewType>>();
+  ): Promise<InterlayerNotice<StatisticViewDto>> {
+    const notice = new InterlayerNotice<StatisticViewDto>();
 
-    const x: any = {};
-    const result: any = await this.gamesSqlQueryRepository.getAllGamesByUserId(
-      x,
+    const result: any = await this.gamesSqlQueryRepository.getStatistic(
       command.userId,
     );
     if (!result) {
