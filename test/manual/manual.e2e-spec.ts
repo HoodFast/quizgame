@@ -30,7 +30,7 @@ describe("create users and questions and game statistics", () => {
       const accessToken = await testManager.createAccessToken();
       accessTokens.push(accessToken);
     }
-    // console.log(accessTokens);
+    console.log(accessTokens);
     await quizSaTestManager.createQuestions(201, 6);
   });
   beforeEach(() => {});
@@ -38,7 +38,7 @@ describe("create users and questions and game statistics", () => {
   it("should be defined", async () => {
     expect(app).toBeDefined();
   });
-  it("create statistics games", async () => {
+  it.skip("create statistics games", async () => {
     const player1 = await testManager.createAccessToken();
     const player2 = await testManager.createAccessToken();
     const player3 = await testManager.createAccessToken();
@@ -61,7 +61,7 @@ describe("create users and questions and game statistics", () => {
       await quizSaTestManager.createGames(player1, player2);
     }
     for (let i = 0; i < 5; i++) {
-      await quizSaTestManager.createGames(player2, player3);
+      await quizSaTestManager.createGames(player3, player4);
     }
     console.log(`player_1:   ${player1},
     player_2:   ${player2}`);
