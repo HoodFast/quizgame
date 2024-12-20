@@ -60,7 +60,7 @@ export class GameSqlQueryRepository {
       lossesCount = players.filter(
         (i) => i.status === playerStatus.lose,
       ).length;
-      lossesCount = players.filter(
+      drawsCount = players.filter(
         (i) => i.status === playerStatus.draft,
       ).length;
     }

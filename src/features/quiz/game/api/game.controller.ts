@@ -61,6 +61,7 @@ export class GameController {
     return res.execute();
   }
   @UseGuards(AccessTokenAuthGuard)
+  @UsePipes(SortDirectionPipe)
   @Get("pairs/my")
   async getMyGames(@UserId() userId: string, @Query() data: SortData) {
     const command = new GetAllGamesCommand(userId, data);
