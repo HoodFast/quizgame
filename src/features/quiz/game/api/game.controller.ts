@@ -60,7 +60,13 @@ export class GameController {
     >(command);
     return res.execute();
   }
-
+  @UseGuards(AccessTokenAuthGuard)
+  @Get("pairs/my")
+  async getMyGames(@UserId() userId: string, @Query() data: SortData) {
+    const command = new GetAllGamesCommand(userId, data);
+    const res = await this.queryBus.execute(command);
+    return res.execute();
+  }
   @UseGuards(AccessTokenAuthGuard)
   @Get("pairs/:id")
   async getGameById(
@@ -86,16 +92,9 @@ export class GameController {
     >(command);
     return res.execute();
   }
+
   @UseGuards(AccessTokenAuthGuard)
-  @UsePipes(SortDirectionPipe)
-  @Get("my")
-  async getMyGames(@UserId() userId: string, @Query() data: SortData) {
-    const command = new GetAllGamesCommand(userId, data);
-    const res = await this.queryBus.execute(command);
-    return res.execute();
-  }
-  @UseGuards(AccessTokenAuthGuard)
-  @Get("my-statistic")
+  @Get("/users/my-statistic")
   async getMyStatistic(@UserId() userId: string) {
     const command = new GetMyStatisticCommand(userId);
     const res = await this.queryBus.execute(command);

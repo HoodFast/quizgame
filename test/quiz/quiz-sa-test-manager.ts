@@ -15,6 +15,33 @@ export enum winnerPlayers {
 export class QuizSaTestManager {
   constructor(protected readonly app: INestApplication) {}
 
+  async createNotFinishedGame(player1: string, player2: string) {
+    await request(this.app.getHttpServer())
+      .post(`/pair-game-quiz/pairs/connection`)
+      .set("Authorization", `Bearer ${player1}`);
+    const game = await request(this.app.getHttpServer())
+      .post(`/pair-game-quiz/pairs/connection`)
+      .set("Authorization", `Bearer ${player2}`);
+    return game.body.id;
+  }
+  async postCorrectAnswers(player: string, count: number) {
+    for (let i = 0; i < count; i++) {
+      await request(this.app.getHttpServer())
+        .post(`/pair-game-quiz/pairs/my-current/answers`)
+        .set("Authorization", `Bearer ${player}`)
+        .send({ answer: "111" });
+    }
+    return;
+  }
+  async postInCorrectAnswers(player: string, count: number) {
+    for (let i = 0; i < count; i++) {
+      await request(this.app.getHttpServer())
+        .post(`/pair-game-quiz/pairs/my-current/answers`)
+        .set("Authorization", `Bearer ${player}`)
+        .send({ answer: "abc" });
+    }
+    return;
+  }
   async createGames(
     player1: string,
     player2: string,

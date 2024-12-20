@@ -38,31 +38,19 @@ describe("create users and questions and game statistics", () => {
   it("should be defined", async () => {
     expect(app).toBeDefined();
   });
-  it.skip("create statistics games", async () => {
+  it("create statistics games", async () => {
     const player1 = await testManager.createAccessToken();
     const player2 = await testManager.createAccessToken();
-    const player3 = await testManager.createAccessToken();
-    const player4 = await testManager.createAccessToken();
-    for (let i = 0; i < 5; i++) {
+
+    for (let i = 0; i < 3; i++) {
       await quizSaTestManager.createGames(
         player1,
         player2,
         winnerPlayers.player_2,
       );
     }
-    for (let i = 0; i < 5; i++) {
-      await quizSaTestManager.createGames(
-        player1,
-        player2,
-        winnerPlayers.player_1,
-      );
-    }
-    for (let i = 0; i < 5; i++) {
-      await quizSaTestManager.createGames(player1, player2);
-    }
-    for (let i = 0; i < 5; i++) {
-      await quizSaTestManager.createGames(player3, player4);
-    }
+    await quizSaTestManager.createNotFinishedGame(player1, player2);
+    await quizSaTestManager.postCorrectAnswers(player1, 5);
     console.log(`player_1:   ${player1},
     player_2:   ${player2}`);
   });
