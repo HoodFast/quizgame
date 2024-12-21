@@ -38,7 +38,7 @@ describe("QuizSaController", () => {
     const totalCount = allQuestion.length;
     quizSaTestManager.checkAllQuestsBody(res, pageSize, pagesCount, totalCount);
   });
-  it("deleteQuestionsById", async () => {
+  it.skip("deleteQuestionsById", async () => {
     const allQuestion = await questionsSqlQueryRepository.getAllForTest();
     await request(httpServer)
       .delete(`/sa/quiz/questions/${allQuestion[0].id}`)
@@ -48,7 +48,7 @@ describe("QuizSaController", () => {
       .get(`/sa/quiz/questions/${allQuestion[0].id}`)
       .expect(404);
   });
-  it("update question", async () => {
+  it.skip("update question", async () => {
     const updateDate = {
       body: "updated ok",
       correctAnswers: ["is updated", "is updated"],

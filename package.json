@@ -37,7 +37,6 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
-    "crypto": "^1.0.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
@@ -97,5 +96,8 @@
     "testEnvironment": "node"
   },
   "main": "index.js",
-  "repository": "https://github.com/HoodFast/quizgame.git"
+  "repository": "https://github.com/HoodFast/quizgame.git",
+  "resolutions": {
+    "glob": "^9.0.0"
+  }
 }

@@ -1,9 +1,10 @@
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { UserTestManager } from "./users/user.test.manager";
-import { randomUUID } from "crypto";
+// import { randomUUID } from "crypto";
 import { SessionEntity } from "../src/features/auth/sessions/domain/session.entity";
 
+const crypto = require("node:crypto");
 export class TestManager {
   constructor(protected readonly app: INestApplication) {}
   expectCorrectModel(createModel: any, responseModel: any) {
@@ -19,7 +20,7 @@ export class TestManager {
   async createAccessToken() {
     const httpServer = this.app.getHttpServer();
     const userTestManager = new UserTestManager(this.app);
-    const random = randomUUID();
+    const random = crypto.randomUUID();
     const createUserData = {
       login: `user ${random.substring(0, 3)}`,
       password: `${random.substring(0, 6)}`,
@@ -35,7 +36,7 @@ export class TestManager {
   async createAccessAndRefreshTokenMultiDevices() {
     const httpServer = this.app.getHttpServer();
     const userTestManager = new UserTestManager(this.app);
-    const random = randomUUID();
+    const random = crypto.randomUUID();
     const createUserData = {
       login: `user ${random.substring(0, 3)}`,
       password: `${random.substring(0, 6)}`,

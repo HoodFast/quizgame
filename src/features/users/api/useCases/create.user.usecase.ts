@@ -1,12 +1,13 @@
-import { InterlayerNotice } from '../../../../base/models/Interlayer';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { OutputUsersType } from '../output/users.output.dto';
-import bcrypt from 'bcrypt';
-import { add } from 'date-fns/add';
-import { UsersSqlRepository } from '../../infrastructure/users.sql.repository';
-import { randomUUID } from 'crypto';
-import { UsersSqlQueryRepository } from '../../infrastructure/users.sql.query.repository';
-import { EmailService } from '../../../auth/infrastructure/email.service';
+import { InterlayerNotice } from "../../../../base/models/Interlayer";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { OutputUsersType } from "../output/users.output.dto";
+import bcrypt from "bcrypt";
+import { add } from "date-fns/add";
+import { UsersSqlRepository } from "../../infrastructure/users.sql.repository";
+// import { randomUUID } from 'crypto';
+import { UsersSqlQueryRepository } from "../../infrastructure/users.sql.query.repository";
+import { EmailService } from "../../../auth/infrastructure/email.service";
+const crypto = require("node:crypto");
 
 export class CreateUserCommand {
   constructor(
@@ -37,7 +38,7 @@ export class CreateUserUseCase
     );
 
     if (checkUserExistLogin) {
-      notice.addError('user is already exist');
+      notice.addError("user is already exist");
       return notice;
       // throw new BadRequestException('user is already exist', 'login');
     }
@@ -47,7 +48,7 @@ export class CreateUserUseCase
     );
 
     if (checkUserExistEmail) {
-      notice.addError('email is already exist');
+      notice.addError("email is already exist");
       return notice;
       // throw new BadRequestException('email is already exist', 'email');
     }
@@ -64,7 +65,7 @@ export class CreateUserUseCase
         login: command.login,
       },
       emailConfirmation: {
-        confirmationCode: randomUUID(),
+        confirmationCode: crypto.randomUUID(),
         expirationDate: add(new Date(), {
           minutes: 15,
         }),
@@ -75,7 +76,7 @@ export class CreateUserUseCase
 
     const createdUser = await this.usersSqlRepository.createUser(userData);
     if (!createdUser) {
-      notice.addError('error BD');
+      notice.addError("error BD");
       return notice;
     }
 
@@ -90,7 +91,7 @@ export class CreateUserUseCase
     try {
       const user = await this.usersSqlQueryRepository.findUser(email);
       if (!user) return false;
-      const subject = 'Email Confirmation';
+      const subject = "Email Confirmation";
       const message = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:
             <a href='https://somesite.com/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>

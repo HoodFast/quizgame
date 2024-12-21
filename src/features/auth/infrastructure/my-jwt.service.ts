@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
-import { randomUUID } from 'crypto';
-import { ConfigService } from '@nestjs/config';
-import { ConfigurationType } from '../../../settings/configuration';
-import { UsersSqlQueryRepository } from '../../users/infrastructure/users.sql.query.repository';
-import { UsersSqlRepository } from '../../users/infrastructure/users.sql.repository';
-import { SessionEntity } from '../sessions/domain/session.entity';
-import { SessionSqlRepository } from '../sessions/infrastructure/session.sql.repository';
-import { JwtService } from '@nestjs/jwt';
+// import { randomUUID } from 'crypto';
+import { ConfigService } from "@nestjs/config";
+import { ConfigurationType } from "../../../settings/configuration";
+import { UsersSqlQueryRepository } from "../../users/infrastructure/users.sql.query.repository";
+import { UsersSqlRepository } from "../../users/infrastructure/users.sql.repository";
+import { SessionEntity } from "../sessions/domain/session.entity";
+import { SessionSqlRepository } from "../sessions/infrastructure/session.sql.repository";
+import { JwtService } from "@nestjs/jwt";
 
-const jwt = require('jsonwebtoken');
+const crypto = require("node:crypto");
+const jwt = require("jsonwebtoken");
 
 @Injectable()
 export class MyJwtService {
@@ -21,7 +22,7 @@ export class MyJwtService {
     private jwtService: JwtService,
   ) {}
 
-  private jwtSettings = this.configService.get('jwtSettings', { infer: true });
+  private jwtSettings = this.configService.get("jwtSettings", { infer: true });
   private AC_SECRET = this.jwtSettings.AC_SECRET;
   private AC_TIME = this.jwtSettings.AC_TIME;
   private RT_SECRET = this.jwtSettings.RT_SECRET;
@@ -51,7 +52,7 @@ export class MyJwtService {
 
   async createRefreshJWT(
     userId: string,
-    deviceId: string = randomUUID(),
+    deviceId: string = crypto.randomUUID(),
     ip: string,
     title: string,
   ): Promise<string | null> {
@@ -61,7 +62,7 @@ export class MyJwtService {
 
     const decoded = jwt.decode(token, { complete: true });
     const iat = new Date(decoded.payload.iat * 1000);
-    const sessionId = randomUUID();
+    const sessionId = crypto.randomUUID();
     const tokenMetaData: SessionEntity = {
       id: sessionId,
       iat,
@@ -80,7 +81,7 @@ export class MyJwtService {
 
   async createPassportRefreshJWT(
     userId: string,
-    deviceId: string = randomUUID(),
+    deviceId: string = crypto.randomUUID(),
     ip: string,
     title: string,
   ): Promise<string | null> {
@@ -94,7 +95,7 @@ export class MyJwtService {
 
     const decoded = jwt.decode(token, { complete: true });
     const iat = new Date(decoded.payload.iat * 1000);
-    const sessionId = randomUUID();
+    const sessionId = crypto.randomUUID();
     const tokenMetaData: SessionEntity = {
       id: sessionId,
       iat,
@@ -125,7 +126,7 @@ export class MyJwtService {
       });
       return token;
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
 

@@ -26,11 +26,11 @@ describe("create users and questions and game statistics", () => {
     testingSqlQueryRepository = module.get(TestingSqlQueryRepository);
     testManager = new TestManager(app);
     await testManager.deleteAll();
-    for (let i = 0; i < 2; i++) {
-      const accessToken = await testManager.createAccessToken();
-      accessTokens.push(accessToken);
-    }
-    console.log(accessTokens);
+    // for (let i = 0; i < 2; i++) {
+    //   const accessToken = await testManager.createAccessToken();
+    //   accessTokens.push(accessToken);
+    // }
+    // console.log(accessTokens);
     await quizSaTestManager.createQuestions(201, 6);
   });
   beforeEach(() => {});
@@ -43,15 +43,27 @@ describe("create users and questions and game statistics", () => {
     const player1 = await testManager.createAccessToken();
     const player2 = await testManager.createAccessToken();
 
-    for (let i = 0; i < 3; i++) {
-      await quizSaTestManager.createGames(
-        player1,
-        player2,
-        winnerPlayers.player_2,
-      );
-    }
+    // for (let i = 0; i < 3; i++) {
+    //   await quizSaTestManager.createGames(
+    //     player1,
+    //     player2,
+    //     winnerPlayers.player_2,
+    //   );
+    // }
+
     await quizSaTestManager.createNotFinishedGame(player1, player2);
     await quizSaTestManager.postCorrectAnswers(player1, 5);
+    await quizSaTestManager.postCorrectAnswers(player2, 5);
+
+    await quizSaTestManager.createNotFinishedGame(player1, player2);
+    await quizSaTestManager.postInCorrectAnswers(player1, 5);
+    await quizSaTestManager.postCorrectAnswers(player2, 5);
+
+    await quizSaTestManager.createNotFinishedGame(player1, player2);
+    await quizSaTestManager.postInCorrectAnswers(player2, 5);
+    await quizSaTestManager.postCorrectAnswers(player1, 5);
+
+    await quizSaTestManager.createNotFinishedGame(player1, player2);
     console.log(`player_1:   ${player1},
     player_2:   ${player2}`);
   });

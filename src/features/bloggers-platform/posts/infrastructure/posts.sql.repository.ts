@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { InputPostCreate, PostCreateData } from '../api/input/PostsCreate.dto';
-import { BlogsSqlQueryRepository } from '../../blogs/infrastructure/blogs.sql.query.repository';
-import { PostsSqlQueryRepository } from './posts.sql.query.repository';
-import { DataSource, Repository } from 'typeorm';
-import { randomUUID } from 'crypto';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { Posts } from '../domain/post.sql.entity';
-import { LikePost } from '../domain/likePost.sql.entity';
-import { likesStatuses } from '../../../../base/models/like.statuses';
+import { Injectable } from "@nestjs/common";
+import { InputPostCreate, PostCreateData } from "../api/input/PostsCreate.dto";
+import { BlogsSqlQueryRepository } from "../../blogs/infrastructure/blogs.sql.query.repository";
+import { PostsSqlQueryRepository } from "./posts.sql.query.repository";
+import { DataSource, Repository } from "typeorm";
+// import { randomUUID } from 'crypto';
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
+import { Posts } from "../domain/post.sql.entity";
+import { LikePost } from "../domain/likePost.sql.entity";
+import { likesStatuses } from "../../../../base/models/like.statuses";
 
 @Injectable()
 export class PostsSqlRepository {
@@ -39,7 +39,7 @@ export class PostsSqlRepository {
       );
     } catch (e) {
       console.log(e);
-      throw new Error('createPost');
+      throw new Error("createPost");
     }
   }
 
@@ -65,7 +65,7 @@ export class PostsSqlRepository {
       return true;
     } catch (e) {
       console.log(e);
-      throw new Error('updatePost');
+      throw new Error("updatePost");
     }
   }
 

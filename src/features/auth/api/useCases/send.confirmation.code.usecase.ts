@@ -1,12 +1,12 @@
-import { InterlayerNotice } from '../../../../base/models/Interlayer';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MyJwtService } from '../../infrastructure/my-jwt.service';
-import { EmailService } from '../../infrastructure/email.service';
-import { BadRequestException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { UsersSqlRepository } from '../../../users/infrastructure/users.sql.repository';
-import { UsersSqlQueryRepository } from '../../../users/infrastructure/users.sql.query.repository';
-
+import { InterlayerNotice } from "../../../../base/models/Interlayer";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { MyJwtService } from "../../infrastructure/my-jwt.service";
+import { EmailService } from "../../infrastructure/email.service";
+import { BadRequestException } from "@nestjs/common";
+// import { randomUUID } from 'crypto';
+import { UsersSqlRepository } from "../../../users/infrastructure/users.sql.repository";
+import { UsersSqlQueryRepository } from "../../../users/infrastructure/users.sql.query.repository";
+const crypto = require("node:crypto");
 export class SendConfirmationCodeCommand {
   constructor(public email: string) {}
 }
@@ -29,21 +29,21 @@ export class SendConfirmationCodeUseCase
     const notice = new InterlayerNotice<boolean>();
     try {
       const user = await this.usersSqlQueryRepository.findUser(command.email);
-      if (!user) throw new BadRequestException('mail doesnt exist', 'email');
+      if (!user) throw new BadRequestException("mail doesnt exist", "email");
       if (user?.emailConfirmation.isConfirmed)
-        throw new BadRequestException('code is already confirm', 'email');
+        throw new BadRequestException("code is already confirm", "email");
 
-      const newConfirmCode = randomUUID();
+      const newConfirmCode = crypto.randomUUID();
       const updateConfirmCode =
         await this.usersSqlRepository.updateNewConfirmCode(
           user?._id,
           newConfirmCode,
         );
       if (!updateConfirmCode) {
-        notice.addError('update code error');
+        notice.addError("update code error");
         return notice;
       }
-      const subject = 'Email Confirmation';
+      const subject = "Email Confirmation";
       const message = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:
             <a href='https://somesite.com/confirm-email?code=${newConfirmCode}'>complete registration</a>
@@ -55,14 +55,14 @@ export class SendConfirmationCodeUseCase
       );
 
       if (!sendConfirmCode) {
-        notice.addError('send email error');
+        notice.addError("send email error");
         return notice;
       }
       notice.addData(true);
       return notice;
     } catch (e) {
       console.log(e);
-      notice.addError('send email error');
+      notice.addError("send email error");
       return notice;
     }
   }

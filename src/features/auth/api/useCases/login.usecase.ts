@@ -1,10 +1,11 @@
-import { InterlayerNotice } from '../../../../base/models/Interlayer';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { randomUUID } from 'crypto';
-import { UsersService } from '../../../users/application/users.service';
-import { SessionSqlRepository } from '../../sessions/infrastructure/session.sql.repository';
-import { MyJwtService } from '../../infrastructure/my-jwt.service';
+import { InterlayerNotice } from "../../../../base/models/Interlayer";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { UsersService } from "../../../users/application/users.service";
+import { SessionSqlRepository } from "../../sessions/infrastructure/session.sql.repository";
+import { MyJwtService } from "../../infrastructure/my-jwt.service";
+// import { randomUUID } from "crypto";
 
+const crypto = require("node:crypto");
 export class LoginCommandOutput {
   accessToken: string;
   refreshToken: string;
@@ -21,8 +22,7 @@ export class LoginCommand {
 
 @CommandHandler(LoginCommand)
 export class LoginUseCase
-  implements
-    ICommandHandler<LoginCommand, InterlayerNotice<LoginCommandOutput>>
+  implements ICommandHandler<LoginCommand, InterlayerNotice<LoginCommandOutput>>
 {
   constructor(
     private usersService: UsersService,
@@ -40,21 +40,21 @@ export class LoginUseCase
       password,
     );
     if (!userId) {
-      notice.addError('login error');
+      notice.addError("login error");
       return notice;
     }
     const oldSession = await this.sessionSqlRepository.getSessionForUserId(
       userId.toString(),
       title,
     );
-    const deviceId = oldSession?.deviceId || randomUUID();
+    const deviceId = oldSession?.deviceId || crypto.randomUUID();
 
     if (oldSession) {
       await this.sessionSqlRepository.deleteById(oldSession.id);
     }
     const accessToken = await this.jwtService.createPassportJWT(userId);
     if (!accessToken) {
-      notice.addError('login error');
+      notice.addError("login error");
       return notice;
     }
     const refreshToken = await this.jwtService.createPassportRefreshJWT(
@@ -64,7 +64,7 @@ export class LoginUseCase
       title,
     );
     if (!refreshToken) {
-      notice.addError('login error');
+      notice.addError("login error");
       return notice;
     }
     notice.addData({ accessToken, refreshToken });

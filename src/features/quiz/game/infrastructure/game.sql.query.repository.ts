@@ -122,32 +122,41 @@ export class GameSqlQueryRepository {
     sortData: SortData,
     userId: string,
   ): Promise<Pagination<GameViewType> | null> {
-    const { sortBy, sortDirection, pageSize, pageNumber } = sortData;
-    const offset = (pageNumber - 1) * pageSize;
-    const res = await this.gamesRepository
-      .createQueryBuilder("game")
-      .leftJoinAndSelect("game.player_1", "player_1")
-      .leftJoinAndSelect("player_1.user", "player_1_user")
-      .leftJoinAndSelect("game.player_2", "player_2")
-      .leftJoinAndSelect("player_2.user", "player_2_user")
-      .leftJoinAndSelect("player_1.answers", "player_1_answers")
-      .leftJoinAndSelect("player_2.answers", "player_2_answers")
-      .leftJoinAndSelect("game.questions", "questions")
-      .leftJoinAndSelect("questions.question", "questions_question")
-      .where("player_1.userId = :userId", { userId })
-      .orWhere("player_2.userId = :userId", { userId })
-      .orderBy(`game.${sortBy}`, sortDirection)
-      .skip(offset)
-      .take(pageSize)
-      .getManyAndCount();
-    const pagesCount = Math.ceil(res[1] / pageSize);
-    return {
-      pagesCount,
-      page: pageNumber,
-      pageSize,
-      totalCount: res[1],
-      items: res[0].map(GameViewMapper),
-    };
+    try {
+      const { sortBy, sortDirection, pageSize, pageNumber } = sortData;
+      const offset = (pageNumber - 1) * pageSize;
+
+      const res = await this.gamesRepository
+        .createQueryBuilder("game")
+        .leftJoinAndSelect("game.player_1", "player_1")
+        .leftJoinAndSelect("player_1.user", "player_1_user")
+        .leftJoinAndSelect("game.player_2", "player_2")
+        .leftJoinAndSelect("player_2.user", "player_2_user")
+        .leftJoinAndSelect("player_1.answers", "player_1_answers")
+        .leftJoinAndSelect("player_2.answers", "player_2_answers")
+        .leftJoinAndSelect("game.questions", "questions")
+        .leftJoinAndSelect("questions.question", "questions_question")
+        .where("player_1.userId = :userId", { userId })
+        .orWhere("player_2.userId = :userId", { userId })
+        .orderBy(`game.${sortBy}`, sortDirection)
+        .addOrderBy("game.pairCreatedDate", ORDER.desc)
+        .skip(offset)
+        .take(pageSize)
+        .getManyAndCount();
+
+      const pagesCount = Math.ceil(res[1] / pageSize);
+
+      return {
+        pagesCount,
+        page: pageNumber,
+        pageSize,
+        totalCount: res[1],
+        items: res[0].map(GameViewMapper),
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   }
   async getGameWithStatusPending(): Promise<Game | null> {
     try {

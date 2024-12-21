@@ -1,7 +1,10 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
 import { Pagination } from "../../../../../base/paginationInputDto/paginationOutput";
-import { InterlayerNotice } from "../../../../../base/models/Interlayer";
+import {
+  ERRORS_CODE,
+  InterlayerNotice,
+} from "../../../../../base/models/Interlayer";
 import {
   SortData,
   sortDirection,
@@ -37,12 +40,12 @@ export class GetAllGamesQueryUseCase
       pageSize: command.data.pageSize ? +command.data.pageSize : 10,
     };
 
-    const result: any = await this.gamesSqlQueryRepository.getAllGamesByUserId(
+    const result = await this.gamesSqlQueryRepository.getAllGamesByUserId(
       sortData,
       command.userId,
     );
     if (!result) {
-      notice.addError("error DAL");
+      notice.addError("error DAL", "error", ERRORS_CODE.FORBIDDEN);
       return notice;
     }
     notice.addData(result);

@@ -105,12 +105,4 @@ export class GameController {
   async deleteGame() {
     return await this.gameRepo.deleteAllGame();
   }
-  // @Post("pairs/:id")
-  // async finish(@Param("id") id: string) {
-  //   await this.gameRepo.finish(id);
-  // }
-  // @Get("allgame")
-  // async getGames() {
-  //   return await this.gameRepo.getGames();
-  // }
 }

@@ -1,8 +1,5 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-
-import { Pagination } from "../../../../../base/paginationInputDto/paginationOutput";
 import { InterlayerNotice } from "../../../../../base/models/Interlayer";
-import { GameViewType } from "../../../question/api/output/game.view.type";
 import { GameSqlQueryRepository } from "../../infrastructure/game.sql.query.repository";
 import { StatisticViewDto } from "../output/statistics.output.dto";
 
