@@ -35,9 +35,7 @@ describe("create users and questions and game statistics", () => {
   });
   beforeEach(() => {});
   afterAll(() => {});
-  it("should be defined", async () => {
-    expect(app).toBeDefined();
-  });
+
   it("should be defined", async () => {
     expect(app).toBeDefined();
   });
