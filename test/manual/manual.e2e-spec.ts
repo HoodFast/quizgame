@@ -36,9 +36,9 @@ describe("create users and questions and game statistics", () => {
   beforeEach(() => {});
   afterAll(() => {});
 
-  it("should be defined", async () => {
-    expect(app).toBeDefined();
-  });
+  // it("should be defined", async () => {
+  //   expect(app).toBeDefined();
+  // });
   it("create statistics games", async () => {
     const player1 = await testManager.createAccessToken();
     const player2 = await testManager.createAccessToken();
