@@ -51,13 +51,13 @@ describe("create users and questions and game statistics", () => {
     //   );
     // }
 
-    await quizSaTestManager.createNotFinishedGame(player1, player2);
-    await quizSaTestManager.postCorrectAnswers(player1, 5);
-    await quizSaTestManager.postCorrectAnswers(player2, 5);
-
-    await quizSaTestManager.createNotFinishedGame(player1, player2);
-    await quizSaTestManager.postInCorrectAnswers(player1, 5);
-    await quizSaTestManager.postCorrectAnswers(player2, 5);
+    // await quizSaTestManager.createNotFinishedGame(player1, player2);
+    // await quizSaTestManager.postCorrectAnswers(player1, 5);
+    // await quizSaTestManager.postCorrectAnswers(player2, 5);
+    //
+    // await quizSaTestManager.createNotFinishedGame(player1, player2);
+    // await quizSaTestManager.postInCorrectAnswers(player1, 5);
+    // await quizSaTestManager.postCorrectAnswers(player2, 5);
 
     await quizSaTestManager.createNotFinishedGame(player1, player2);
     await quizSaTestManager.postInCorrectAnswers(player2, 5);

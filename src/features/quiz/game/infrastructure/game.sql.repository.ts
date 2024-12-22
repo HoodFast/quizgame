@@ -129,7 +129,7 @@ export class GameSqlRepository {
       } else {
         answer.answerStatus = AnswersStatus.incorrect;
       }
-
+      debugger;
       const saved = await this.answersRepository.save(answer);
       return saved;
     } catch (e) {
