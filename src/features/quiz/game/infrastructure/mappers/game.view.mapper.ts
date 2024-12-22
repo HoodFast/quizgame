@@ -55,7 +55,7 @@ const questionsMapper = (question: Question) => {
 const playerMapper = (answers, userId, login, score, answerMap: boolean) => {
   const answerMapper = answerMap ? AnswerViewMapper : AnswerAllViewMapper;
   return {
-    answers: answers.map(AnswerViewMapper),
+    answers: answers.map(answerMapper),
     player: { id: userId, login },
     score,
   };
