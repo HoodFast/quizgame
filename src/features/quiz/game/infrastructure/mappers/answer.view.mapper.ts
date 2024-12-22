@@ -8,3 +8,11 @@ export const AnswerViewMapper = (answer: Answer): AnswerViewType => {
     addedAt: answer.addedAt,
   };
 };
+
+export const AnswerAllViewMapper = (answer: Answer): AnswerViewType => {
+  return {
+    addedAt: answer.addedAt,
+    answerStatus: answer.answerStatus,
+    questionId: answer.questionId,
+  };
+};

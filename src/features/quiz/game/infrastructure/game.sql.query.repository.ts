@@ -151,7 +151,7 @@ export class GameSqlQueryRepository {
         page: pageNumber,
         pageSize,
         totalCount: res[1],
-        items: res[0].map(GameViewMapper),
+        items: res[0].map((i) => GameViewMapper(i, false)),
       };
     } catch (e) {
       console.log(e);
