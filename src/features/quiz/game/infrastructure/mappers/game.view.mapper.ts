@@ -21,7 +21,7 @@ export const GameViewMapper = (
   const questions = game.questions
     ? game.questions.sort((a, b) => a.index - b.index).map((i) => i.question)
     : [];
-  debugger;
+
   return {
     id: game.id,
     firstPlayerProgress: playerMapper(

@@ -31,6 +31,7 @@ import { AnswerGameUseCase } from "./game/api/useCases/answer.game.usecase";
 import { GetAllGamesQueryUseCase } from "./game/api/useCases/get.all.games.query.usecase";
 import { GetMyStatisticQueryUseCase } from "./game/api/useCases/get.statistic.query.usecase";
 import { Statistic } from "./game/domain/statistic.sql.entity";
+import { GetTopQueryUseCase } from "./game/api/useCases/get.top.query.usecase";
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { Statistic } from "./game/domain/statistic.sql.entity";
   ],
   controllers: [QuizSaController, GameController],
   providers: [
+    GetTopQueryUseCase,
     GetMyStatisticQueryUseCase,
     GetAllGamesQueryUseCase,
     AnswerGameUseCase,

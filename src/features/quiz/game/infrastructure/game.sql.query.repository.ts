@@ -15,6 +15,7 @@ import { SortData } from "../../../../base/sortData/sortData.model";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 import { StatisticViewDto } from "../api/output/statistics.output.dto";
 import { Statistic } from "../domain/statistic.sql.entity";
+import { isArray } from "class-validator";
 
 enum ORDER {
   asc = "ASC",
@@ -148,7 +149,40 @@ export class GameSqlQueryRepository {
       throw new Error();
     }
   }
+  async getTop(sort: string | string[]) {
+    try {
+      const query_ = await this.statisticRepository
+        .createQueryBuilder("statistic")
+        .leftJoinAndSelect("statistic.user", "user")
+        .getMany();
+      const query = this.statisticRepository
+        .createQueryBuilder("statistic")
+        .leftJoinAndSelect("statistic.user", "user");
 
+      if (isArray(sort)) {
+        sort.map((order) => {
+          const [column, direction] = order.split(" ");
+          query.addOrderBy(
+            `statistic.${column}`,
+            direction.toUpperCase() as "ASC" | "DESC",
+          );
+        });
+        debugger;
+      } else {
+        const [column, direction] = sort.split(" ");
+        debugger;
+        query.orderBy(
+          `statistic.${column}`,
+          direction.toUpperCase() as "ASC" | "DESC",
+        );
+      }
+      const res = await query.getMany();
+      return res;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
   async getPlayersUserIdByGameId(
     gameId: string,
   ): Promise<getGameAndUserIdOutput | null> {

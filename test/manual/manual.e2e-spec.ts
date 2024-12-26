@@ -42,22 +42,37 @@ describe("create users and questions and game statistics", () => {
   it("create statistics games", async () => {
     const player1 = await testManager.createAccessToken();
     const player2 = await testManager.createAccessToken();
-    //
-    // for (let i = 0; i < 3; i++) {
-    //   await quizSaTestManager.createGames(
-    //     player1,
-    //     player2,
-    //     winnerPlayers.player_2,
-    //   );
-    // }
-    //
-    // await quizSaTestManager.createNotFinishedGame(player1, player2);
-    // await quizSaTestManager.postCorrectAnswers(player1, 5);
-    // await quizSaTestManager.postCorrectAnswers(player2, 5);
-    //
-    // await quizSaTestManager.createNotFinishedGame(player1, player2);
-    // await quizSaTestManager.postInCorrectAnswers(player1, 5);
-    // await quizSaTestManager.postCorrectAnswers(player2, 5);
+    const player3 = await testManager.createAccessToken();
+    const player4 = await testManager.createAccessToken();
+
+    for (let i = 0; i < 3; i++) {
+      await quizSaTestManager.createGames(
+        player1,
+        player2,
+        winnerPlayers.player_2,
+      );
+    }
+    for (let i = 0; i < 3; i++) {
+      await quizSaTestManager.createGames(
+        player3,
+        player4,
+        winnerPlayers.player_1,
+      );
+    }
+    for (let i = 0; i < 5; i++) {
+      await quizSaTestManager.createGames(
+        player3,
+        player4,
+        winnerPlayers.player_2,
+      );
+    }
+    await quizSaTestManager.createNotFinishedGame(player1, player2);
+    await quizSaTestManager.postCorrectAnswers(player1, 5);
+    await quizSaTestManager.postCorrectAnswers(player2, 5);
+
+    await quizSaTestManager.createNotFinishedGame(player1, player2);
+    await quizSaTestManager.postInCorrectAnswers(player1, 5);
+    await quizSaTestManager.postCorrectAnswers(player2, 5);
 
     await quizSaTestManager.createNotFinishedGame(player1, player2);
     await quizSaTestManager.postInCorrectAnswers(player2, 5);

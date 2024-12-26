@@ -1,6 +1,6 @@
 export class SortData {
   sortBy: string;
-  sortDirection: 'ASC' | 'DESC';
+  sortDirection: "ASC" | "DESC";
   pageNumber: number;
   pageSize: number;
 }
@@ -14,7 +14,12 @@ export class UsersSortData extends SortData {
   searchEmailTerm?: string | null;
 }
 
+export class SortDataTopStatistic {
+  sort: string | string[];
+  pageNumber: number;
+  pageSize: number;
+}
 export enum sortDirection {
-  asc = 'ASC',
-  desc = 'DESC',
+  asc = "ASC",
+  desc = "DESC",
 }
