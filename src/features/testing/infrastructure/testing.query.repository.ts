@@ -6,6 +6,7 @@ import { Player } from "../../quiz/game/domain/player.sql.entity";
 import { Game } from "../../quiz/game/domain/game.sql.entity";
 import { Users } from "../../users/domain/user.sql.entity";
 import { Question } from "../../quiz/question/domain/question.sql.entity";
+import { Statistic } from "../../quiz/game/domain/statistic.sql.entity";
 
 @Injectable()
 export class TestingSqlQueryRepository {
@@ -16,6 +17,8 @@ export class TestingSqlQueryRepository {
     @InjectRepository(Player) protected playersRepository: Repository<Player>,
     @InjectRepository(Game) protected gamesRepository: Repository<Game>,
     @InjectRepository(Users) protected usersRepository: Repository<Users>,
+    @InjectRepository(Statistic)
+    protected statisticRepository: Repository<Statistic>,
     @InjectRepository(Question)
     protected questionRepository: Repository<Question>,
   ) {}
@@ -28,7 +31,7 @@ export class TestingSqlQueryRepository {
     await this.playersRepository.delete({});
     await this.gamesRepository.delete({});
     await this.questionRepository.delete({});
-
+    await this.statisticRepository.delete({});
     return true;
   }
 }

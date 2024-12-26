@@ -42,7 +42,7 @@ describe("create users and questions and game statistics", () => {
   it("create statistics games", async () => {
     const player1 = await testManager.createAccessToken();
     const player2 = await testManager.createAccessToken();
-
+    //
     // for (let i = 0; i < 3; i++) {
     //   await quizSaTestManager.createGames(
     //     player1,
@@ -50,7 +50,7 @@ describe("create users and questions and game statistics", () => {
     //     winnerPlayers.player_2,
     //   );
     // }
-
+    //
     // await quizSaTestManager.createNotFinishedGame(player1, player2);
     // await quizSaTestManager.postCorrectAnswers(player1, 5);
     // await quizSaTestManager.postCorrectAnswers(player2, 5);

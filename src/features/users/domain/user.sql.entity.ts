@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { EmailConfirmation } from "./email.confirmation.entity";
@@ -14,6 +15,7 @@ import {
 } from "../../bloggers-platform/comments/domain/comment.sql.entity";
 import { Sessions } from "../../auth/sessions/domain/session.sql.entity";
 import { Player } from "../../quiz/game/domain/player.sql.entity";
+import { Statistic } from "../../quiz/game/domain/statistic.sql.entity";
 
 @Entity()
 export class Users extends BaseEntity {
@@ -69,4 +71,6 @@ export class Users extends BaseEntity {
     nullable: true,
   })
   player: Player[];
+  @OneToOne(() => Statistic, { cascade: true })
+  statistic: Statistic;
 }

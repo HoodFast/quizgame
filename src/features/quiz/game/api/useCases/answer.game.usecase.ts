@@ -126,8 +126,11 @@ export class AnswerGameUseCase
       ) {
         currentGame.player_1.score = currentGame.player_1.score + 1;
       }
-      debugger;
+
       await this.gameSqlRepository.finishGame(currentGame);
+      await this.gameSqlRepository.createStatistic(currentGame.player_1.userId);
+      await this.gameSqlRepository.createStatistic(currentGame.player_2.userId);
+
       notice.addData(AnswerViewMapper(addAnswer));
       return notice;
     }

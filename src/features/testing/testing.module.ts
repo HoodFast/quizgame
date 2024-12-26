@@ -8,6 +8,7 @@ import { GameQuestion } from "../quiz/game/domain/game.questions.sql.entity";
 import { Game } from "../quiz/game/domain/game.sql.entity";
 import { Player } from "../quiz/game/domain/player.sql.entity";
 import { Users } from "../users/domain/user.sql.entity";
+import { Statistic } from "../quiz/game/domain/statistic.sql.entity";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Users } from "../users/domain/user.sql.entity";
       Game,
       Player,
       Users,
+      Statistic,
     ]),
   ],
   controllers: [TestingController],

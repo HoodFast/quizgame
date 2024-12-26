@@ -30,10 +30,18 @@ import { GetCurrentGameUseCase } from "./game/api/useCases/get.current.game.usec
 import { AnswerGameUseCase } from "./game/api/useCases/answer.game.usecase";
 import { GetAllGamesQueryUseCase } from "./game/api/useCases/get.all.games.query.usecase";
 import { GetMyStatisticQueryUseCase } from "./game/api/useCases/get.statistic.query.usecase";
+import { Statistic } from "./game/domain/statistic.sql.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Question, Answer, GameQuestion, Game, Player]),
+    TypeOrmModule.forFeature([
+      Question,
+      Answer,
+      GameQuestion,
+      Game,
+      Player,
+      Statistic,
+    ]),
     CqrsModule,
     // UserModule,
     AuthModule,

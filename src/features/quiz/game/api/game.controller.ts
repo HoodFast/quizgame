@@ -101,6 +101,9 @@ export class GameController {
     const res = await this.queryBus.execute(command);
     return res.execute();
   }
+  @UseGuards(AccessTokenAuthGuard)
+  @Get("/users/my-statistic")
+  async getTop() {}
   @Delete("allgame")
   async deleteGame() {
     return await this.gameRepo.deleteAllGame();

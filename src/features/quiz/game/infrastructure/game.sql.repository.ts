@@ -10,7 +10,7 @@ import { GameQuestion } from "../domain/game.questions.sql.entity";
 import { Answer, AnswersStatus } from "../domain/answer.sql.entity";
 import { QuestionsSqlQueryRepository } from "../../question/infrastructure/questions.sql.query.repository";
 import { GameSqlQueryRepository } from "./game.sql.query.repository";
-import { Question } from "../../question/domain/question.sql.entity";
+import { Statistic } from "../domain/statistic.sql.entity";
 
 export class GameSqlRepository {
   constructor(
@@ -22,6 +22,8 @@ export class GameSqlRepository {
     protected answersRepository: Repository<Answer>,
     @InjectRepository(GameQuestion)
     protected gameQuestionsRepository: Repository<GameQuestion>,
+    @InjectRepository(Statistic)
+    protected statisticRepository: Repository<Statistic>,
     @InjectDataSource()
     protected dataSource: DataSource,
     protected questionsSqlQueryRepository: QuestionsSqlQueryRepository,
@@ -184,6 +186,55 @@ export class GameSqlRepository {
     } catch (e) {
       console.log(e);
       return false;
+    }
+  }
+  async createStatistic(userId: string) {
+    try {
+      let myStatistic = await this.statisticRepository.findOne({
+        where: { userId },
+      });
+      if (!myStatistic) {
+        myStatistic = new Statistic();
+      }
+
+      const players = await this.playersRepository.find({
+        where: { userId, active: playerActive.finished },
+      });
+      let sumScore = 0;
+      let avgScores = 0;
+      let winsCount = 0;
+      let lossesCount = 0;
+      let drawsCount = 0;
+      const gamesCount = players.length;
+      if (gamesCount > 0) {
+        sumScore = players.reduce((acc, i) => {
+          return acc + i.score;
+        }, 0);
+        avgScores = Number.isInteger(sumScore / gamesCount)
+          ? sumScore / gamesCount
+          : parseFloat((sumScore / gamesCount).toFixed(2));
+        winsCount = players.filter(
+          (i) => i.status === playerStatus.winner,
+        ).length;
+        lossesCount = players.filter(
+          (i) => i.status === playerStatus.lose,
+        ).length;
+        drawsCount = players.filter(
+          (i) => i.status === playerStatus.draft,
+        ).length;
+      }
+      myStatistic.sumScore = sumScore;
+      myStatistic.avgScores = avgScores;
+      myStatistic.winsCount = winsCount;
+      myStatistic.lossesCount = lossesCount;
+      myStatistic.drawsCount = drawsCount;
+      myStatistic.gamesCount = gamesCount;
+      myStatistic.userId = userId;
+      const saved = await this.statisticRepository.save(myStatistic);
+      return saved;
+    } catch (e) {
+      console.log(e);
+      return null;
     }
   }
   async gameSave(game: Game) {

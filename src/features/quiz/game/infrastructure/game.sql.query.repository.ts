@@ -14,6 +14,7 @@ import { Question } from "../../question/domain/question.sql.entity";
 import { SortData } from "../../../../base/sortData/sortData.model";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 import { StatisticViewDto } from "../api/output/statistics.output.dto";
+import { Statistic } from "../domain/statistic.sql.entity";
 
 enum ORDER {
   asc = "ASC",
@@ -36,42 +37,21 @@ export class GameSqlQueryRepository {
     protected questionsRepository: Repository<Question>,
     @InjectRepository(Answer)
     protected answersRepository: Repository<Answer>,
+    @InjectRepository(Statistic)
+    protected statisticRepository: Repository<Statistic>,
   ) {}
-  async getStatistic(userId: string): Promise<StatisticViewDto> {
-    const players = await this.playersRepository.find({
-      where: { userId, active: playerActive.finished },
+  async getStatistic(userId: string): Promise<StatisticViewDto | null> {
+    const statistic = await this.statisticRepository.findOne({
+      where: { userId },
     });
-    let sumScore = 0;
-    let avgScores = 0;
-    let winsCount = 0;
-    let lossesCount = 0;
-    let drawsCount = 0;
-    const gamesCount = players.length;
-    if (gamesCount > 0) {
-      sumScore = players.reduce((acc, i) => {
-        return acc + i.score;
-      }, 0);
-      avgScores = Number.isInteger(sumScore / gamesCount)
-        ? sumScore / gamesCount
-        : parseFloat((sumScore / gamesCount).toFixed(2));
-      winsCount = players.filter(
-        (i) => i.status === playerStatus.winner,
-      ).length;
-      lossesCount = players.filter(
-        (i) => i.status === playerStatus.lose,
-      ).length;
-      drawsCount = players.filter(
-        (i) => i.status === playerStatus.draft,
-      ).length;
-    }
-
+    if (!statistic) return null;
     return {
-      sumScore,
-      avgScores,
-      gamesCount,
-      winsCount,
-      lossesCount,
-      drawsCount,
+      sumScore: statistic.sumScore,
+      avgScores: statistic.avgScores,
+      gamesCount: statistic.gamesCount,
+      winsCount: statistic.winsCount,
+      lossesCount: statistic.lossesCount,
+      drawsCount: statistic.drawsCount,
     };
   }
   async getGameById(gameId: string): Promise<GameViewType | null> {
