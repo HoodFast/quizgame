@@ -20,7 +20,7 @@ export class GetTopQueryUseCase
     const notice = new InterlayerNotice<StatisticViewDto>();
 
     const result: any = await this.gamesSqlQueryRepository.getTop(
-      command.sortData.sort,
+      command.sortData,
     );
     if (!result) {
       notice.addError("error DAL");

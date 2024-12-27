@@ -10,7 +10,6 @@ export const AnswerViewMapper = (answer: Answer): AnswerViewType => {
 };
 
 export const AnswerAllViewMapper = (answer: Answer): AnswerViewType => {
-  debugger;
   return {
     addedAt: answer.addedAt,
     answerStatus: answer.answerStatus,

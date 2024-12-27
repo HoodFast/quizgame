@@ -78,6 +78,10 @@ describe("create users and questions and game statistics", () => {
     await quizSaTestManager.postInCorrectAnswers(player2, 5);
     await quizSaTestManager.postCorrectAnswers(player1, 5);
 
+    await quizSaTestManager.createNotFinishedGame(player1, player4);
+    await quizSaTestManager.postInCorrectAnswers(player1, 5);
+    await quizSaTestManager.postCorrectAnswers(player4, 5);
+
     await quizSaTestManager.createNotFinishedGame(player1, player2);
     console.log(`player_1:   ${player1},
     player_2:   ${player2}`);

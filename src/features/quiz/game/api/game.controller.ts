@@ -34,6 +34,7 @@ import {
 import { GetAllGamesCommand } from "./useCases/get.all.games.query.usecase";
 import { GetMyStatisticCommand } from "./useCases/get.statistic.query.usecase";
 import { GetTopCommand } from "./useCases/get.top.query.usecase";
+import { sortDirection } from "../../../bloggers-platform/blogs/api/blogs.sa.controller";
 
 @Controller("pair-game-quiz")
 export class GameController {
@@ -107,8 +108,13 @@ export class GameController {
   }
 
   @Get("/users/top")
-  async getTop(@Query() data: SortDataTopStatistic) {
-    const command = new GetTopCommand(data);
+  async getTop(@Query() query: SortDataTopStatistic) {
+    const sortData = {
+      sort: query.sort ?? ["avgScores desc", "sumScore desc"],
+      pageNumber: query.pageNumber ? +query.pageNumber : 1,
+      pageSize: query.pageSize ? +query.pageSize : 10,
+    };
+    const command = new GetTopCommand(sortData);
     const res = await this.queryBus.execute(command);
     return res.execute();
   }

@@ -11,11 +11,16 @@ import { GameViewType } from "../../question/api/output/game.view.type";
 import { Answer } from "../domain/answer.sql.entity";
 import { GameViewMapper } from "./mappers/game.view.mapper";
 import { Question } from "../../question/domain/question.sql.entity";
-import { SortData } from "../../../../base/sortData/sortData.model";
+import {
+  SortData,
+  SortDataTopStatistic,
+} from "../../../../base/sortData/sortData.model";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 import { StatisticViewDto } from "../api/output/statistics.output.dto";
 import { Statistic } from "../domain/statistic.sql.entity";
 import { isArray } from "class-validator";
+import { blogMapper } from "../../../bloggers-platform/blogs/domain/blog.mapper";
+import { topMapper } from "./mappers/top.mapper";
 
 enum ORDER {
   asc = "ASC",
@@ -149,12 +154,11 @@ export class GameSqlQueryRepository {
       throw new Error();
     }
   }
-  async getTop(sort: string | string[]) {
+  async getTop(sortData: SortDataTopStatistic) {
     try {
-      const query_ = await this.statisticRepository
-        .createQueryBuilder("statistic")
-        .leftJoinAndSelect("statistic.user", "user")
-        .getMany();
+      const { sort, pageSize, pageNumber } = sortData;
+      const offset = (pageNumber - 1) * pageSize;
+
       const query = this.statisticRepository
         .createQueryBuilder("statistic")
         .leftJoinAndSelect("statistic.user", "user");
@@ -167,17 +171,23 @@ export class GameSqlQueryRepository {
             direction.toUpperCase() as "ASC" | "DESC",
           );
         });
-        debugger;
       } else {
         const [column, direction] = sort.split(" ");
-        debugger;
+
         query.orderBy(
           `statistic.${column}`,
           direction.toUpperCase() as "ASC" | "DESC",
         );
       }
-      const res = await query.getMany();
-      return res;
+      const res = await query.skip(offset).take(pageSize).getManyAndCount();
+      const pagesCount = Math.ceil(res[1] / pageSize);
+      return {
+        pagesCount,
+        page: pageNumber,
+        pageSize,
+        totalCount: res[1],
+        items: res[0].map(topMapper),
+      };
     } catch (e) {
       console.log(e);
       return null;
