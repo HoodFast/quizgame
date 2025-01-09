@@ -105,7 +105,7 @@ export class AnswerGameUseCase
             const finish = await this.finish(myGame, notice, addAnswer);
             return finish;
           }
-        }, 10000);
+        }, 9000);
         notice.addData(AnswerViewMapper(addAnswer));
         return notice;
       }
