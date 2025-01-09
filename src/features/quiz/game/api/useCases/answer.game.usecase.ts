@@ -102,10 +102,13 @@ export class AnswerGameUseCase
       ) {
         setTimeout(async () => {
           if (game.status !== gameStatuses.finished) {
-            const finish = await this.finish(myGame, notice, addAnswer);
-            return finish;
+            const myGame = await this.gameSqlQueryRepository.getDomainGameById(
+              game.id,
+            );
+            if (!myGame) return;
+            await this.finish(myGame, notice, addAnswer);
           }
-        }, 8000);
+        }, 9000);
         notice.addData(AnswerViewMapper(addAnswer));
         return notice;
       }

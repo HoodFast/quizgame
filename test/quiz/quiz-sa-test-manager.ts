@@ -128,7 +128,6 @@ export class QuizSaTestManager {
     });
   }
   checkGameResult(response: any, score1: number, score2: number) {
-    debugger;
     const game: GameViewType = response.body;
     expect(game.status).toBe(gameStatuses.finished);
     expect(game.firstPlayerProgress.score).toBe(score1);
