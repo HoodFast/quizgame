@@ -131,7 +131,14 @@ export class AnswerGameUseCase
     const lastAnswerPlayer2 = currentGame.player_2.answers.filter(
       (i) => i.questionId === lastQuestionId,
     )[0];
-
+    if (!lastAnswerPlayer1 && currentGame.player_2.score > 0) {
+      currentGame.player_2.score = currentGame.player_2.score + 1;
+      return currentGame;
+    }
+    if (!lastAnswerPlayer2 && currentGame.player_1.score > 0) {
+      currentGame.player_1.score = currentGame.player_1.score + 1;
+      return currentGame;
+    }
     if (
       lastAnswerPlayer2.addedAt < lastAnswerPlayer1.addedAt &&
       currentGame.player_2.score > 0

@@ -127,4 +127,50 @@ describe("QuizGame", () => {
 
     quizSaTestManager.checkGameResult(finishedFirstGame, 5, 5);
   });
+  it.skip("finish game timeout", async () => {
+    const player1 = accessTokens[2];
+    const player2 = accessTokens[3];
+    const correctAnswer = { answer: "111" };
+    const incorrectAnswer = { answer: "abc" };
+    const startGame = await request(httpServer)
+      .post(`/pair-game-quiz/pairs/connection`)
+      .set("Authorization", `Bearer ${player1}`);
+    const connectionGame = await request(httpServer)
+      .post(`/pair-game-quiz/pairs/connection`)
+      .set("Authorization", `Bearer ${player2}`);
+
+    for (let i = 0; i < 3; i++) {
+      await request(httpServer)
+        .post(`/pair-game-quiz/pairs/my-current/answers`)
+        .set("Authorization", `Bearer ${player1}`)
+        .send(correctAnswer);
+    }
+    for (let i = 0; i < 5; i++) {
+      await request(httpServer)
+        .post(`/pair-game-quiz/pairs/my-current/answers`)
+        .set("Authorization", `Bearer ${player2}`)
+        .send(correctAnswer);
+    }
+    // setTimeout(async () => {
+    //   const finishedFirstGame = await request(httpServer)
+    //     .get(`/pair-game-quiz/pairs/${secondGameId}`)
+    //     .set("Authorization", `Bearer ${player1}`);
+    //
+    //   quizSaTestManager.checkGameResult(finishedFirstGame, 3, 6);
+    // }, 11000);
+    const asyncFunction = async () => {
+      return new Promise<any>((resolve) =>
+        setTimeout(async () => {
+          resolve(
+            await request(httpServer)
+              .get(`/pair-game-quiz/pairs/${startGame.body.id}`)
+              .set("Authorization", `Bearer ${player1}`),
+          );
+        }, 11000),
+      );
+    };
+
+    const res = await asyncFunction();
+    quizSaTestManager.checkGameResult(res, 3, 6);
+  });
 });
