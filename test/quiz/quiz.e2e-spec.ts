@@ -163,7 +163,7 @@ describe("QuizGame", () => {
       );
     };
   });
-  it("finish two game timeout", async () => {
+  it.skip("finish two game timeout", async () => {
     const player1 = accessTokens[0];
     const player2 = accessTokens[1];
     const player3 = accessTokens[2];

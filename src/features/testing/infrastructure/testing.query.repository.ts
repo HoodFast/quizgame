@@ -26,12 +26,13 @@ export class TestingSqlQueryRepository {
   async deleteAll(): Promise<boolean> {
     await this.dataSource.query(`DELETE FROM public."users"`);
     await this.dataSource.query(`DELETE FROM public."blogs"`);
-
     await this.gameQuestionsRepository.delete({});
     await this.playersRepository.delete({});
-    await this.gamesRepository.delete({});
+
     await this.questionRepository.delete({});
     await this.statisticRepository.delete({});
+    await this.gamesRepository.delete({});
+
     return true;
   }
 }

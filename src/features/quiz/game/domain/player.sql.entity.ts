@@ -38,7 +38,9 @@ export class Player extends BaseEntity {
   @Column("uuid")
   userId: string;
 
-  @ManyToOne(() => Users, (user) => user.player, { onDelete: "CASCADE" })
+  @ManyToOne(() => Users, (user) => user.player, {
+    onDelete: "CASCADE",
+  })
   user: Users;
 
   @Column({ default: 0 })
