@@ -10,7 +10,7 @@ import { Player, playerActive } from "../../domain/player.sql.entity";
 import { GameSqlQueryRepository } from "../../infrastructure/game.sql.query.repository";
 import { AnswerViewType } from "../../../question/api/output/answer.view.type";
 import { AnswerViewMapper } from "../../infrastructure/mappers/answer.view.mapper";
-import { AnswersStatus } from "../../domain/answer.sql.entity";
+import { Answer, AnswersStatus } from "../../domain/answer.sql.entity";
 import { Game, gameStatuses } from "../../domain/game.sql.entity";
 
 export class AnswerGameCommand {
@@ -100,40 +100,17 @@ export class AnswerGameUseCase
         myGame.player_1.answers.length < 5 ||
         myGame.player_2.answers.length < 5
       ) {
-        // setTimeout(() => {
-        //   return;
-        // }, 10000);
+        setTimeout(async () => {
+          if (game.status !== gameStatuses.finished) {
+            const finish = await this.finish(myGame, notice, addAnswer);
+            return finish;
+          }
+        }, 10000);
         notice.addData(AnswerViewMapper(addAnswer));
         return notice;
       }
-      const currentGame = await this.countLastPoint(myGame);
-      // const lastQuestionId = currentGame.questions!.slice(-1)[0].questionId;
-      // const lastAnswerPlayer1 = currentGame.player_1.answers.filter(
-      //   (i) => i.questionId === lastQuestionId,
-      // )[0];
-      // const lastAnswerPlayer2 = currentGame.player_2.answers.filter(
-      //   (i) => i.questionId === lastQuestionId,
-      // )[0];
-      //
-      // if (
-      //   lastAnswerPlayer2.addedAt < lastAnswerPlayer1.addedAt &&
-      //   currentGame.player_2.score > 0
-      // ) {
-      //   currentGame.player_2.score = currentGame.player_2.score + 1;
-      // }
-      // if (
-      //   lastAnswerPlayer2.addedAt > lastAnswerPlayer1.addedAt &&
-      //   currentGame.player_1.score > 0
-      // ) {
-      //   currentGame.player_1.score = currentGame.player_1.score + 1;
-      // }
-
-      await this.gameSqlRepository.finishGame(currentGame);
-      await this.gameSqlRepository.createStatistic(currentGame.player_1.userId);
-      await this.gameSqlRepository.createStatistic(currentGame.player_2.userId);
-
-      notice.addData(AnswerViewMapper(addAnswer));
-      return notice;
+      const finish = await this.finish(myGame, notice, addAnswer);
+      return finish;
     }
 
     notice.addData(AnswerViewMapper(addAnswer));
@@ -168,5 +145,17 @@ export class AnswerGameUseCase
       currentGame.player_1.score = currentGame.player_1.score + 1;
     }
     return currentGame;
+  }
+  async finish(
+    myGame: Game,
+    notice: InterlayerNotice<AnswerViewType>,
+    addAnswer: Answer,
+  ) {
+    const currentGame = await this.countLastPoint(myGame);
+    await this.gameSqlRepository.finishGame(currentGame);
+    await this.gameSqlRepository.createStatistic(currentGame.player_1.userId);
+    await this.gameSqlRepository.createStatistic(currentGame.player_2.userId);
+    notice.addData(AnswerViewMapper(addAnswer));
+    return notice;
   }
 }
