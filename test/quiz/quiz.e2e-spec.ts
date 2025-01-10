@@ -38,8 +38,8 @@ describe("QuizGame", () => {
     await quizSaTestManager.createQuestions(201, 10);
   });
   beforeEach(() => {});
-  afterAll(() => {
-    testManager.deleteAll();
+  afterAll(async () => {
+    await testManager.deleteAll();
   });
   it("should be defined", async () => {
     expect(app).toBeDefined();
@@ -128,7 +128,7 @@ describe("QuizGame", () => {
 
     quizSaTestManager.checkGameResult(finishedFirstGame, 5, 5);
   });
-  it.skip("finish game timeout", async () => {
+  it("finish game timeout", async () => {
     const player1 = accessTokens[2];
     const player2 = accessTokens[3];
     const correctAnswer = { answer: "111" };
@@ -164,8 +164,10 @@ describe("QuizGame", () => {
         }, 11000),
       );
     };
+    const res1 = await asyncFunction();
+    quizSaTestManager.checkGameResult(res1, 3, 6);
   });
-  it.skip("finish two game timeout", async () => {
+  it("finish two game timeout", async () => {
     const player1 = accessTokens[0];
     const player2 = accessTokens[1];
     const player3 = accessTokens[2];
