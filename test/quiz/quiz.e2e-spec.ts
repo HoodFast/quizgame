@@ -28,6 +28,8 @@ describe("QuizGame", () => {
     quizSaTestManager = new QuizSaTestManager(app);
     testingSqlQueryRepository = module.get(TestingSqlQueryRepository);
     testManager = new TestManager(app);
+    const res = await testManager.deleteAll();
+
     for (let i = 0; i < 4; i++) {
       const accessToken = await testManager.createAccessToken();
       accessTokens.push(accessToken);

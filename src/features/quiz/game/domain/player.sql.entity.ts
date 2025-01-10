@@ -40,6 +40,7 @@ export class Player extends BaseEntity {
 
   @ManyToOne(() => Users, (user) => user.player, {
     onDelete: "CASCADE",
+    nullable: true,
   })
   user: Users;
 
