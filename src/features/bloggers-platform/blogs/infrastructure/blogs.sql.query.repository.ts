@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { BlogSortData } from '../../../../base/sortData/sortData.model';
-import { blogMapper } from '../domain/blog.mapper';
-import { Blogs } from '../domain/blog.sql.entity';
-import { sortDirection } from '../api/blogs.controller';
+import { Injectable } from "@nestjs/common";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
+import { DataSource, Repository } from "typeorm";
+import { BlogSortData } from "../../../../base/sortData/sortData.model";
+import { blogMapper } from "../domain/blog.mapper";
+import { Blogs } from "../domain/blog.sql.entity";
+import { sortDirection } from "../api/blogs.controller";
 
 @Injectable()
 export class BlogsSqlQueryRepository {
@@ -18,9 +18,10 @@ export class BlogsSqlQueryRepository {
       const { sortBy, sortDirection, searchNameTerm, pageSize, pageNumber } =
         sortData;
       const offset = (pageNumber - 1) * pageSize;
+
       const result = await this.blogRepository
-        .createQueryBuilder('blog')
-        .where('blog.name ILIKE :searchLoginTerm ', {
+        .createQueryBuilder("blog")
+        .where("blog.name ILIKE :searchLoginTerm ", {
           searchLoginTerm: `%${searchNameTerm}%`,
         })
         .orderBy(`blog.${sortBy}`, sortDirection)
@@ -45,8 +46,8 @@ export class BlogsSqlQueryRepository {
 
   async getBlogById(id: string) {
     const result = await this.blogRepository
-      .createQueryBuilder('blog')
-      .where('blog.id = :id', { id })
+      .createQueryBuilder("blog")
+      .where("blog.id = :id", { id })
       .getOne();
     if (!result) return null;
     return blogMapper(result);

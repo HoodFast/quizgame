@@ -11,39 +11,43 @@ import {
   Query,
   UseGuards,
   UsePipes,
-} from '@nestjs/common';
-import { PostInput } from '../../posts/api/input/PostsCreate.dto';
+} from "@nestjs/common";
+import { PostInput } from "../../posts/api/input/PostsCreate.dto";
 
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   CommandCreateBlogData,
   CreateBlogCommand,
-} from './use-cases/create-blog.usecase';
-import { InterlayerNotice } from '../../../../base/models/Interlayer';
+} from "./use-cases/create-blog.usecase";
+import { InterlayerNotice } from "../../../../base/models/Interlayer";
 import {
   CommandCreatePostForBlogOutput,
   CreatePostForBlogCommand,
-} from '../../posts/api/use-cases/create-post-for-blog.usecase';
-import { AuthGuard } from '../../../../guards/auth.guard';
-import { createBlogInputDto } from './model/input/create-blog-input-dto';
+} from "../../posts/api/use-cases/create-post-for-blog.usecase";
+import { AuthGuard } from "../../../../guards/auth.guard";
+import { createBlogInputDto } from "./model/input/create-blog-input-dto";
 import {
   CommandUpdateBlogData,
   UpdateBlogCommand,
-} from './use-cases/update-blog.usecase';
+} from "./use-cases/update-blog.usecase";
 
 import {
   CommandDeleteBlogOutputData,
   DeleteBlogCommand,
-} from './use-cases/delete-blog.usecase';
-import { AccessTokenGetId } from '../../../../guards/access.token.get.id';
-import { BlogsSqlQueryRepository } from '../infrastructure/blogs.sql.query.repository';
-import { PostsSqlQueryRepository } from '../../posts/infrastructure/posts.sql.query.repository';
-import { SortDirectionPipe } from '../../../../base/pipes/sortDirectionPipe';
-import { UserId } from '../../../../decorators/userId';
+} from "./use-cases/delete-blog.usecase";
+import { AccessTokenGetId } from "../../../../guards/access.token.get.id";
+import { BlogsSqlQueryRepository } from "../infrastructure/blogs.sql.query.repository";
+import { PostsSqlQueryRepository } from "../../posts/infrastructure/posts.sql.query.repository";
+import { SortDirectionPipe } from "../../../../base/pipes/sortDirectionPipe";
+import { UserId } from "../../../../decorators/userId";
+import { GetAllBlogsCommand } from "./use-cases/get-all-blogs.query.usecase";
+import { BlogSortData } from "../../../../base/sortData/sortData.model";
+import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
+import { OutputBlogMapData } from "./model/output/outputBlog.model";
 
 export enum sortDirection {
-  asc = 'ASC',
-  desc = 'DESC',
+  asc = "ASC",
+  desc = "DESC",
 }
 
 export type queryBlogsInputType = {
@@ -54,44 +58,50 @@ export type queryBlogsInputType = {
   pageSize?: number;
 };
 
-@Controller('blogs')
+@Controller("blogs")
 export class BlogsController {
   constructor(
     protected blogsQueryRepository: BlogsSqlQueryRepository,
     protected postsQueryRepository: PostsSqlQueryRepository,
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
   @UsePipes(SortDirectionPipe)
   @Get()
   async getAllBlogs(@Query() query: queryBlogsInputType) {
-    const sortData = {
-      searchNameTerm: query.searchNameTerm ?? '',
-      sortBy: query.sortBy ?? 'createdAt',
+    const sortData: BlogSortData = {
+      searchNameTerm: query.searchNameTerm ?? "",
+      sortBy: query.sortBy ?? "createdAt",
       sortDirection: query.sortDirection ?? sortDirection.desc,
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
     };
 
-    const blogs = await this.blogsQueryRepository.getAllBlogs(sortData);
-    return blogs;
+    const command = new GetAllBlogsCommand(sortData);
+    const res = await this.queryBus.execute<
+      GetAllBlogsCommand,
+      InterlayerNotice<Pagination<OutputBlogMapData>>
+    >(command);
+    // const blogs = await this.blogsQueryRepository.getAllBlogs(sortData);
+    return res.execute();
   }
 
-  @Get(':id')
-  async getBlogById(@Param('id') blogId: string) {
+  @Get(":id")
+  async getBlogById(@Param("id") blogId: string) {
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
     return blog;
   }
 
   @UseGuards(AccessTokenGetId)
-  @Get(':id/posts')
+  @Get(":id/posts")
   async getPostsForBlog(
-    @Param('id') blogId: string,
+    @Param("id") blogId: string,
     @Query() query: queryBlogsInputType,
     @UserId() userId: string,
   ) {
     const sortData = {
-      sortBy: query.sortBy ?? 'createdAt',
+      sortBy: query.sortBy ?? "createdAt",
       sortDirection: query.sortDirection ?? sortDirection.desc,
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
@@ -125,9 +135,9 @@ export class BlogsController {
   }
 
   @UseGuards(AuthGuard)
-  @Post(':id/posts')
+  @Post(":id/posts")
   async createPostForBlog(
-    @Param('id') blogId: string,
+    @Param("id") blogId: string,
     @Body() input: PostInput,
   ) {
     const command = new CreatePostForBlogCommand(
@@ -152,9 +162,9 @@ export class BlogsController {
 
   @HttpCode(204)
   @UseGuards(AuthGuard)
-  @Put(':id')
+  @Put(":id")
   async updateBlog(
-    @Param('id') blogId: string,
+    @Param("id") blogId: string,
     @Body() body: createBlogInputDto,
   ) {
     const command = new UpdateBlogCommand(
@@ -173,9 +183,9 @@ export class BlogsController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete(':id')
+  @Delete(":id")
   @HttpCode(204)
-  async deleteBlogById(@Param('id') blogId: string) {
+  async deleteBlogById(@Param("id") blogId: string) {
     const command = new DeleteBlogCommand(blogId);
     const deletedBlog = await this.commandBus.execute<
       DeleteBlogCommand,
