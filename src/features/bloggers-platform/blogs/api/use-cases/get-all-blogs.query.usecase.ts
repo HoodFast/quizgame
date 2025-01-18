@@ -36,7 +36,7 @@ export class GetAllBlogUseCase
     const result = await this.blogQueryRepository.getAllBlogs(command.sortData);
 
     if (!result) {
-      notice.addError("blog don`t create");
+      notice.addError("blogs not found", "error", 404);
       return notice;
     }
     notice.addData(result);

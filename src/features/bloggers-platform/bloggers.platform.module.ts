@@ -40,8 +40,10 @@ import { BlogExistsValidator } from "../../base/validate/blog.exist.validate";
 import { Sessions } from "../auth/sessions/domain/session.sql.entity";
 import { AuthModule } from "../auth/auth.module";
 import { GetAllBlogUseCase } from "./blogs/api/use-cases/get-all-blogs.query.usecase";
+import { GetAllPostsForBlogUseCase } from "./blogs/api/use-cases/get-all-posts-for-blog.query.usecase";
 
 const useCases = [
+  GetAllPostsForBlogUseCase,
   GetAllBlogUseCase,
   CreateBlogUseCase,
   CreatePostForBlogUseCase,

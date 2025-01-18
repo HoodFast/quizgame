@@ -5,7 +5,10 @@ import { QuestionsSqlQueryRepository } from "../../infrastructure/questions.sql.
 import { Question } from "../../domain/question.sql.entity";
 import { QuestionViewType } from "../output/question.view.type";
 import { Pagination } from "../../../../../base/paginationInputDto/paginationOutput";
-import { InterlayerNotice } from "../../../../../base/models/Interlayer";
+import {
+  ERRORS_CODE,
+  InterlayerNotice,
+} from "../../../../../base/models/Interlayer";
 import { sortDirection } from "../../../../../base/sortData/sortData.model";
 
 export class GetAllQuestionsCommand {
@@ -40,7 +43,7 @@ export class GetAllQuestionsQueryUseCase
     const result =
       await this.questionsSqlQueryRepository.getAllQuestions(sortData);
     if (!result) {
-      notice.addError("error DAL");
+      notice.addError("error DAL", "error", ERRORS_CODE.ERROR);
       return notice;
     }
     notice.addData(result);

@@ -41,9 +41,14 @@ import { PostsSqlQueryRepository } from "../../posts/infrastructure/posts.sql.qu
 import { SortDirectionPipe } from "../../../../base/pipes/sortDirectionPipe";
 import { UserId } from "../../../../decorators/userId";
 import { GetAllBlogsCommand } from "./use-cases/get-all-blogs.query.usecase";
-import { BlogSortData } from "../../../../base/sortData/sortData.model";
+import {
+  BlogSortData,
+  SortData,
+} from "../../../../base/sortData/sortData.model";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 import { OutputBlogMapData } from "./model/output/outputBlog.model";
+import { GetAllPostsForBlogCommand } from "./use-cases/get-all-posts-for-blog.query.usecase";
+import { PostType } from "../../posts/infrastructure/mappers/post.mapper";
 
 export enum sortDirection {
   asc = "ASC",
@@ -100,20 +105,23 @@ export class BlogsController {
     @Query() query: queryBlogsInputType,
     @UserId() userId: string,
   ) {
-    const sortData = {
+    const sortData: SortData = {
       sortBy: query.sortBy ?? "createdAt",
       sortDirection: query.sortDirection ?? sortDirection.desc,
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
     };
-
+    const command = new GetAllPostsForBlogCommand(userId, blogId, sortData);
+    const res = await this.queryBus.execute<
+      GetAllPostsForBlogCommand,
+      InterlayerNotice<Pagination<PostType>>
+    >(command);
     const posts = await this.postsQueryRepository.getAllPostsForBlog(
       userId,
       blogId,
       sortData,
     );
-    if (!posts) throw new NotFoundException();
-    return posts;
+    return res.execute();
   }
 
   @UseGuards(AuthGuard)
