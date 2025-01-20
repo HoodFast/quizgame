@@ -49,6 +49,7 @@ import { Pagination } from "../../../../base/paginationInputDto/paginationOutput
 import { OutputBlogMapData } from "./model/output/outputBlog.model";
 import { GetAllPostsForBlogCommand } from "./use-cases/get-all-posts-for-blog.query.usecase";
 import { PostType } from "../../posts/infrastructure/mappers/post.mapper";
+import { GetBlogByIdCommand } from "./use-cases/get-blog-by-id.query.usecase";
 
 export enum sortDirection {
   asc = "ASC",
@@ -93,9 +94,13 @@ export class BlogsController {
 
   @Get(":id")
   async getBlogById(@Param("id") blogId: string) {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
-    if (!blog) throw new NotFoundException();
-    return blog;
+    const command = new GetBlogByIdCommand(blogId);
+    const res = await this.queryBus.execute<
+      GetBlogByIdCommand,
+      InterlayerNotice<OutputBlogMapData>
+    >(command);
+
+    return res.execute();
   }
 
   @UseGuards(AccessTokenGetId)
@@ -116,11 +121,7 @@ export class BlogsController {
       GetAllPostsForBlogCommand,
       InterlayerNotice<Pagination<PostType>>
     >(command);
-    const posts = await this.postsQueryRepository.getAllPostsForBlog(
-      userId,
-      blogId,
-      sortData,
-    );
+
     return res.execute();
   }
 
@@ -134,12 +135,10 @@ export class BlogsController {
     );
     const creatingBlog = await this.commandBus.execute<
       CreateBlogCommand,
-      InterlayerNotice<CommandCreateBlogData>
+      InterlayerNotice<OutputBlogMapData>
     >(command);
-    const blog = await this.blogsQueryRepository.getBlogById(
-      creatingBlog.data!.blogId,
-    );
-    return blog;
+
+    return creatingBlog.execute();
   }
 
   @UseGuards(AuthGuard)

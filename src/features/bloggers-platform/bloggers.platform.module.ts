@@ -41,8 +41,10 @@ import { Sessions } from "../auth/sessions/domain/session.sql.entity";
 import { AuthModule } from "../auth/auth.module";
 import { GetAllBlogUseCase } from "./blogs/api/use-cases/get-all-blogs.query.usecase";
 import { GetAllPostsForBlogUseCase } from "./blogs/api/use-cases/get-all-posts-for-blog.query.usecase";
+import { GetBlogByIdUseCase } from "./blogs/api/use-cases/get-blog-by-id.query.usecase";
 
 const useCases = [
+  GetBlogByIdUseCase,
   GetAllPostsForBlogUseCase,
   GetAllBlogUseCase,
   CreateBlogUseCase,
