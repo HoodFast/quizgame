@@ -12,51 +12,56 @@ import {
   Req,
   UseGuards,
   UsePipes,
-} from '@nestjs/common';
-import { PostService } from '../application/posts.service';
+} from "@nestjs/common";
+import { PostService } from "../application/posts.service";
 
-import { InputPostCreate } from './input/PostsCreate.dto';
-import { QueryPostInputModel } from './input/PostsGetInput';
-import { sortDirection } from '../../blogs/api/blogs.controller';
-import { AuthGuard } from '../../../../guards/auth.guard';
+import { InputPostCreate, PostCreateData } from "./input/PostsCreate.dto";
+import { QueryPostInputModel } from "./input/PostsGetInput";
+import { sortDirection } from "../../blogs/api/blogs.controller";
+import { AuthGuard } from "../../../../guards/auth.guard";
 import {
   CommandCreatePostForBlogOutput,
   CreatePostForBlogCommand,
-} from './use-cases/create-post-for-blog.usecase';
-import { CommandBus } from '@nestjs/cqrs';
-import { InterlayerNotice } from '../../../../base/models/Interlayer';
+} from "./use-cases/create-post-for-blog.usecase";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { InterlayerNotice } from "../../../../base/models/Interlayer";
 import {
   CommandUpdatePostOutputData,
   UpdatePostCommand,
-} from './use-cases/update-post.usecase';
-import { LikesDto } from './input/likesDtos';
-import { AccessTokenAuthGuard } from '../../../../guards/access.token.auth.guard';
-import { UpdateLikesCommand } from './use-cases/update-likes.usecase';
-import { UpdateOutputData } from '../../../../base/models/updateOutput';
-import { AccessTokenGetId } from '../../../../guards/access.token.get.id';
-import { CreateCommentForPostCommand } from './use-cases/create-comment-for-post.usecase';
-import { CommentsInput } from '../../comments/api/model/input/comments.input';
-import { CommentsOutputType } from '../../comments/api/model/output/comments.output';
-import { PostsSqlQueryRepository } from '../infrastructure/posts.sql.query.repository';
-import { CommentsSqlQueryRepository } from '../../comments/infrastructure/comments.sql.query.repository';
-import { SortDirectionPipe } from '../../../../base/pipes/sortDirectionPipe';
-import { UserId } from '../../../../decorators/userId';
+} from "./use-cases/update-post.usecase";
+import { LikesDto } from "./input/likesDtos";
+import { AccessTokenAuthGuard } from "../../../../guards/access.token.auth.guard";
+import { UpdateLikesCommand } from "./use-cases/update-likes.usecase";
+import { UpdateOutputData } from "../../../../base/models/updateOutput";
+import { AccessTokenGetId } from "../../../../guards/access.token.get.id";
+import { CreateCommentForPostCommand } from "./use-cases/create-comment-for-post.usecase";
+import { CommentsInput } from "../../comments/api/model/input/comments.input";
+import { CommentsOutputType } from "../../comments/api/model/output/comments.output";
+import { PostsSqlQueryRepository } from "../infrastructure/posts.sql.query.repository";
+import { CommentsSqlQueryRepository } from "../../comments/infrastructure/comments.sql.query.repository";
+import { SortDirectionPipe } from "../../../../base/pipes/sortDirectionPipe";
+import { UserId } from "../../../../decorators/userId";
+import { GetAllPostsCommand } from "./use-cases/get-all-posts.query.usecase";
+import { SortData } from "../../../../base/sortData/sortData.model";
+import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
+import { PostType } from "../infrastructure/mappers/post.mapper";
 
-@Controller('posts')
+@Controller("posts")
 export class PostsController {
   constructor(
     protected postService: PostService,
     protected postsQueryRepository: PostsSqlQueryRepository,
     protected commentsQueryRepository: CommentsSqlQueryRepository,
     protected commandBus: CommandBus,
+    protected queryBus: QueryBus,
   ) {}
 
   @HttpCode(204)
   @UseGuards(AccessTokenAuthGuard)
-  @Put(':id/like-status')
+  @Put(":id/like-status")
   async updateLikes(
     @Body() body: LikesDto,
-    @Param('id') postId: string,
+    @Param("id") postId: string,
     @UserId() userId: string,
   ) {
     const command = new UpdateLikesCommand(body.likeStatus, postId, userId);
@@ -75,21 +80,25 @@ export class PostsController {
     @Query() query: QueryPostInputModel,
     @UserId() userId: string,
   ) {
-    const sortData = {
-      sortBy: query.sortBy ?? 'createdAt',
+    const sortData: SortData = {
+      sortBy: query.sortBy ?? "createdAt",
       sortDirection: query.sortDirection ?? sortDirection.desc,
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
     };
+    const command = new GetAllPostsCommand(sortData, userId);
+    const res = await this.queryBus.execute<
+      GetAllPostsCommand,
+      InterlayerNotice<Pagination<PostType>>
+    >(command);
+    // const posts = await this.postService.getAllPosts(sortData, userId);
 
-    const posts = await this.postService.getAllPosts(sortData, userId);
-
-    return posts;
+    return res.execute();
   }
 
   @UseGuards(AccessTokenGetId)
-  @Get(':id')
-  async getPostById(@Param('id') postId: string, @UserId() userId: string) {
+  @Get(":id")
+  async getPostById(@Param("id") postId: string, @UserId() userId: string) {
     const post = await this.postService.getPostById(postId, userId);
     if (!post) throw new NotFoundException();
     return post;
@@ -97,14 +106,14 @@ export class PostsController {
 
   @UseGuards(AccessTokenGetId)
   @UsePipes(SortDirectionPipe)
-  @Get(':id/comments')
+  @Get(":id/comments")
   async getCommentsForPost(
-    @Param('id') postId: string,
+    @Param("id") postId: string,
     @Query() query: QueryPostInputModel,
     @UserId() userId: string,
   ) {
     const sortData = {
-      sortBy: query.sortBy ?? 'createdAt',
+      sortBy: query.sortBy ?? "createdAt",
       sortDirection: query.sortDirection ?? sortDirection.desc,
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
@@ -145,8 +154,8 @@ export class PostsController {
 
   @UseGuards(AuthGuard)
   @HttpCode(204)
-  @Put(':id')
-  async updatePost(@Param('id') postId, @Body() model: InputPostCreate) {
+  @Put(":id")
+  async updatePost(@Param("id") postId, @Body() model: InputPostCreate) {
     const command = new UpdatePostCommand(
       postId,
       model.title,
@@ -165,8 +174,8 @@ export class PostsController {
 
   @UseGuards(AuthGuard)
   @HttpCode(204)
-  @Delete(':id')
-  async deletePost(@Param('id') postId: string) {
+  @Delete(":id")
+  async deletePost(@Param("id") postId: string) {
     const post = await this.postService.deletePost(postId);
     if (!post) throw new NotFoundException();
     return;
@@ -174,9 +183,9 @@ export class PostsController {
 
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(201)
-  @Post('/:id/comments')
+  @Post("/:id/comments")
   async createCommentForPost(
-    @Param('id') postId: string,
+    @Param("id") postId: string,
     @Body() data: CommentsInput,
     @UserId() userId: string,
   ) {
