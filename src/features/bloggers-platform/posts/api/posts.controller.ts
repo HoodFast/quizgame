@@ -45,6 +45,7 @@ import { GetAllPostsCommand } from "./use-cases/get-all-posts.query.usecase";
 import { SortData } from "../../../../base/sortData/sortData.model";
 import { Pagination } from "../../../../base/paginationInputDto/paginationOutput";
 import { PostType } from "../infrastructure/mappers/post.mapper";
+import { GetPostByIdCommand } from "./use-cases/get-post-by-id.query.usecase";
 
 @Controller("posts")
 export class PostsController {
@@ -99,9 +100,14 @@ export class PostsController {
   @UseGuards(AccessTokenGetId)
   @Get(":id")
   async getPostById(@Param("id") postId: string, @UserId() userId: string) {
-    const post = await this.postService.getPostById(postId, userId);
-    if (!post) throw new NotFoundException();
-    return post;
+    const command = new GetPostByIdCommand(postId, userId);
+    const res = await this.queryBus.execute<
+      GetPostByIdCommand,
+      InterlayerNotice<PostType>
+    >(command);
+    // const post = await this.postService.getPostById(postId, userId);
+    // if (!post) throw new NotFoundException();
+    return res.execute();
   }
 
   @UseGuards(AccessTokenGetId)

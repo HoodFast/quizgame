@@ -43,8 +43,10 @@ import { GetAllBlogUseCase } from "./blogs/api/use-cases/get-all-blogs.query.use
 import { GetAllPostsForBlogUseCase } from "./blogs/api/use-cases/get-all-posts-for-blog.query.usecase";
 import { GetBlogByIdUseCase } from "./blogs/api/use-cases/get-blog-by-id.query.usecase";
 import { GetAllPostsUseCase } from "./posts/api/use-cases/get-all-posts.query.usecase";
+import { GetPostByIdUseCase } from "./posts/api/use-cases/get-post-by-id.query.usecase";
 
 const useCases = [
+  GetPostByIdUseCase,
   GetAllPostsUseCase,
   GetBlogByIdUseCase,
   GetAllPostsForBlogUseCase,

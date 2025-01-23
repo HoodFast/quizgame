@@ -12,7 +12,7 @@ import { PostsSqlQueryRepository } from "../../infrastructure/posts.sql.query.re
 export class GetAllPostsCommand {
   constructor(
     public sortData: SortData,
-    public userId?: string,
+    public userId: string,
   ) {}
 }
 

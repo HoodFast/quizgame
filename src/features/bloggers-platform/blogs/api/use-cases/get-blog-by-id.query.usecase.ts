@@ -16,7 +16,10 @@ import { OutputBlogMapData } from "../model/output/outputBlog.model";
 import { BlogsSqlQueryRepository } from "../../infrastructure/blogs.sql.query.repository";
 
 export class GetBlogByIdCommand {
-  constructor(public blogId: string) {}
+  constructor(
+    public blogId: string,
+    public userId?: string,
+  ) {}
 }
 
 @QueryHandler(GetBlogByIdCommand)
